@@ -12,7 +12,7 @@ import tempfile
 import subprocess
 import shutil
 
-from ..plot import Image
+from ..plot import Image as plt_Image
 
 def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10, use_absolute_scale=True):
 
@@ -40,7 +40,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
 
         fig = plt.figure(figsize=(7, 6)) 
         fig, (ax_dir, ax_pap) = plt.subplots(1,2)
-        plt.suptitle(event.mc_truth.short_event_info())
+        plt.suptitle(event.simulation_truth.short_event_info())
 
         gs = gridspec.GridSpec(1, 2, width_ratios=[1, 6]) 
         ax0 = plt.subplot(gs[0])
@@ -58,7 +58,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
         ax1 = plt.subplot(gs[1])
         ax1.set_aspect('equal')  
 
-        plot.Image.add_pixel_image_to_ax(image, ax1, vmin=vmin, vmax=vmax)
+        plt_Image.add_pixel_image_to_ax(image, ax1, vmin=vmin, vmax=vmax)
         plt.savefig(os.path.join(path, 'refocus_'+str(i).zfill(6)+".png"), dpi=180)
         plt.close()
 

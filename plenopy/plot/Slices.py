@@ -96,7 +96,7 @@ def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10,
         ax1.set_xlabel('x/m')  
         ax1.set_ylabel('y/m')
 
-        plt.savefig(os.path.join(path, 'refocus_'+str(i).zfill(6)+".png"), dpi=180)
+        plt.savefig(os.path.join(path, 'slice_'+str(i).zfill(6)+".png"), dpi=180)
         plt.close()
 
 def save_slices_video(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=25, fps=25, use_absolute_scale=True):
@@ -113,25 +113,25 @@ def save_slices_video(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=25
         i=0
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, 'refocus_'+str(0).zfill(6)+".png"), 
+                os.path.join(work_dir, 'slice_'+str(0).zfill(6)+".png"), 
                 os.path.join(work_dir, 'video_'+str(i).zfill(6)+".png"))
             i+=1
 
         for o in range(steps):
             shutil.copy(
-                os.path.join(work_dir, 'refocus_'+str(o).zfill(6)+".png"), 
+                os.path.join(work_dir, 'slice_'+str(o).zfill(6)+".png"), 
                 os.path.join(work_dir, 'video_'+str(i).zfill(6)+".png"))
             i+=1
 
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, 'refocus_'+str(steps-1).zfill(6)+".png"), 
+                os.path.join(work_dir, 'slice_'+str(steps-1).zfill(6)+".png"), 
                 os.path.join(work_dir, 'video_'+str(i).zfill(6)+".png"))
             i+=1
 
         for o in range(steps-1, -1, -1):
             shutil.copy(
-                os.path.join(work_dir, 'refocus_'+str(o).zfill(6)+".png"), 
+                os.path.join(work_dir, 'slice_'+str(o).zfill(6)+".png"), 
                 os.path.join(work_dir, 'video_'+str(i).zfill(6)+".png"))
             i+=1
 
