@@ -12,7 +12,7 @@ import tempfile
 import subprocess
 import shutil
 
-from .PlotTools import plot_pixel
+from ..plot import Image
 
 def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10, use_absolute_scale=True):
 
@@ -58,7 +58,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
         ax1 = plt.subplot(gs[1])
         ax1.set_aspect('equal')  
 
-        plot_pixel(image, ax1, vmin=vmin, vmax=vmax)
+        plot.Image.add_pixel_image_to_ax(image, ax1, vmin=vmin, vmax=vmax)
         plt.savefig(os.path.join(path, 'refocus_'+str(i).zfill(6)+".png"), dpi=180)
         plt.close()
 

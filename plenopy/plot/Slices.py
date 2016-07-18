@@ -12,10 +12,6 @@ import tempfile
 import subprocess
 import shutil
 
-from PlotTools import add_pixel_image_to_ax
-
-__all__ = ['save_object_distance_slice_stack', 'save_slices_video']
-
 def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10, use_absolute_scale=True, restrict_to_plenoscope_aperture=True):
 
     plt.rcParams.update({'font.size': 12})
@@ -34,7 +30,8 @@ def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10,
     intensity = event.light_field.intensity.flatten()[event.light_field.valid_lixel.flatten()]
 
     for i, object_distance in enumerate(object_distances):
-        pos_xy = event.light_field.rays.pos_x_y_for_object_distance(object_distance)
+        pos_xy = event.light_field.rays.slice_intersections_in_object_distance(
+            object_distance)
         xs[i,:] = pos_xy[:,0][event.light_field.valid_lixel.flatten()]
         ys[i,:] = pos_xy[:,1][event.light_field.valid_lixel.flatten()]
 
@@ -50,7 +47,7 @@ def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10,
         ymax = ys.max()
         ymin = ys.min()
 
-    n_bins = int(0.5*np.sqrt(n_lixel))
+    n_bins = int(0.25*np.sqrt(n_lixel))
 
     bins = np.zeros([steps, n_bins, n_bins])
     xedges = np.zeros(n_bins+1)
@@ -70,7 +67,7 @@ def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10,
 
         fig = plt.figure(figsize=(7, 6)) 
         fig, (ax0, ax1) = plt.subplots(1,2)
-        plt.suptitle(event.mc_truth.short_event_info())
+        plt.suptitle(event.simulation_truth.short_event_info())
 
         gs = gridspec.GridSpec(1, 2, width_ratios=[1, 6]) 
         ax0 = plt.subplot(gs[0])

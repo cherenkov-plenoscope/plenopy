@@ -4,13 +4,14 @@ from __future__ import absolute_import, print_function, division
 import numpy as np
 import glob, os
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
 from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
 from .SimulationTruth import SimulationTruth
 from .LightField import LightField
-from .plot.tools import add_pixel_image_to_ax 
-from .plot.tools import add_paxel_image_to_ax
-from .add2ax.raw_light_field_sensor_response import hist_intensity as add2ax_hist_intensity
+from .plot import Image as plt_Image
+from .plot import RawLightFieldSensorResponse as plt_RawLightFieldSensorResponse
+from .plot import LightField as plt_LightField
 
 class Event(object):
     """
@@ -88,15 +89,28 @@ class Event(object):
         """
         fig, axs = plt.subplots(2,2)
         plt.suptitle(self.simulation_truth.short_event_info())
-        add_pixel_image_to_ax(
+
+        axs[0][0].set_title('directional image')
+        plt_Image.add_pixel_image_to_ax(
             self.light_field.pixel_sum(), 
             axs[0][0])
-        add_paxel_image_to_ax(
+
+        axs[0][1].set_title('principal aperture plane')
+        plt_Image.add_paxel_image_to_ax(
             self.light_field.paxel_sum(interpolate_central_paxel=True), 
             axs[0][1])
-        self.light_field.add_arrival_time_histogram_to_ax(
+
+        plt_LightField.add2ax_hist_arrival_time(
+            self.light_field,
             axs[1][0])
-        add2ax_hist_intensity(
-            axs[1][1], 
-            self.raw_light_field_sensor_response)
+        
+        plt_RawLightFieldSensorResponse.add2ax_hist_intensity(
+            self.raw_light_field_sensor_response,
+            axs[1][1])
+        plt_LightField.add2ax_hist_intensity(
+            self.light_field,
+            axs[1][1], color='green')
+        raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
+        eff_corrected_intensity_patch = mpatches.Patch(color='green', label='efficiency corrected')
+        axs[1][1].legend(handles=[raw_intensity_patch, eff_corrected_intensity_patch])
         plt.show()

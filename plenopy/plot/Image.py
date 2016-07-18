@@ -6,7 +6,7 @@ from matplotlib.patches import RegularPolygon
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-def add_to_ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None):
+def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None):
 
     if vmin is None:
         vmin = I.min()
@@ -52,7 +52,7 @@ def add_pixel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    add_to_ax(
+    add2ax(
         ax=ax,
         I=img.intensity,
         px=np.rad2deg(img.pixel_pos_x),
@@ -69,7 +69,7 @@ def add_paxel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    add_to_ax(
+    add2ax(
         ax=ax,
         I=img.intensity,
         px=img.pixel_pos_x,
@@ -79,11 +79,3 @@ def add_paxel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
         vmin=vmin,
         vmax=vmax,
     )
-
-class FigureSize():
-    def __init__(self, cols, rows, dpi):
-        self.cols = cols
-        self.rows = rows
-        self.dpi = dpi
-        self.hight = self.rows/self.dpi
-        self.width = self.cols/self.dpi

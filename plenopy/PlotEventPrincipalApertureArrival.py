@@ -12,6 +12,14 @@ import subprocess
 
 from PlotTools import FigureSize
 
+class FigureSize():
+    def __init__(self, cols, rows, dpi):
+        self.cols = cols
+        self.rows = rows
+        self.dpi = dpi
+        self.hight = self.rows/self.dpi
+        self.width = self.cols/self.dpi
+
 def save_principal_aperture_arrival_stack(lf, path, steps=7, threshold=100):
 
     plt.rcParams.update({'font.size': 12})

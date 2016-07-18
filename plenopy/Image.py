@@ -3,13 +3,15 @@
 from __future__ import absolute_import, print_function, division
 import numpy as np
 import matplotlib.pyplot as plt
-from .plot.tools import add_to_ax
-    
+from .plot import Image as plt_Image
+
 class Image:
     """
     A 2D Images to display the classic IACT images and the intensity 
     distributions on the principal aperture plane.
 
+    Parameters
+    ----------
     intensity   The photon equivalent intensity in each channel [p.e.]
 
     pixel_pos_x, pixel_pos_y    The x and y position of the channels 
@@ -22,7 +24,11 @@ class Image:
 
     def plot(self):
         fig, ax = plt.subplots()
-        add_to_ax(ax, self.intensity, self.pixel_pos_x, self.pixel_pos_y)
+        plt_Image.add2ax(
+            ax, 
+            self.intensity, 
+            self.pixel_pos_x, 
+            self.pixel_pos_y)
         plt.show()
 
     def __str__(self):

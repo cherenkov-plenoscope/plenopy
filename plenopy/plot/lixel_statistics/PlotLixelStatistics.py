@@ -4,7 +4,7 @@ from __future__ import absolute_import, print_function, division
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from .add2ax import *
+from . import add2ax
 
 class PlotLixelStatistics(object):
     def __init__(self, lss, path):
@@ -30,76 +30,76 @@ class PlotLixelStatistics(object):
             dpi=self.dpi)
     def save_cx_mean(self):
         fig, ax = self.fig_ax()
-        add_to_ax_cx_mean_hist(self.lss, ax)
+        add2ax.cx_mean_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cx_mean.png')
         plt.close(fig)
     def save_cy_mean(self):
         fig, ax = self.fig_ax()
-        add_to_ax_cy_mean_hist(self.lss, ax)
+        add2ax.cy_mean_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cy_mean.png')
         plt.close(fig)
     def save_x_mean(self):
         fig, ax = self.fig_ax()
-        add_to_ax_x_mean_hist(self.lss, ax)
+        add2ax.x_mean_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'x_mean.png')
         plt.close(fig)
     def save_y_mean(self):
         fig, ax = self.fig_ax()
-        add_to_ax_y_mean_hist(self.lss, ax)
+        add2ax.y_mean_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'y_mean.png')
         plt.close(fig)
     def save_cx_stddev(self):
         fig, ax = self.fig_ax()
-        add_to_ax_cx_std_hist(self.lss, ax)
+        add2ax.cx_std_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cx_stddev.png')
         plt.close(fig)
     def save_cy_stddev(self):
         fig, ax = self.fig_ax()
-        add_to_ax_cy_std_hist(self.lss, ax)
+        add2ax.cy_std_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cy_stddev.png')
         plt.close(fig)
     def save_time_mean(self):
         fig, ax = self.fig_ax()
-        add_to_ax_time_mean_hist(self.lss, ax)
+        add2ax.time_mean_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'time_delay_mean.png')
         plt.close(fig)
     def save_time_stddev(self):
         fig, ax = self.fig_ax()
-        add_to_ax_time_std_hist(self.lss, ax)
+        add2ax.time_std_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'time_stddev.png')
         plt.close(fig)
     def save_geometrical_efficiency(self):
         fig, ax = self.fig_ax()
-        add_to_ax_geometric_efficieny_hist(self.lss, ax)
+        add2ax.geometric_efficieny_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'efficiency.png')
         plt.close(fig)
     def save_c_mean_vs_c_std(self):
         fig, ax = self.fig_ax()
-        add_to_ax_c_vs_c_std(self.lss, ax)
+        add2ax.c_vs_c_std(self.lss, ax)
         self.__save_fig(fig, 'c_mean_vs_c_std.png')
         plt.close(fig)
     def save_x_y_hist2d(self):
         fig, ax = self.fig_ax()
-        add_to_ax_x_y_hist2d(self.lss, ax)
+        add2ax.x_y_hist2d(self.lss, ax)
         self.__save_fig(fig, 'x_y_mean_hist2d.png')
         plt.close(fig)
     def save_cx_cy_hist2d(self):
         fig, ax = self.fig_ax()
-        add_to_ax_cx_cy_hist2d(self.lss, ax)
+        add2ax.cx_cy_hist2d(self.lss, ax)
         self.__save_fig(fig, 'cx_cy_mean_hist2d.png')
         plt.close(fig)
     def save_sensor_plane_overview(self, I, name='unknown', unit='unknown'):
         fig, ax = self.fig_ax()
-        coll = add_to_ax_colored_lixels(self.lss, I, ax)
+        coll = add2ax.colored_lixels(self.lss, I, ax)
         ax.set_ylabel('sensor plane y/m')
         ax.set_xlabel('sensor plane x/m')
         fig.colorbar(coll, label='principal aperture '+name+'/'+unit)

@@ -3,7 +3,7 @@
 from __future__ import absolute_import, print_function, division
 import numpy as np
 from .Image import Image
-from .ApertureMasks import circular_mask
+from . import Masks
    
 class LightField(object):
     def __init__(self, raw_plenoscope_response, lixel_statistics, sensor_plane2imaging_system):
@@ -183,20 +183,18 @@ class LightField(object):
             self.paxel_pos_x, 
             self.paxel_pos_y)
 
-    def pixel_sum_sub_aperture(self, sub_x, sub_y, sub_r, smear=0.0):
+    def pixel_sum_sub_aperture(self, x, y, r, smear=0.0):
         """
         Return Image    An image as seen by a sub aperture at sub_x, sub_y with 
                         radius sub_r.
 
         Parameters
         ----------
-        sub_x   x position of sub aperture on principal aperture plane
+        x, y    x and y position of sub aperture on principal aperture plane
 
-        sub_y   y position of sub aperture on principal aperture plane
+        r       radius of sub aperture
 
-        sub_r   radius of sub aperture
-
-        smear   [optional] same units as sub_r. If smear != 0.0, paxel will
+        smear   [optional] same units as r. If smear != 0.0, paxel will
                 be taken into account not abrupt but smootly according to 
                 their distance to the circular sub aperture's center
                 
@@ -212,31 +210,19 @@ class LightField(object):
                      |       .      \ 
                      |       .       \ 
                 0.0 -|-------|--------|--------------->
-                        sub_r     sub_r+smear       distance of paxel
+                             r       r+smear       distance of paxel
                                                    to sub aperture center
         """
         return self.pixel_sum(
-            circular_mask(
+            Masks.circular(
                 self.paxel_pos_x,
                 self.paxel_pos_y,
-                x=sub_x,
-                y=sub_y,
-                r=sub_r,
+                x=x,
+                y=y,
+                r=r,
                 smear=smear
             )
         )
-
-    def add_arrival_time_histogram_to_ax(self, ax):
-        bins, bin_edges = np.histogram(
-            self.arrival_time[self.valid_lixel], 
-            weights=self.intensity[self.valid_lixel],
-            bins=int(np.ceil(0.5*np.sqrt(self.valid_lixel.sum()))))
-
-        ax.step(bin_edges[:-1], bins)
-        ax.set_xlabel('arrival time t/s')
-        ax.set_ylabel('p.e. #/1')
-
-        return bins, bin_edges
 
     def __str__(self):
         out = 'LightField('

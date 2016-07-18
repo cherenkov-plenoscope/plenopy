@@ -15,7 +15,7 @@ setup(
         'numpy',            # in anaconda
     ],
     entry_points={'console_scripts': [
-        'mctPlenoscopePlotLixelStatistics = plenopy.plot.plot_lixel_statistics:main',
+        'mctPlenoscopePlotLixelStatistics = plenopy.main.plot_lixel_statistics:main',
     ]},
     zip_safe=False
 )
