@@ -43,14 +43,14 @@ class Event(object):
         self.__path = os.path.abspath(path)
         
         self.raw_light_field_sensor_response = RawLighFieldSensorResponse(
-            os.path.join(self.__path, 'raw_plenoscope_response.bin'))
+            os.path.join(self.__path, 'raw_light_field_sensor_response.bin'))
 
         self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(
             os.path.join(self.__path, 'sensor_plane2imaging_system.bin'))
 
         try:
             self.simulation_truth = SimulationTruth(
-                os.path.join(self.__path, 'mc_truth'))
+                os.path.join(self.__path, 'simulation_truth'))
             self.type = "simulation"
         except(FileNotFoundError):
             self.type = "observation"
