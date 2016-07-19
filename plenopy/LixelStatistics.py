@@ -136,10 +136,10 @@ class LixelStatistics(object):
 
     def __read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32) 
-        ls = ls.reshape([ls.shape[0]/11 ,11])
+        ls = ls.reshape([ls.shape[0]/12 ,12])
 
         for i, attribute_name in enumerate([
-                'efficiency',
+                'efficiency', 'efficiency_std',
                 'cx_mean','cx_std',
                 'cy_mean','cy_std',
                 'x_mean','x_std',
