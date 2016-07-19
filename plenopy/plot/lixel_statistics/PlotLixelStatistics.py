@@ -76,11 +76,17 @@ class PlotLixelStatistics(object):
         ax.semilogy()
         self.__save_fig(fig, 'time_stddev.png')
         plt.close(fig)
-    def save_geometrical_efficiency(self):
+    def save_efficiency(self):
         fig, ax = self.fig_ax()
-        add2ax.geometric_efficieny_hist(self.lss, ax)
+        add2ax.efficieny_hist(self.lss, ax)
         ax.semilogy()
         self.__save_fig(fig, 'efficiency.png')
+        plt.close(fig)
+    def save_efficiency_relative_error(self):
+        fig, ax = self.fig_ax()
+        add2ax.efficieny_relative_error_hist(self.lss, ax)
+        ax.semilogy()
+        self.__save_fig(fig, 'efficiency_error.png')
         plt.close(fig)
     def save_c_mean_vs_c_std(self):
         fig, ax = self.fig_ax()
@@ -134,7 +140,8 @@ class PlotLixelStatistics(object):
         self.save_cy_stddev()
         self.save_time_mean()
         self.save_time_stddev()
-        self.save_geometrical_efficiency()
+        self.save_efficiency()
+        self.save_efficiency_relative_error()
         self.save_c_mean_vs_c_std()
         self.save_x_y_hist2d()
         self.save_cx_cy_hist2d()

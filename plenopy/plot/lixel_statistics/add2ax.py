@@ -60,10 +60,17 @@ def time_std_hist(lss, ax):
     symmetric_hist(time_delay_std, ax)
     ax.set_xlabel('relative arrival time stddev t/s')
 
-def geometric_efficieny_hist(lss, ax):
-    geo_eff = lss.efficiency
-    symmetric_hist(geo_eff, ax)
-    ax.set_xlabel('geometric efficiency eff/1')
+def efficieny_hist(lss, ax):
+    eff = lss.efficiency
+    symmetric_hist(eff, ax)
+    ax.set_xlabel('efficiency eff/1')
+    ax.set_ylabel('number of lixel #/1')
+
+def efficieny_relative_error_hist(lss, ax):
+    rel_error = lss.efficiency_std/lss.efficiency
+    symmetric_hist(rel_error, ax)
+    ax.set_xlabel('relative error efficiency')
+    ax.set_ylabel('number of lixel #/1')
 
 def hist_2d(x,y, ax, aspect='auto'):
     nbins_x = np.sqrt(x.shape[0])
