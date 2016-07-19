@@ -67,7 +67,7 @@ def efficieny_hist(lss, ax):
     ax.set_ylabel('number of lixel #/1')
 
 def efficieny_relative_error_hist(lss, ax):
-    rel_error = lss.efficiency_std/lss.efficiency
+    rel_error = lss.efficiency_std[lss.efficiency > 0.0]/lss.efficiency[lss.efficiency > 0.0]
     symmetric_hist(rel_error, ax)
     ax.set_xlabel('relative error efficiency')
     ax.set_ylabel('number of lixel #/1')
