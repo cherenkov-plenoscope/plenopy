@@ -62,16 +62,13 @@ class Event(object):
 
         self.number = int(os.path.basename(self.__path))
 
-    def __str__(self):
+    def __repr__(self):
         out = "Event("
         out+= "path='"+self.__path+"', "
         out+= "number "+str(self.number)+", "
         out+= "type '"+self.type
         out+="')\n"
         return out   
-
-    def __repr__(self):
-        return self.__str__()
 
     def plot(self):
         """

@@ -33,11 +33,8 @@ class LixelRays(object):
         pos3D = self.support - (scale_factors*self.direction.T).T
         return pos3D[:,0:2]
 
-    def __str__(self):
+    def __repr__(self):
         out = 'LixelRays('
         out+= str(self.support.shape[0])+' lixels'
         out+= ')\n'
         return out
-
-    def __repr__(self):
-        return self.__str__()

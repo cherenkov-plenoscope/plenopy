@@ -22,11 +22,8 @@ class RawLighFieldSensorResponse(object):
         self.arrival_time = raw[:,0]
         self.intensity = raw[:,1]
 
-    def __str__(self):
+    def __repr__(self):
         out = 'RawLighFieldSensorResponse('
         out+= str(self.arrival_time.shape[0])+' lixel, '
         out+= 'Sum_Intensity '+str(round(self.intensity.sum()))+' p.e.)\n'
         return out
-
-    def __repr__(self):
-        return self.__str__()

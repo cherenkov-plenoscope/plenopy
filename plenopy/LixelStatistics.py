@@ -219,12 +219,9 @@ class LixelStatistics(object):
         flat_mask[flat_idxs] = True
         return flat_mask.reshape([self.number_pixel, self.number_paxel])
 
-    def __str__(self):
+    def __repr__(self):
         out = 'LixelStatistics( '
         out+= str(self.number_lixel)+' lixel = '
         out+= str(self.number_pixel)+' pixel x '
         out+= str(self.number_paxel)+' paxel)\n'
-        return out
-
-    def __repr__(self):
-        return self.__str__()        
+        return out      

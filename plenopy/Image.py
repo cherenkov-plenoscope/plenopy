@@ -31,12 +31,9 @@ class Image:
             self.pixel_pos_y)
         plt.show()
 
-    def __str__(self):
+    def __repr__(self):
         out = 'Image('
         out+= str(self.intensity.shape[0])+' channels, '
         out+= 'Sum_intensity '+str(round(self.intensity.sum()))+' p.e.'
         out+= ')\n'
         return out
-
-    def __repr__(self):
-        return self.__str__()

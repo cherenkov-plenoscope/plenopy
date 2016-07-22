@@ -224,13 +224,10 @@ class LightField(object):
             )
         )
 
-    def __str__(self):
+    def __repr__(self):
         out = 'LightField('
         out+= str(self.number_lixel)+' lixel = '
         out+= str(self.number_pixel)+' pixel x '
         out+= str(self.number_paxel)+' paxel, '
         out+= 'Sum_Intensity = '+str(round(self.intensity.sum()))+' p.e.)\n'
-        return out        
-
-    def __repr__(self):
-        return self.__str__()
+        return out 

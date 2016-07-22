@@ -44,9 +44,6 @@ class CherenkovProductionVolume(object):
                 bins=[n_xy_bins, n_xy_bins],
                 range=[[xmin, xmax], [ymin, ymax]])
 
-    def __str__(self):
-        out = 'CherenkovProductionVolume()\n'
-        return out        
-
     def __repr__(self):
-        return self.__str__()
+        out = 'CherenkovProductionVolume()\n'
+        return out

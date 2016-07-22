@@ -61,11 +61,8 @@ class Run(object):
         except(FileNotFoundError):
             raise StopIteration
 
-    def __str__(self):
+    def __repr__(self):
         out = 'Run('
         out+="path='"+self.__path+"', "
         out+= str(self.number_events)+' events)\n'
-        return out        
-
-    def __repr__(self):
-        return self.__str__()
+        return out

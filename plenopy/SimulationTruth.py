@@ -66,15 +66,12 @@ class SimulationTruth(object):
         raw = np.fromfile(path, dtype=np.float32)
         return raw
 
-    def __str__(self):
+    def __repr__(self):
         out = ''
         out+= corsika_run_header_repr(self.corsika_run_header)
         out+= '\n'
         out+= corsika_event_header_repr(self.corsika_event_header)
         return out
-
-    def __repr__(self):
-        return self.__str__()
 
     def short_event_info(self):
         """
