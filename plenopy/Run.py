@@ -19,6 +19,11 @@ class Run(object):
     """
 
     def __init__(self, path):
+        """
+        Parameters
+        ----------
+        path        The path to the directory representing the run.
+        """
         self.__path = os.path.abspath(path)
         if not os.path.isdir(self.__path):
             raise NotADirectoryError(self.__path)
