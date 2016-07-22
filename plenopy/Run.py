@@ -40,30 +40,21 @@ class Run(object):
         events.sort()
         return events
 
-    def event(self, i):
-        """
-        Returns the i-th event in the run.
-
-        Parameters
-        ----------
-        i           The event_number of the event to be returned. 
-                    This is the CORSIKA event number (starting at 1).
-        """
-        event_path = os.path.join(self.__path, str(i))
-        return Event(event_path, self.lixel_statistics)
-
     def __getitem__(self, index):
         """
-        Returns an event of run.
+        Returns the index-th event of the run.
 
         Parameters
         ----------
-        i           The index of the event to be returned. (starting at 0).      
+        index       The index of the event to be returned. (starting at 0).      
         """
+
         try:
-            return self.event(index + 1)
-        except(FileNotFoundError):
+            event_number = self.event_numbers[index]
+        except(IndexError):
             raise StopIteration
+        event_path = os.path.join(self.__path, str(event_number))
+        return Event(event_path, self.lixel_statistics)
 
     def __repr__(self):
         out = 'Run('
