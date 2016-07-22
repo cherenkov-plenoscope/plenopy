@@ -17,6 +17,8 @@ class Run(object):
     """
     def __init__(self, path):
         self.__path = os.path.abspath(path)
+        if not os.path.isdir(self.__path):
+            raise NotADirectoryError(self.__path)
         self.__path_input = os.path.join(self.__path, 'input')
         self.__path_input_plenoscope = os.path.join(self.__path_input, 'plenoscope')
 
