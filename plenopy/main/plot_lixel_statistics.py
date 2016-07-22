@@ -19,6 +19,7 @@ import os
 from ..LixelStatistics import LixelStatistics
 from ..plot.lixel_statistics.PlotLixelStatistics import PlotLixelStatistics
 
+
 def main():
     try:
         arguments = do.docopt(__doc__)

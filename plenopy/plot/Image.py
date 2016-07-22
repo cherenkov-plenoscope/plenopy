@@ -6,6 +6,7 @@ from matplotlib.patches import RegularPolygon
 from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+
 def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None):
 
     if vmin is None:
@@ -14,14 +15,14 @@ def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=No
         vmax = I.max()
     fov = np.abs(px).max() * 1.05
     Area = fov * fov
-    bin_radius = 1.15 * np.sqrt((Area/I.shape[0]))
+    bin_radius = 1.15 * np.sqrt((Area / I.shape[0]))
 
     nfov = fov + bin_radius
     ax.set_xlim([-nfov, nfov])
     ax.set_ylim([-nfov, nfov])
     ax.set_aspect("equal")
-    
-    orientation=np.deg2rad(hexrotation)
+
+    orientation = np.deg2rad(hexrotation)
 
     patches = []
     for d in range(I.shape[0]):
@@ -44,7 +45,8 @@ def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=No
 
     ax.add_collection(p)
     ax.set_aspect('equal')
-    return p 
+    return p
+
 
 def add_pixel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
     ax.set_xlabel('x/deg')
@@ -62,6 +64,7 @@ def add_pixel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
         vmin=vmin,
         vmax=vmax,
     )
+
 
 def add_paxel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
     ax.set_xlabel('x/m')

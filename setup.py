@@ -13,7 +13,7 @@ setup(
         'plenopy.plot',
         'plenopy.plot.lixel_statistics',
         'plenopy.main',
-        ],
+    ],
     install_requires=[
         'numpy',            # in anaconda
     ],

@@ -2,7 +2,8 @@
 # coding: utf-8
 from __future__ import absolute_import, print_function, division
 import numpy as np
-import glob, os
+import glob
+import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
@@ -12,6 +13,7 @@ from .LightField import LightField
 from .plot import Image as plt_Image
 from .plot import RawLightFieldSensorResponse as plt_RawLightFieldSensorResponse
 from .plot import LightField as plt_LightField
+
 
 class Event(object):
     """
@@ -39,9 +41,10 @@ class Event(object):
                                     respect to the plenoscope's imaging system 
                                     in the moment this event was recorded.
     """
+
     def __init__(self, path, lixel_statistics):
         self.__path = os.path.abspath(path)
-        
+
         self.raw_light_field_sensor_response = RawLighFieldSensorResponse(
             os.path.join(self.__path, 'raw_light_field_sensor_response.bin'))
 
@@ -64,16 +67,16 @@ class Event(object):
 
     def __repr__(self):
         out = "Event("
-        out+= "path='"+self.__path+"', "
-        out+= "number "+str(self.number)+", "
-        out+= "type '"+self.type
-        out+="')\n"
-        return out   
+        out += "path='" + self.__path + "', "
+        out += "number " + str(self.number) + ", "
+        out += "type '" + self.type
+        out += "')\n"
+        return out
 
     def plot(self):
         """
         This will open a plot showing:
-        
+
         1   Directional intensity distribution accross the field of view
             (the classical IACT image)
 
@@ -84,23 +87,23 @@ class Event(object):
 
         4   The photo equivalent distribution accross all lixels
         """
-        fig, axs = plt.subplots(2,2)
+        fig, axs = plt.subplots(2, 2)
         plt.suptitle(self.simulation_truth.short_event_info())
 
         axs[0][0].set_title('directional image')
         plt_Image.add_pixel_image_to_ax(
-            self.light_field.pixel_sum(), 
+            self.light_field.pixel_sum(),
             axs[0][0])
 
         axs[0][1].set_title('principal aperture plane')
         plt_Image.add_paxel_image_to_ax(
-            self.light_field.paxel_sum(interpolate_central_paxel=True), 
+            self.light_field.paxel_sum(interpolate_central_paxel=True),
             axs[0][1])
 
         plt_LightField.add2ax_hist_arrival_time(
             self.light_field,
             axs[1][0])
-        
+
         plt_RawLightFieldSensorResponse.add2ax_hist_intensity(
             self.raw_light_field_sensor_response,
             axs[1][1])
@@ -108,6 +111,8 @@ class Event(object):
             self.light_field,
             axs[1][1], color='green')
         raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
-        eff_corrected_intensity_patch = mpatches.Patch(color='green', label='efficiency corrected')
-        axs[1][1].legend(handles=[raw_intensity_patch, eff_corrected_intensity_patch])
+        eff_corrected_intensity_patch = mpatches.Patch(
+            color='green', label='efficiency corrected')
+        axs[1][1].legend(handles=[raw_intensity_patch,
+                                  eff_corrected_intensity_patch])
         plt.show()
