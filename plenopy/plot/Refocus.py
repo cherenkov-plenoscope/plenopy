@@ -7,6 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.art3d as art3d
 from matplotlib import gridspec
+from tqdm import tqdm
 import os
 import tempfile
 import subprocess
@@ -28,7 +29,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
     )
 
     images = [event.light_field.refocus(
-        object_distance) for object_distance in object_distances]
+        object_distance) for object_distance in tqdm(object_distances)]
     intensities = [i.intensity for i in images]
     if use_absolute_scale:
         vmin = np.array(intensities).min()
@@ -36,7 +37,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
     else:
         vmin, vmax = None, None
 
-    for i in range(len(images)):
+    for i in tqdm(range(len(images))):
         image = images[i]
         object_distance = object_distances[i]
 
@@ -64,7 +65,7 @@ def save_refocus_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=1
         plt_Image.add_pixel_image_to_ax(image, ax1, vmin=vmin, vmax=vmax)
         plt.savefig(os.path.join(path, 'refocus_' +
                                  str(i).zfill(6) + ".png"), dpi=180)
-        plt.close()
+        plt.close(fig)
 
 
 def save_refocus_video(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=25, fps=25, use_absolute_scale=True):

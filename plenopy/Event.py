@@ -51,19 +51,22 @@ class Event(object):
         self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(
             os.path.join(self.__path, 'sensor_plane2imaging_system.bin'))
 
-        try:
-            self.simulation_truth = SimulationTruth(
-                os.path.join(self.__path, 'simulation_truth'))
-            self.type = "simulation"
-        except(FileNotFoundError):
-            self.type = "observation"
-
+        self.__read__simulation_truth()
+        
         self.light_field = LightField(
             self.raw_light_field_sensor_response,
             lixel_statistics,
             self.sensor_plane2imaging_system)
 
         self.number = int(os.path.basename(self.__path))
+
+    def __read__simulation_truth(self):
+        try:
+            self.simulation_truth = SimulationTruth(
+                os.path.join(self.__path, 'simulation_truth'))
+            self.type = "simulation"
+        except(FileNotFoundError):
+            self.type = "observation"
 
     def __repr__(self):
         out = "Event("

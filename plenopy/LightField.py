@@ -8,7 +8,16 @@ from . import Masks
 
 class LightField(object):
 
-    def __init__(self, raw_plenoscope_response, lixel_statistics, sensor_plane2imaging_system):
+    def __init__(self, raw_light_field_sensor_response, lixel_statistics, sensor_plane2imaging_system):
+        """
+        Parameters
+        ----------
+        raw_light_field_sensor_response 
+
+        lixel_statistics
+
+        sensor_plane2imaging_system
+        """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
         intensity       [number_pixel x number_paxel]
@@ -27,12 +36,12 @@ class LightField(object):
 
         self.__sensor_plane2imaging_system = sensor_plane2imaging_system
 
-        self.__init_intensity(raw_plenoscope_response)
-        self.__init_arrival_times(raw_plenoscope_response)
+        self.__init_intensity(raw_light_field_sensor_response)
+        self.__init_arrival_times(raw_light_field_sensor_response)
         self.__init_valid_lixel_mask()
 
-    def __init_intensity(self, raw_plenoscope_response):
-        self.intensity = raw_plenoscope_response.intensity.copy()
+    def __init_intensity(self, raw_light_field_sensor_response):
+        self.intensity = raw_light_field_sensor_response.intensity.copy()
         self.intensity = self.intensity.reshape(
             self.number_pixel,
             self.number_paxel)
@@ -45,8 +54,8 @@ class LightField(object):
         self.intensity[
             self.valid_efficiency] *= mean_efficiency_where_sensitive
 
-    def __init_arrival_times(self, raw_plenoscope_response):
-        self.arrival_time = raw_plenoscope_response.arrival_time.copy()
+    def __init_arrival_times(self, raw_light_field_sensor_response):
+        self.arrival_time = raw_light_field_sensor_response.arrival_time.copy()
         self.arrival_time = self.arrival_time.reshape(
             self.number_pixel,
             self.number_paxel)
