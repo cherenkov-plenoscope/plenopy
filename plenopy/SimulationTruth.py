@@ -80,9 +80,12 @@ class Intensity(object):
         self.lixel_intensities = []
         with open(path, 'r') as handle:
             for line in handle:
-                self.lixel_intensities.append(
-                    np.fromstring(line, sep=' ', dtype=int)
-                )
+                if line != "\n": 
+                    self.lixel_intensities.append(
+                        np.fromstring(line, sep=' ', dtype=int))
+                else:
+                    self.lixel_intensities.append(
+                        np.zeros(0, dtype=int))
 
         self.number_lixel = len(self.lixel_intensities)
 
