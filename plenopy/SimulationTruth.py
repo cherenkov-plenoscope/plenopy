@@ -138,8 +138,6 @@ class SimulationTruth(object):
         self.__read_optional_intensity_truth(
             os.path.join(path, 'intensity_truth.txt'))
 
-        self.__init_intensity_truth_with_air_shower_truth()
-
     def __read_optional_air_shower_photons(self, path):
         try:
             self.air_shower_photons = AirShowerPhotons(path)
@@ -149,6 +147,7 @@ class SimulationTruth(object):
     def __read_optional_intensity_truth(self, path):
         try:
             self.intensity = Intensity(path)
+            self.__init_intensity_truth_with_air_shower_truth()
         except(FileNotFoundError):
             pass
 
