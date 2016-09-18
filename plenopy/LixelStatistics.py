@@ -109,20 +109,20 @@ class LixelStatistics(object):
     def __init__(self, path):
         path = os.path.abspath(path)
 
-        self.__read_light_field_sensor_geometry_header(
+        self._read_light_field_sensor_geometry_header(
             os.path.join(path, 'light_field_sensor_geometry.header.bin'))
-        self.__read_lixel_positions(os.path.join(path, 'lixel_positions.bin'))
-        self.__read_lixel_statistics(
+        self._read_lixel_positions(os.path.join(path, 'lixel_positions.bin'))
+        self._read_lixel_statistics(
             os.path.join(path, 'lixel_statistics.bin'))
 
-        self.__calc_pixel_and_paxel_average_positions()
-        self.__init_lixel_polygons()
-        self.__init_lixel_rays()
+        self._calc_pixel_and_paxel_average_positions()
+        self._init_lixel_polygons()
+        self._init_lixel_rays()
 
         #self.valid_efficiency = self.efficiency > 0.10
         self.valid_efficiency = self.most_efficient_lixels(0.95)
 
-    def __calc_pixel_and_paxel_average_positions(self):
+    def _calc_pixel_and_paxel_average_positions(self):
         self.paxel_pos_x = np.nanmean(self.x_mean, axis=0)
         self.paxel_pos_y = np.nanmean(self.y_mean, axis=0)
 
@@ -137,7 +137,7 @@ class LixelStatistics(object):
         self.paxel_efficiency_along_pixel = np.nanmean(self.efficiency, axis=0)
         self.pixel_efficiency_along_paxel = np.nanmean(self.efficiency, axis=1)
 
-    def __read_lixel_statistics(self, path):
+    def _read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32)
         ls = ls.reshape([ls.shape[0] / 12, 12])
 
@@ -155,7 +155,7 @@ class LixelStatistics(object):
                 ls[:, i].reshape(self.number_pixel, self.number_paxel)
             )
 
-    def __read_light_field_sensor_geometry_header(self, path):
+    def _read_light_field_sensor_geometry_header(self, path):
         gh = np.fromfile(path, dtype=np.float32)
         assert_marker_of_header_is(gh, 'PLGH')
         self.number_pixel = int(gh[101 - 1])
@@ -170,13 +170,13 @@ class LixelStatistics(object):
 
         self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(path)
 
-    def __read_lixel_positions(self, path):
+    def _read_lixel_positions(self, path):
         lp = np.fromfile(path, dtype=np.float32)
         lp = lp.reshape([lp.shape[0] / 2, 2])
         self.lixel_positions_x = lp[:, 0]
         self.lixel_positions_y = lp[:, 1]
 
-    def __init_lixel_polygons(self):
+    def _init_lixel_polygons(self):
         s32 = np.sqrt(3) / 2.
 
         poly_template = np.array([
@@ -196,7 +196,7 @@ class LixelStatistics(object):
 
         self.lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
 
-    def __init_lixel_rays(self):
+    def _init_lixel_rays(self):
         self.rays = LixelRays(
             x=self.x_mean.flatten(),
             y=self.y_mean.flatten(),

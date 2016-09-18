@@ -32,10 +32,10 @@ class Run(object):
             self.__path_input, 'plenoscope')
 
         self.lixel_statistics = LixelStatistics(self.__path_input_plenoscope)
-        self.event_numbers = self.__event_numbers_in_run()
+        self.event_numbers = self._event_numbers_in_run()
         self.number_events = self.event_numbers.shape[0]
 
-    def __event_numbers_in_run(self):
+    def _event_numbers_in_run(self):
         files_in_run_folder = glob.glob(os.path.join(self.__path, '*'))
         events = []
         for fi in files_in_run_folder:

@@ -73,10 +73,10 @@ class Intensity(object):
         ----------
         path    The input path to a the simulation truth intensity text file.
         """
-        self.__read_raw__(path)
-        self.__init_channels()
+        self._read_raw(path)
+        self._init_channels()
 
-    def __read_raw__(self, path):
+    def _read_raw(self, path):
         self.lixel_intensities = []
         with open(path, 'r') as handle:
             for line in handle:
@@ -89,7 +89,7 @@ class Intensity(object):
 
         self.number_lixel = len(self.lixel_intensities)
 
-    def __init_channels(self):
+    def _init_channels(self):
 
         self.air_shower = np.zeros(self.number_lixel)
         self.night_sky_background = np.zeros(self.number_lixel)
@@ -128,30 +128,30 @@ class SimulationTruth(object):
     """
 
     def __init__(self, path):
-        self.corsika_event_header = self.__read_273_float_header(
+        self.corsika_event_header = self._read_273_float_header(
             os.path.join(path, 'corsika_event_header.bin'))
-        self.corsika_run_header = self.__read_273_float_header(
+        self.corsika_run_header = self._read_273_float_header(
             os.path.join(path, 'corsika_run_header.bin'))
 
-        self.__read_optional_air_shower_photons(
+        self._read_optional_air_shower_photons(
             os.path.join(path, 'air_shower_photons.bin'))
-        self.__read_optional_intensity_truth(
+        self._read_optional_intensity_truth(
             os.path.join(path, 'intensity_truth.txt'))
 
-    def __read_optional_air_shower_photons(self, path):
+    def _read_optional_air_shower_photons(self, path):
         try:
             self.air_shower_photons = AirShowerPhotons(path)
         except(FileNotFoundError):
             pass
 
-    def __read_optional_intensity_truth(self, path):
+    def _read_optional_intensity_truth(self, path):
         try:
             self.intensity = Intensity(path)
-            self.__init_intensity_truth_with_air_shower_truth()
+            self._init_intensity_truth_with_air_shower_truth()
         except(FileNotFoundError):
             pass
 
-    def __init_intensity_truth_with_air_shower_truth(self):
+    def _init_intensity_truth_with_air_shower_truth(self):
         self.__intensity_air_shower_em_z = []
 
         for lix in range(len(self.intensity.lixel_intensities)):
@@ -176,7 +176,7 @@ class SimulationTruth(object):
             )
         return intensity
 
-    def __read_273_float_header(self, path):
+    def _read_273_float_header(self, path):
         raw = np.fromfile(path, dtype=np.float32)
         return raw
 

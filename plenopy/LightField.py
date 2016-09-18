@@ -36,11 +36,11 @@ class LightField(object):
 
         self.__sensor_plane2imaging_system = sensor_plane2imaging_system
 
-        self.__init_intensity(raw_light_field_sensor_response)
-        self.__init_arrival_times(raw_light_field_sensor_response)
-        self.__init_valid_lixel_mask()
+        self._init_intensity(raw_light_field_sensor_response)
+        self._init_arrival_times(raw_light_field_sensor_response)
+        self._init_valid_lixel_mask()
 
-    def __init_intensity(self, raw_light_field_sensor_response):
+    def _init_intensity(self, raw_light_field_sensor_response):
         self.intensity = raw_light_field_sensor_response.intensity.copy()
         self.intensity = self.intensity.reshape(
             self.number_pixel,
@@ -54,7 +54,7 @@ class LightField(object):
         self.intensity[
             self.valid_efficiency] *= mean_efficiency_where_sensitive
 
-    def __init_arrival_times(self, raw_light_field_sensor_response):
+    def _init_arrival_times(self, raw_light_field_sensor_response):
         self.arrival_time = raw_light_field_sensor_response.arrival_time.copy()
         self.arrival_time = self.arrival_time.reshape(
             self.number_pixel,
@@ -64,7 +64,7 @@ class LightField(object):
         self.arrival_time -= self.arrival_time[self.valid_efficiency].min()
         self.arrival_time[np.invert(self.valid_efficiency)] = 0.0
 
-    def __init_valid_lixel_mask(self):
+    def _init_valid_lixel_mask(self):
         # too low efficiency
         valid_effi = self.valid_efficiency
         # too large time delay
@@ -73,7 +73,7 @@ class LightField(object):
         valid_time = self.arrival_time < max_arrival_time_without_multiple_reflections_on_imaging_system
         self.valid_lixel = np.logical_and(valid_time, valid_effi)
 
-    def __refocus_alpha(self, wanted_object_distance):
+    def _refocus_alpha(self, wanted_object_distance):
         focal_length = self.expected_focal_length_of_imaging_system
         image_sensor_distance = self.__sensor_plane2imaging_system.light_filed_sensor_distance
 
@@ -102,7 +102,7 @@ class LightField(object):
 
         """
         focal_length = self.expected_focal_length_of_imaging_system
-        alpha = self.__refocus_alpha(wanted_object_distance)
+        alpha = self._refocus_alpha(wanted_object_distance)
 
         n_pixel = self.number_pixel
         n_paxel = self.number_paxel

@@ -51,7 +51,7 @@ class Event(object):
         self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(
             os.path.join(self.__path, 'sensor_plane2imaging_system.bin'))
 
-        self.__read__simulation_truth()
+        self._read_simulation_truth()
         
         self.light_field = LightField(
             self.raw_light_field_sensor_response,
@@ -60,7 +60,7 @@ class Event(object):
 
         self.number = int(os.path.basename(self.__path))
 
-    def __read__simulation_truth(self):
+    def _read_simulation_truth(self):
         try:
             self.simulation_truth = SimulationTruth(
                 os.path.join(self.__path, 'simulation_truth'))
