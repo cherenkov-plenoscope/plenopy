@@ -6,9 +6,9 @@ import os
 from .HeaderRepresentation import corsika_event_header_repr
 from .HeaderRepresentation import corsika_run_header_repr
 
-class AirShowerPhotons(object):
+class AirShowerPhotonBunches(object):
     """
-    The CORSIKA air shower photons as they were used for the simulation
+    The CORSIKA air shower photon bunches
 
     x, y        x and y intersection position of photon on observation 
                 plane/level, [m]
@@ -17,7 +17,7 @@ class AirShowerPhotons(object):
                 of the observation plane [rad]
                 incomin_direction = [cx, cy, sqrt(1 - cx^2 - cy^2)]
 
-    time_since_first_interaction                    [s]
+    arrival_time_since_first_interaction            [s]
 
     emission_height                                 [m]
 
@@ -46,17 +46,17 @@ class AirShowerPhotons(object):
         self.y = raw[:, 1]/100 # in meters
         self.cx = raw[:, 2] # in rad
         self.cy = raw[:, 3] # in rad
-        self.time_since_first_interaction = raw[:, 4]/1e9 # in seconds
+        self.arrival_time_since_first_interaction = raw[:, 4]/1e9 # in seconds
         self.emission_height = raw[:, 5]/100 # in meters
         self.probability_to_reach_observation_level = raw[:, 6] # in [1]
         self.wavelength = raw[:, 7]/1e9 # in meters
 
     def __repr__(self):
-        out = 'AirShowerPhotons( '
-        out += str(self.x.shape[0])+' photons'
+        out = 'AirShowerPhotonBunches( '
+        out += str(self.x.shape[0])+' bunches, '
+        out += str(self.probability_to_reach_observation_level.sum())+' photons'
         out += ' )\n'
         return out
-
 
 class Intensity(object):
     MCTRACER_DEFAULT = -1
@@ -140,7 +140,7 @@ class SimulationTruth(object):
 
     def _read_optional_air_shower_photons(self, path):
         try:
-            self.air_shower_photons = AirShowerPhotons(path)
+            self.air_shower_photons = AirShowerPhotonBunches(path)
         except(FileNotFoundError):
             pass
 

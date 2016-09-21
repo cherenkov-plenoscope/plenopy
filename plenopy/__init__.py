@@ -6,3 +6,4 @@ from .Event import Event
 from .Run import Run
 from .Image import Image
 from . import plot
+from . import IdealizedPlenoscope
