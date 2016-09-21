@@ -31,7 +31,7 @@ class Event(object):
 
     def _init_air_shower_photons(self):
         bunches = Corsika.AirShowerPhotonBunches(
-            os.path.join(self.path, 'air_shower_photons.bin'))
+            os.path.join(self.path, 'air_shower_photon_bunches.bin'))
         self.air_shower_photons = AirShowerPhotons(bunches)        
 
     def _init_simulation_truth(self):
