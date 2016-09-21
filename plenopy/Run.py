@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, division
 import numpy as np
 import glob
 import os
+from . import FileSystemFormat
 from .LixelStatistics import LixelStatistics
 from .Event import Event
 
@@ -36,14 +37,7 @@ class Run(object):
         self.number_events = self.event_numbers.shape[0]
 
     def _event_numbers_in_run(self):
-        files_in_run_folder = glob.glob(os.path.join(self.__path, '*'))
-        events = []
-        for fi in files_in_run_folder:
-            if os.path.isdir(fi) and os.path.basename(fi).isdigit():
-                events.append(int(os.path.basename(fi)))
-        events = np.array(events)
-        events.sort()
-        return events
+        return FileSystemFormat.all_folders_with_digit_names_in_path(self.__path)
 
     def __getitem__(self, index):
         """
