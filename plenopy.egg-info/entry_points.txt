@@ -1,3 +1,0 @@
-[console_scripts]
-mctPlenoscopePlotLixelStatistics = plenopy.main.plot_lixel_statistics:main
-

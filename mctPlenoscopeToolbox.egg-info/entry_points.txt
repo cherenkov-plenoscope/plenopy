@@ -1,3 +1,0 @@
-[console_scripts]
-mctPlenoscopePlotLixelStatistics = ToolBox.LixelStatistics.__init__:main
-
