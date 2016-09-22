@@ -60,7 +60,7 @@ class Event(object):
 
         guess_number_bins = int(np.sqrt(self.air_shower_photons.x.shape[0]))
 
-        axs[0].set_title('directional image')
+        axs[0].set_title('field of view intensity')
         axs[0].hist2d(
             np.rad2deg(self.air_shower_photons.cx), 
             np.rad2deg(self.air_shower_photons.cy),
@@ -70,7 +70,7 @@ class Event(object):
         axs[0].set_xlabel('cx/deg')
         axs[0].set_ylabel('cy/deg')
 
-        axs[1].set_title('principal aperture plane')
+        axs[1].set_title('principal aperture plane intensity')
         axs[1].hist2d(
             self.air_shower_photons.x, 
             self.air_shower_photons.y,
