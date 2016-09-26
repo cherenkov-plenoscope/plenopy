@@ -7,11 +7,6 @@ from tqdm import tqdm
 run = pop.Run('demo_big/Fe8/')
 evt = run[1]
 
-class Voxel(object):
-    def __init__(self, pos):
-        self.pos = pos
-        self.rays = []
-
 intensityThresh = 1
 # only valid lixels
 validGeom = evt.light_field.valid_lixel.flatten()
@@ -24,14 +19,14 @@ valid = validGeom*validIntensity*validArrivalTime
 support = evt.light_field.rays.support[valid]
 direction = evt.light_field.rays.direction[valid]
 intensity = evt.light_field.intensity.flatten()[valid]
-idx = np.arange(intensity.shape[0])
+#idx = np.arange(intensity.shape[0])
 
 fast = 1
 nbins_xy = 64/fast
 nbins_z = 256/fast
 voxel_xy_radius = 1*fast
 voxel_z_radius = 6.6*fast
-voxelArea = (voxel_xy_radius**2.0)*4.0
+#voxelArea = (voxel_xy_radius**2.0)*4.0
 
 xyBinEdges = np.linspace(
     -nbins_xy*voxel_xy_radius, 
@@ -46,9 +41,9 @@ zBinEdges = np.linspace(
 xyBinCenters = xyBinEdges[:-1]+voxel_xy_radius
 zBinCenters = zBinEdges[:-1]+voxel_z_radius
 
-raysRefVoxel = []
-for i in intensity:
-    raysRefVoxel.append([])
+#raysRefVoxel = []
+#for i in intensity:
+#    raysRefVoxel.append([])
 
 def xyRayIntersectOnSlice(z):
     scale_factors = z/direction[:, 2]
@@ -84,7 +79,7 @@ def histogramVolumeIntensity():
     volIntensity = np.array(volIntensity)
     return volIntensity
 
-def rampFilterZ(vol, kernel):
+"""def rampFilterZ(vol, kernel):
 
     kernelWidth = kernel.shape[0] - 1
 
@@ -98,7 +93,7 @@ def rampFilterZ(vol, kernel):
             volFil[:,x,y] = np.convolve(vol[:,x,y], kernel, mode='valid')
 
     return volFil
-
+"""
 def flatten(vol, threshold=0):
     xyzi = []
     for z in tqdm(range(vol.shape[0])):
@@ -113,6 +108,7 @@ def flatten(vol, threshold=0):
     xyzi = np.array(xyzi)
     return xyzi
 
+"""
 def stdIvsZ(vol):
     maxI = np.zeros(vol.shape[0])
     for i, zSlice in enumerate(vol):
@@ -124,7 +120,7 @@ def meanIvsZ(vol):
     for i, zSlice in enumerate(vol):
         maxI[i] = np.mean(zSlice)
     return maxI
-
+"""
 def maxIvsZ(vol):
     maxI = np.zeros(vol.shape[0])
     for i, zSlice in enumerate(vol):

@@ -8,3 +8,4 @@ from .Image import Image
 from . import plot
 from . import IdealizedPlenoscope
 from . import Corsika
+from . import Tomography

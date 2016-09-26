@@ -80,14 +80,14 @@ class SimulationTruth(object):
         self.corsika_run_header = self._read_273_float_header(
             os.path.join(path, 'corsika_run_header.bin'))
 
-        self._read_optional_air_shower_photons(
+        self._read_optional_air_shower_photon_bunches(
             os.path.join(path, 'air_shower_photons.bin'))
         self._read_optional_intensity_truth(
             os.path.join(path, 'intensity_truth.txt'))
 
-    def _read_optional_air_shower_photons(self, path):
+    def _read_optional_air_shower_photon_bunches(self, path):
         try:
-            self.air_shower_photons = Corsika.AirShowerPhotonBunches(path)
+            self.air_shower_photon_bunches = Corsika.AirShowerPhotonBunches(path)
         except(FileNotFoundError):
             pass
 
@@ -106,7 +106,7 @@ class SimulationTruth(object):
             for simulation_truth_id in self.intensity.lixel_intensities[lix]:
                 if simulation_truth_id > self.intensity.MCTRACER_DEFAULT:
                     em_z.append(
-                        self.air_shower_photons.emission_height[
+                        self.air_shower_photon_bunches.emission_height[
                             simulation_truth_id
                         ]
                     )
