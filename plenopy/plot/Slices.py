@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-from __future__ import absolute_import, print_function, division
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
@@ -32,7 +30,7 @@ def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10,
     )[event.light_field.valid_lixel.flatten()]
 
     for i, object_distance in enumerate(object_distances):
-        pos_xy = event.light_field.rays.slice_intersections_in_object_distance(
+        pos_xy = event.light_field.rays.xy_intersections_in_object_distance(
             object_distance)
         xs[i, :] = pos_xy[:, 0][event.light_field.valid_lixel.flatten()]
         ys[i, :] = pos_xy[:, 1][event.light_field.valid_lixel.flatten()]

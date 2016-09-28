@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, print_function, division
 import numpy as np
 
 
@@ -22,7 +19,7 @@ class LixelRays(object):
         # (cos_x, cos_y, sqrt(1 - cos_x^2 - cos_y^2))^T
         self.direction = np.array([cx, cy, dir_z]).T
 
-    def slice_intersections_in_object_distance(self, object_distance):
+    def xy_intersections_in_object_distance(self, object_distance):
         """
         Returns the x,y intersections of the lixel rays with the x,y plane 
         at z=object_distance.

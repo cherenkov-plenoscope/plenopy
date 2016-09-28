@@ -1,9 +1,7 @@
 import numpy as np
 import os
 from .. import Corsika
-from .AirShowerPhotons import AirShowerPhotons
 from .Event import Event
-from .SimulationTruth import SimulationTruth
 from .. import FileSystemFormat
 
 class Run(object):

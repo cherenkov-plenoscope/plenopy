@@ -1,6 +1,6 @@
 import numpy as np
 
-class AirShowerPhotonBunches(object):
+class PhotonBunches(object):
     """
     The CORSIKA air shower photon bunches
 

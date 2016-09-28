@@ -40,4 +40,4 @@ def primary_particle_id2str(PRMPAR):
 
         return out + 'A' + str(round(A)) + ' Z' + str(round(Z))
     else:
-        return str(PRMPAR)
+        return 'ID_'+str(PRMPAR)

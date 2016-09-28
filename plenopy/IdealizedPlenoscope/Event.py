@@ -1,8 +1,9 @@
 import numpy as np
 import os
 from .. import Corsika
-from .AirShowerPhotons import AirShowerPhotons
-from .SimulationTruth import SimulationTruth
+from .LightField import LightField
+from .IdealizedPlenoscopeSimulationTruthDetector import IdealizedPlenoscopeSimulationTruthDetector
+from .. import SimulationTruth
 import matplotlib.pyplot as plt
 
 class Event(object):
@@ -15,30 +16,38 @@ class Event(object):
                                 Idealized Plenoscope Events are always 
                                 'simulation'
 
-    air_shower_photons          The air shower Cherenkov photons of an extensive
+    light_field                 The air shower Cherenkov photons of an extensive
                                 air shower which have passed the atmosphere and
-                                reached the observation level
+                                reached the observation level seen by an
+                                idealized light field sensor
 
     simulation_truth            Additional 'true' information known from the 
                                 Corsika simulation itself
     """
     def __init__(self, path):
         self.path = path
-        self._init_air_shower_photons()
-        self._init_simulation_truth()
-        self.type = 'simulation'
-        self.number = int(os.path.basename(self.path))
 
-    def _init_air_shower_photons(self):
-        bunches = Corsika.AirShowerPhotonBunches(
-            os.path.join(self.path, 'air_shower_photon_bunches.bin'))
-        self.air_shower_photons = AirShowerPhotons(bunches)        
-
-    def _init_simulation_truth(self):
         evth = Corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
         runh = Corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
-        ids = self.air_shower_photons.ids
-        self.simulation_truth = SimulationTruth(evth, runh, ids)
+        
+        simulation_truth_event = SimulationTruth.Event(evth=evth, runh=runh)
+
+        simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
+                     os.path.join(self.path, 'air_shower_photon_bunches.bin'))
+
+        self.light_field = LightField(
+            simulation_truth_air_shower_photon_bunches) 
+
+        simulation_truth_detector = IdealizedPlenoscopeSimulationTruthDetector(
+            self.light_field._ids)
+
+        self.simulation_truth = SimulationTruth.SimulationTruth(                
+            event=simulation_truth_event,
+            air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
+            detector=simulation_truth_detector)
+
+        self.type = 'simulation'
+        self.number = int(os.path.basename(self.path))
 
     def __repr__(self):
         out = 'IdealizedPlenoscopeEvent( '
@@ -56,14 +65,14 @@ class Event(object):
         2   Positional intensity distribution on the principal aperture plane
         """
         fig, axs = plt.subplots(2)
-        plt.suptitle(self.simulation_truth.short_event_info())
+        plt.suptitle(self.simulation_truth.event.short_event_info())
 
-        guess_number_bins = int(np.sqrt(self.air_shower_photons.x.shape[0]))
+        guess_number_bins = int(np.sqrt(self.light_field.x.shape[0]))
 
         axs[0].set_title('field of view intensity')
         axs[0].hist2d(
-            np.rad2deg(self.air_shower_photons.cx), 
-            np.rad2deg(self.air_shower_photons.cy),
+            np.rad2deg(self.light_field.cx), 
+            np.rad2deg(self.light_field.cy),
             cmap='viridis',
             bins=guess_number_bins)
         axs[0].set_aspect('equal')
@@ -72,8 +81,8 @@ class Event(object):
 
         axs[1].set_title('principal aperture plane intensity')
         axs[1].hist2d(
-            self.air_shower_photons.x, 
-            self.air_shower_photons.y,
+            self.light_field.x, 
+            self.light_field.y,
             cmap='viridis',
             bins=int(guess_number_bins/4))
         axs[1].set_aspect('equal')

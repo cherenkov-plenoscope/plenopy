@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, print_function, division
 import numpy as np
 
 
@@ -18,27 +15,17 @@ class RawLighFieldSensorResponse(object):
                     sensor. [p.e.]
     """
 
-    def __init__(self, path=None, arrival_time=None, intensity=None):
+    def __init__(self, path):
         """
         Parameter
         ---------
         path        path to raw light field response binary of arrival times
                     and intensities for each read out channel (lixel).
-
-                    OR
-
-        arrival_time    array[number_lixel] the pulse arrival times in a lixel
-
-        intensity       array[number_lixel] the photon equvalent in a lixel
         """
-        if path is not None:
-            raw = np.fromfile(path, dtype=np.float32)
-            raw = raw.reshape([raw.shape[0] / 2, 2])
-            self.arrival_time = raw[:, 0]
-            self.intensity = raw[:, 1]
-        elif arrival_time is not None and intensity is not None:
-            self.arrival_time = arrival_time
-            self.intensity = intensity           
+        raw = np.fromfile(path, dtype=np.float32)
+        raw = raw.reshape([raw.shape[0] / 2, 2])
+        self.arrival_time = raw[:, 0]
+        self.intensity = raw[:, 1]
 
     def __repr__(self):
         out = 'RawLighFieldSensorResponse('

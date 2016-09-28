@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, print_function, division
 import numpy as np
 import matplotlib.pyplot as plt
 import os

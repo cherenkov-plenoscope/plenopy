@@ -1,11 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, print_function, division
 import numpy as np
 import os
-from . import Corsika
 
-class Intensity(object):
+class Detector(object):
     MCTRACER_DEFAULT = -1
     NIGHT_SKY_BACKGROUND = -100;
     PHOTO_ELECTRIC_CONVERTER_ACCIDENTAL = - 201;
@@ -53,51 +49,6 @@ class Intensity(object):
             self.photo_electric_crosstalk[i] = np.count_nonzero(
                 lixel_intensity == self.PHOTO_ELECTRIC_CONVERTER_CROSSTALK)
 
-    def __repr__(self):
-        out = 'Intensity( '
-        out += str(self.number_lixel)+' lixels'
-        out += ' )\n'
-        return out
-
-
-class SimulationTruth(object):
-    """
-    Additional truth known from the simulation itself
-
-    CORSIKA run header      [float 273] The raw run header
-
-    CORSIKA event header    [float 273] The raw event header
-
-    intensity               [only if present in event] 
-                            The detailed simulation truth of the pulses which
-                            contribute to the intensity found in a read out 
-                            channel (lixel).
-    """
-
-    def __init__(self, path):
-        self.corsika_event_header = self._read_273_float_header(
-            os.path.join(path, 'corsika_event_header.bin'))
-        self.corsika_run_header = self._read_273_float_header(
-            os.path.join(path, 'corsika_run_header.bin'))
-
-        self._read_optional_air_shower_photon_bunches(
-            os.path.join(path, 'air_shower_photons.bin'))
-        self._read_optional_intensity_truth(
-            os.path.join(path, 'intensity_truth.txt'))
-
-    def _read_optional_air_shower_photon_bunches(self, path):
-        try:
-            self.air_shower_photon_bunches = Corsika.AirShowerPhotonBunches(path)
-        except(FileNotFoundError):
-            pass
-
-    def _read_optional_intensity_truth(self, path):
-        try:
-            self.intensity = Intensity(path)
-            self._init_intensity_truth_with_air_shower_truth()
-        except(FileNotFoundError):
-            pass
-
     def _init_intensity_truth_with_air_shower_truth(self):
         self.__intensity_air_shower_em_z = []
 
@@ -123,18 +74,8 @@ class SimulationTruth(object):
             )
         return intensity
 
-    def _read_273_float_header(self, path):
-        raw = np.fromfile(path, dtype=np.float32)
-        return raw
-
     def __repr__(self):
-        out = ''
-        out += Corsika.run_header_repr(self.corsika_run_header)
-        out += '\n'
-        out += Corsika.event_header_repr(self.corsika_event_header)
+        out = 'SimulationTruthDetector( '
+        out += str(self.number_lixel)+' lixels'
+        out += ' )\n'
         return out
-
-    def short_event_info(self):
-        return Corsika.short_event_info(
-            self.corsika_run_header,
-            self.corsika_event_header)

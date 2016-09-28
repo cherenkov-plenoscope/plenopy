@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
 '''
 Save plots of a plenoscope light field calibration. 
 When the OUTPUT_PATH is not set, a plot folder is created in the input

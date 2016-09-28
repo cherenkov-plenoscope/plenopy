@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-from __future__ import absolute_import, print_function, division
 import numpy as np
 import glob
 import os
@@ -8,12 +5,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
 from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
-from .SimulationTruth import SimulationTruth
 from .LightField import LightField
 from .plot import Image as plt_Image
 from .plot import RawLightFieldSensorResponse as plt_RawLightFieldSensorResponse
 from .plot import LightField as plt_LightField
-
+from . import Corsika
+from . import SimulationTruth
 
 class Event(object):
     """
@@ -29,9 +26,15 @@ class Event(object):
                                 for the given sensor plane 2 imaging system 
                                 orientation and position of this event.
 
-    simulation_truth            If type == "simulation"
+    simulation_truth_air_shower If type == "simulation"
                                 Additional 'true' information known from the 
                                 simulation itself 
+
+    simulation_truth_detector   Optional, additional information about the 
+                                electric pulse composition. Tells which air
+                                shower photons contributed to which pulse and
+                                if electric cross talk, after pulses or dark 
+                                noise pulses are present
 
     raw_light_field_sensor_response     The raw light field sensor response
                                         of the plenoscope
@@ -62,9 +65,30 @@ class Event(object):
 
     def _read_simulation_truth(self):
         try:
-            self.simulation_truth = SimulationTruth(
-                os.path.join(self.__path, 'simulation_truth'))
-            self.type = "simulation"
+            sim_truth_path = os.path.join(self.__path, 'simulation_truth')
+            evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
+            runh = Corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
+            simulation_truth_event = SimulationTruth.Event(evth=evth, runh=runh)
+
+
+            try:
+                simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
+                     os.path.join(sim_truth_path, 'air_shower_photons.bin'))
+            except(FileNotFoundError):
+                simulation_truth_air_shower_photon_bunches = None         
+
+            try:
+                simulation_truth_detector = SimulationTruth.Detector(
+                     os.path.join(sim_truth_path, 'intensity_truth.txt'))
+            except(FileNotFoundError):
+                simulation_truth_detector = None
+
+
+            self.simulation_truth = SimulationTruth.SimulationTruth(
+                event=simulation_truth_event,
+                air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
+                detector=simulation_truth_detector)
+
         except(FileNotFoundError):
             self.type = "observation"
 
@@ -91,7 +115,7 @@ class Event(object):
         4   The photo equivalent distribution accross all lixels
         """
         fig, axs = plt.subplots(2, 2)
-        plt.suptitle(self.simulation_truth.short_event_info())
+        plt.suptitle(self.simulation_truth.event.short_event_info())
 
         axs[0][0].set_title('directional image')
         plt_Image.add_pixel_image_to_ax(
