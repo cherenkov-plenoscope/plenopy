@@ -16,11 +16,12 @@ class RunHeader(object):
         HeaderRepresentation.assert_shape_is_valid(self.raw)
         HeaderRepresentation.assert_marker_of_header_is(self.raw, 'RUNH')
 
-        self.run_number = int(self.raw[2 - 1])
+        self.number = int(self.raw[2 - 1])
         self.xscatt = self.raw[248 - 1]/100 # cm -> m
         self.yscatt = self.raw[249 - 1]/100 # cm -> m
 
     def __repr__(self):
         out = 'CorsikaRunHeader( '
+        out +='number '+str(self.number)
         out += ' )\n'
         return out
