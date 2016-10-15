@@ -31,7 +31,7 @@ class LightField(object):
         """
         self.__doc__ += lixel_statistics.__doc__
 
-        self.__sensor_plane2imaging_system = sensor_plane2imaging_system
+        self.sensor_plane2imaging_system = sensor_plane2imaging_system
 
         self._init_intensity(raw_light_field_sensor_response)
         self._init_arrival_times(raw_light_field_sensor_response)
@@ -72,7 +72,7 @@ class LightField(object):
 
     def _refocus_alpha(self, wanted_object_distance):
         focal_length = self.expected_focal_length_of_imaging_system
-        image_sensor_distance = self.__sensor_plane2imaging_system.light_filed_sensor_distance
+        image_sensor_distance = self.sensor_plane2imaging_system.light_filed_sensor_distance
 
         alpha = 1 / image_sensor_distance * 1 / \
             ((1 / focal_length) - (1 / wanted_object_distance))
