@@ -1,6 +1,22 @@
 import numpy as np
 import os
 import json
+from . import ImageRays
+import matplotlib.pyplot as plt
+
+def max_fov_radius(light_field):
+    valid = light_field.valid_lixel.flatten()
+    cx = light_field.cx_mean.flatten()[valid]
+    cy = light_field.cx_mean.flatten()[valid]
+    fov_radius = 1.71*np.mean(np.sqrt(cx**2 + cy**2))
+    return fov_radius
+
+def estimate_pixel_radius(light_field):
+    fov_radius = max_fov_radius(light_field)
+    fov_area = np.pi*fov_radius**2
+    fov_area_per_pixel = fov_area/light_field.number_pixel
+    fov_radius_pixel = np.sqrt((fov_area_per_pixel/np.pi))
+    return fov_radius_pixel
 
 def write_dict_to_file(dictionary, path):
     with open(path, 'w') as outfile:
@@ -50,17 +66,52 @@ def collect_trigger_relevant_information(event):
         np.log10(end_obj_dist),
         number_refocuses)
 
+    valid = event.light_field.valid_lixel.flatten()
+    intensity = event.light_field.intensity.flatten()
+    
+    fov_radius_pixel = estimate_pixel_radius(event.light_field)
+    fov_radius = max_fov_radius(event.light_field)
+    number_pixel_on_diagonal = int(np.ceil(fov_radius/fov_radius_pixel))
+    bins = np.linspace(-fov_radius, fov_radius, number_pixel_on_diagonal)
+
+    in_round_fov = np.zeros(
+        shape=(number_pixel_on_diagonal-1,number_pixel_on_diagonal-1), 
+        dtype=np.bool)
+    for x in range(number_pixel_on_diagonal-1):
+        for y in range(number_pixel_on_diagonal-1):
+            if np.hypot(bins[x], bins[y]) < fov_radius:
+                in_round_fov[x,y] = True
+
+    image_rays = ImageRays(event.light_field)
     refocus_nodes = []
     for object_distance in object_distances:
-        image = event.light_field.refocus(object_distance)
+        #image = event.light_field.refocus(object_distance)
+
+        cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
+
+        image = np.histogram2d(
+            cx[valid], 
+            cy[valid], 
+            weights=intensity[valid],
+            bins=(bins,bins))[0]
+
+        """plt.imshow(
+            image, 
+            cmap='viridis', 
+            interpolation='none',
+            extent=[-fov_radius,fov_radius,-fov_radius,fov_radius])
+        plt.show()"""
 
         refocus_nodes.append({
             'object_distance': object_distance,
-            'max': np.max(image.intensity),
-            'med': np.median(image.intensity),
-            'min': np.min(image.intensity)})
+            'max': np.max(image[in_round_fov]),
+            'med': np.median(image[in_round_fov]),
+            'min': np.min(image[in_round_fov])})
 
-    info['refocus_pixel'] = refocus_nodes
+    info['refocussing'] = {
+        'square_pixel_fov': 2*fov_radius_pixel,
+        'fov': 2*fov_radius,
+        'image_intensity': refocus_nodes}
 
     return info
 
