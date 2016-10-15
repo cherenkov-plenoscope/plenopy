@@ -89,6 +89,7 @@ class Event(object):
                 air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
                 detector=simulation_truth_detector)
 
+            self.type = "simulation"
         except(FileNotFoundError):
             self.type = "observation"
 
