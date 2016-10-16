@@ -11,4 +11,4 @@ from . import IdealizedPlenoscope
 from . import Corsika
 from . import SimulationTruth
 from . import Tomography
-from .trigger_studie import *
+from .trigger_study import *
