@@ -73,7 +73,7 @@ class Event(object):
 
             try:
                 simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
-                     os.path.join(sim_truth_path, 'air_shower_photons.bin'))
+                     os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
                 simulation_truth_air_shower_photon_bunches = None         
 
