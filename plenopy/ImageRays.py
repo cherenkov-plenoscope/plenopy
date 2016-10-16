@@ -22,7 +22,7 @@ class ImageRays(object):
         cy = light_field.cy_mean.flatten()
 
         self._f = light_field.expected_focal_length_of_imaging_system
-        bs = light_field.sensor_plane2imaging_system.light_filed_sensor_distance
+        bs = light_field.sensor_plane2imaging_system.sensor_plane_distance
 
         number_lixel = x.shape[0]
 

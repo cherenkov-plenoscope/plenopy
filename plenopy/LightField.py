@@ -5,7 +5,7 @@ from . import Masks
 
 class LightField(object):
 
-    def __init__(self, raw_light_field_sensor_response, lixel_statistics, sensor_plane2imaging_system):
+    def __init__(self, raw_light_field_sensor_response, lixel_statistics, plenoscope_geometry):
         """
         Parameters
         ----------
@@ -13,7 +13,7 @@ class LightField(object):
 
         lixel_statistics
 
-        sensor_plane2imaging_system
+        plenoscope_geometry
         """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
@@ -31,7 +31,7 @@ class LightField(object):
         """
         self.__doc__ += lixel_statistics.__doc__
 
-        self.sensor_plane2imaging_system = sensor_plane2imaging_system
+        self.plenoscope_geometry = plenoscope_geometry
 
         self._init_intensity(raw_light_field_sensor_response)
         self._init_arrival_times(raw_light_field_sensor_response)
@@ -72,7 +72,7 @@ class LightField(object):
 
     def _refocus_alpha(self, wanted_object_distance):
         focal_length = self.expected_focal_length_of_imaging_system
-        image_sensor_distance = self.sensor_plane2imaging_system.light_filed_sensor_distance
+        image_sensor_distance = self.plenoscope_geometry.sensor_plane_distance
 
         alpha = 1 / image_sensor_distance * 1 / \
             ((1 / focal_length) - (1 / wanted_object_distance))

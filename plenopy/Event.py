@@ -3,7 +3,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
+from .PlenoscopeGeometry import PlenoscopeGeometry
 from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
 from .LightField import LightField
 from .HeaderRepresentation import str2float
@@ -62,14 +62,14 @@ class Event(object):
         self.light_field = LightField(
             self.raw_light_field_sensor_response,
             lixel_statistics,
-            self.sensor_plane2imaging_system)
+            self.plenoscope_geometry)
 
         self.number = int(os.path.basename(self.__path))
 
     def _read_event_header(self):
         event_header_path = os.path.join(self.__path, 'event_header.bin')
         self.header = read_float32_header(event_header_path)
-        self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(self.header)
+        self.plenoscope_geometry = PlenoscopeGeometry(self.header)
 
         # TYPE
         assert self.header[  1-1] == str2float("PEVT")

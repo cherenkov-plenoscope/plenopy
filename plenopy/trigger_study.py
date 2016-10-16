@@ -4,23 +4,26 @@ import json
 from . import ImageRays
 import matplotlib.pyplot as plt
 
-def max_fov_radius(light_field):
-    valid = light_field.valid_lixel.flatten()
-    cx = light_field.cx_mean.flatten()[valid]
-    cy = light_field.cx_mean.flatten()[valid]
-    fov_radius = 1.71*np.mean(np.sqrt(cx**2 + cy**2))
-    return fov_radius
-
-def estimate_pixel_radius(light_field):
-    fov_radius = max_fov_radius(light_field)
-    fov_area = np.pi*fov_radius**2
-    fov_area_per_pixel = fov_area/light_field.number_pixel
-    fov_radius_pixel = np.sqrt((fov_area_per_pixel/np.pi))
-    return fov_radius_pixel
-
 def write_dict_to_file(dictionary, path):
     with open(path, 'w') as outfile:
-        json.dump(config, outfile)    
+        json.dump(dictionary, outfile)
+
+def to_std_float_and_integer(dic):
+    ret = {}
+    for k, v in list(dic.items()):
+        if isinstance(v, dict):
+            ret[k] = to_std_float_and_integer(v)
+        elif isinstance(v, np.ndarray):
+            if v.dtype == np.float32:
+                v = v.astype(np.float64)
+            ret[k] = v.tolist()
+        elif isinstance(v, np.floating):
+            ret[k] = float(v)
+        elif isinstance(v, np.integer):
+            ret[k] = int(v)
+        else:
+            ret[k] = v
+    return ret
 
 def collect_trigger_relevant_information(event):
     info = {}
@@ -69,8 +72,9 @@ def collect_trigger_relevant_information(event):
     valid = event.light_field.valid_lixel.flatten()
     intensity = event.light_field.intensity.flatten()
     
-    fov_radius_pixel = estimate_pixel_radius(event.light_field)
-    fov_radius = max_fov_radius(event.light_field)
+    fov_radius_pixel = event.plenoscope_geometry.pixel_FoV_hex_flat2flat/2.0
+    fov_radius = event.plenoscope_geometry.max_FoV_diameter
+
     number_pixel_on_diagonal = int(np.ceil(fov_radius/fov_radius_pixel))
     bins = np.linspace(-fov_radius, fov_radius, number_pixel_on_diagonal)
 
@@ -149,4 +153,4 @@ def export_trigger_information(event):
         }
     }
 
-    return info
+    return to_std_float_and_integer(info)

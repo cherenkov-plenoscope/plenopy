@@ -2,9 +2,9 @@ import numpy as np
 import scipy.spatial
 import os
 from .LixelRays import LixelRays
-from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
+from .PlenoscopeGeometry import PlenoscopeGeometry
 from .HeaderRepresentation import assert_marker_of_header_is
-
+from .HeaderRepresentation import read_float32_header
 
 class LixelStatistics(object):
     """
@@ -165,7 +165,7 @@ class LixelStatistics(object):
         self.expected_focal_length_of_imaging_system = gh[23 - 1]
         self.expected_aperture_radius_of_imaging_system = gh[24 - 1]
 
-        self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(path)
+        self.sensor_plane2imaging_system = PlenoscopeGeometry(read_float32_header(path))
 
     def _read_lixel_positions(self, path):
         lp = np.fromfile(path, dtype=np.float32)
