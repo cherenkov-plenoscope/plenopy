@@ -7,13 +7,11 @@ __all__ = ['SensorPlane2ImagingSystem']
 
 class SensorPlane2ImagingSystem(object):
 
-    def __init__(self, path):
-        self.homogeneous_transformation = self._read(path)
-        self.light_filed_sensor_distance = self.homogeneous_transformation[
-            2, 3]
+    def __init__(self, event_header):
+        self.homogeneous_transformation = self._read(event_header)
+        self.light_filed_sensor_distance = self.homogeneous_transformation[2, 3]
 
-    def _read(self, path):
-        gh = np.fromfile(path, dtype=np.float32)
+    def _read(self, gh):
         return np.array([
             [gh[11 - 1], gh[14 - 1], gh[17 - 1], gh[20 - 1]],
             [gh[12 - 1], gh[15 - 1], gh[18 - 1], gh[21 - 1]],

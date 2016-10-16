@@ -6,6 +6,8 @@ import matplotlib.patches as mpatches
 from .SensorPlane2ImagingSystem import SensorPlane2ImagingSystem
 from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
 from .LightField import LightField
+from .HeaderRepresentation import str2float
+from .HeaderRepresentation import read_float32_header
 from .plot import Image as plt_Image
 from .plot import RawLightFieldSensorResponse as plt_RawLightFieldSensorResponse
 from .plot import LightField as plt_LightField
@@ -19,6 +21,8 @@ class Event(object):
     type                        A string as type indicator
                                 "simulation" in case this event was simulated
                                 "observation" in case this event was observed
+
+    trigger_type                Indicates the trigger mechanism.
 
     light_field                 The light field recorded by the plenoscope.
                                 Created using the raw light field sensor  
@@ -47,15 +51,14 @@ class Event(object):
 
     def __init__(self, path, lixel_statistics):
         self.__path = os.path.abspath(path)
+        self._read_event_header()
 
+        if self.type == 'SIMULATION':
+            self._read_simulation_truth()
+        
         self.raw_light_field_sensor_response = RawLighFieldSensorResponse(
             os.path.join(self.__path, 'raw_light_field_sensor_response.bin'))
 
-        self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(
-            os.path.join(self.__path, 'sensor_plane2imaging_system.bin'))
-
-        self._read_simulation_truth()
-        
         self.light_field = LightField(
             self.raw_light_field_sensor_response,
             lixel_statistics,
@@ -63,13 +66,37 @@ class Event(object):
 
         self.number = int(os.path.basename(self.__path))
 
+    def _read_event_header(self):
+        event_header_path = os.path.join(self.__path, 'event_header.bin')
+        self.header = read_float32_header(event_header_path)
+        self.sensor_plane2imaging_system = SensorPlane2ImagingSystem(self.header)
+
+        # TYPE
+        assert self.header[  1-1] == str2float("PEVT")
+        if self.header[  2-1] == 0.0:
+            self.type = 'OBSERVATION'
+        elif self.header[  2-1] == 1.0:
+            self.type = 'SIMULATION'
+        else:
+            self.type = 'unknown: '+str(self.header[  2-1])
+
+        # TRIGGER TYPE
+        if self.header[  3-1] == 0.0:
+            self.trigger_type = 'SELF_TRIGGER'
+        elif self.header[  3-1] == 1.0:
+            self.trigger_type = 'EXTERNAL_RANDOM_TRIGGER'
+        elif self.header[  3-1] == 2.0:
+            self.trigger_type = 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'
+        else:
+            self.trigger_type = 'unknown: '+str(self.header[  3-1])
+
     def _read_simulation_truth(self):
-        try:
-            sim_truth_path = os.path.join(self.__path, 'simulation_truth')
+        sim_truth_path = os.path.join(self.__path, 'simulation_truth')
+
+        if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
             evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
             runh = Corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
             simulation_truth_event = SimulationTruth.Event(evth=evth, runh=runh)
-
 
             try:
                 simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
@@ -83,15 +110,11 @@ class Event(object):
             except(FileNotFoundError):
                 simulation_truth_detector = None
 
-
             self.simulation_truth = SimulationTruth.SimulationTruth(
                 event=simulation_truth_event,
                 air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
                 detector=simulation_truth_detector)
 
-            self.type = "simulation"
-        except(FileNotFoundError):
-            self.type = "observation"
 
     def __repr__(self):
         out = "Event("
@@ -116,7 +139,18 @@ class Event(object):
         4   The photo equivalent distribution accross all lixels
         """
         fig, axs = plt.subplots(2, 2)
-        plt.suptitle(self.simulation_truth.event.short_event_info())
+        if self.type == "SIMULATION":
+            if self.trigger_type == "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH":
+                plt.suptitle(self.simulation_truth.event.short_event_info())
+            elif self.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
+                plt.suptitle('Extrenal random trigger, no air shower')
+            else:
+                plt.suptitle('Simulation, but trigger type is unknown: '+str(self.trigger_type))
+        elif self.type == "OBSERVATION":
+            plt.suptitle('Observation')
+        else:
+            plt.suptitle('unknown event type: '+str(self.type))
+
 
         axs[0][0].set_title('directional image')
         plt_Image.add_pixel_image_to_ax(

@@ -117,23 +117,30 @@ def collect_trigger_relevant_information(event):
 
 def export_trigger_information(event):
     info = {}
-    evth = event.simulation_truth.event.corsika_event_header
-    runh = event.simulation_truth.event.corsika_run_header
+    
+    assert event.type == "SIMULATION"
+    if event.trigger_type == "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH":
+        info['trigger_type'] = "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH"
+        evth = event.simulation_truth.event.corsika_event_header
+        runh = event.simulation_truth.event.corsika_run_header
+        info['id'] = {'run': runh.number, 'event': evth.number}
+        info['simulation_truth'] = {
+            'primary_particle': {'name': evth.primary_particle, 'id': evth.raw[3-1]},
+            'energy': evth.raw[4-1],
+            'zenith': evth.raw[11-1],
+            'azimuth': evth.raw[12-1],
+            'core_position': {
+                'x': evth.raw[98-1]/100, 
+                'y': evth.raw[118-1]/100},
+            'scatter_radius': runh.raw[248-1]/100,
+            'first_interaction_height': np.abs(evth.raw[7-1]/100),
+            'observation_level_altitude_asl': runh.raw[6-1]/100}    
 
-    info['id'] = {'run': runh.number, 'event': evth.number}
-    info['truth'] = {
-        'primary_particle': {'name': evth.primary_particle, 'id': evth.raw[3-1]},
-        'energy': evth.raw[4-1],
-        'zenith': evth.raw[11-1],
-        'azimuth': evth.raw[12-1],
-        'core_position': {
-            'x': evth.raw[98-1]/100, 
-            'y': evth.raw[118-1]/100},
-        'scatter_radius': runh.raw[248-1]/100,
-        'first_interaction_height': np.abs(evth.raw[7-1]/100)}
+    elif  event.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
+        info['trigger_type'] = "EXTERNAL_RANDOM_TRIGGER"
+
     info['acp'] = {
         'response': collect_trigger_relevant_information(event),
-        'observation_level_altitude_asl': runh.raw[6-1]/100,
         'light_field_sensor': {
             'expected_focal_length': event.light_field.expected_focal_length_of_imaging_system,
             'expected_aperture_radius': event.light_field.expected_aperture_radius_of_imaging_system,
