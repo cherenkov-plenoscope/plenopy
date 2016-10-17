@@ -2,17 +2,16 @@ import numpy as np
 import os
 import json
 from . import ImageRays
-import matplotlib.pyplot as plt
 
 def write_dict_to_file(dictionary, path):
     with open(path, 'w') as outfile:
         json.dump(dictionary, outfile)
 
-def to_std_float_and_integer(dic):
+def un_numpyify_dictionary(dic):
     ret = {}
     for k, v in list(dic.items()):
         if isinstance(v, dict):
-            ret[k] = to_std_float_and_integer(v)
+            ret[k] = un_numpyify_dictionary(v)
         elif isinstance(v, np.ndarray):
             if v.dtype == np.float32:
                 v = v.astype(np.float64)
@@ -89,8 +88,6 @@ def collect_trigger_relevant_information(event):
     image_rays = ImageRays(event.light_field)
     refocus_nodes = []
     for object_distance in object_distances:
-        #image = event.light_field.refocus(object_distance)
-
         cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
 
         image = np.histogram2d(
@@ -98,13 +95,6 @@ def collect_trigger_relevant_information(event):
             cy[valid], 
             weights=intensity[valid],
             bins=(bins,bins))[0]
-
-        """plt.imshow(
-            image, 
-            cmap='viridis', 
-            interpolation='none',
-            extent=[-fov_radius,fov_radius,-fov_radius,fov_radius])
-        plt.show()"""
 
         refocus_nodes.append({
             'object_distance': object_distance,
@@ -134,8 +124,8 @@ def export_trigger_information(event):
             'zenith': evth.raw[11-1],
             'azimuth': evth.raw[12-1],
             'core_position': {
-                'x': evth.raw[98-1]/100, 
-                'y': evth.raw[118-1]/100},
+                'x': evth.raw[98-1+1]/100, 
+                'y': evth.raw[118-1+1]/100},
             'scatter_radius': runh.raw[248-1]/100,
             'first_interaction_height': np.abs(evth.raw[7-1]/100),
             'observation_level_altitude_asl': runh.raw[6-1]/100}    
@@ -153,4 +143,4 @@ def export_trigger_information(event):
         }
     }
 
-    return to_std_float_and_integer(info)
+    return un_numpyify_dictionary(info)
