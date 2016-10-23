@@ -3,3 +3,4 @@ from . import Image
 from . import RawLightFieldSensorResponse
 from . import Refocus
 from . import Slices
+from .FigSize import FigSize

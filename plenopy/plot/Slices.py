@@ -1,154 +1,124 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-import mpl_toolkits.mplot3d.art3d as art3d
 from matplotlib import gridspec
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 import tempfile
-import subprocess
 import shutil
+from .FigSize import FigSize
+from .ObjectDistanceRuler import add2ax_object_distance_ruler
+from .images2video import images2video
+
+def save_slice_stack(
+    event, 
+    binning, 
+    intensity_volume, 
+    output_path, 
+    image_prefix='slice_'):
+
+    fig_size = FigSize(dpi=200)
+    fig = plt.figure(
+        figsize=(fig_size.width, fig_size.hight), 
+        dpi=fig_size.dpi)
+    gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3]) 
+    ax_object_distance_ruler = plt.subplot(gs[0])
+    ax_histogram = plt.subplot(gs[1])
+
+    intensity_max = intensity_volume.max()
+    intensity_min = intensity_volume.min()
+    for z_slice in range(binning.number_z_bins):
+
+        fig.suptitle(event.simulation_truth.event.short_event_info())
+
+        add2ax_z_slice(
+            ax=ax_histogram,
+            z_slice=z_slice,
+            binning=binning, 
+            intensity_volume=intensity_volume,
+            intensity_min=intensity_min,
+            intensity_max=intensity_max)
+
+        add2ax_object_distance_ruler(
+            ax=ax_object_distance_ruler,
+            object_distance=binning.z_bin_centers[z_slice],
+            object_distance_min=binning.z_min,
+            object_distance_max=binning.z_max)
+
+        plt.savefig(
+            os.path.join(output_path, image_prefix+str(z_slice).zfill(6)+".jpg"), 
+            dpi=fig_size.dpi)
+
+        ax_object_distance_ruler.clear()
+        ax_histogram.clear()
+    plt.close(fig)
 
 
-def save_slice_stack(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=10, use_absolute_scale=True, restrict_to_plenoscope_aperture=True):
+def add2ax_z_slice(
+    ax, 
+    z_slice, 
+    binning, 
+    intensity_volume,
+    intensity_min=None, 
+    intensity_max=None):
 
-    plt.rcParams.update({'font.size': 12})
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-
-    object_distances = np.logspace(
-        np.log10(obj_dist_min),
-        np.log10(obj_dist_max),
-        steps
-    )
-
-    n_lixel = event.light_field.valid_lixel.sum()
-    xs = np.zeros([steps, n_lixel])
-    ys = np.zeros([steps, n_lixel])
-    intensity = event.light_field.intensity.flatten(
-    )[event.light_field.valid_lixel.flatten()]
-
-    for i, object_distance in enumerate(object_distances):
-        pos_xy = event.light_field.rays.xy_intersections_in_object_distance(
-            object_distance)
-        xs[i, :] = pos_xy[:, 0][event.light_field.valid_lixel.flatten()]
-        ys[i, :] = pos_xy[:, 1][event.light_field.valid_lixel.flatten()]
-
-    if restrict_to_plenoscope_aperture:
-        r = 5.0 * event.light_field.expected_aperture_radius_of_imaging_system
-        xmax = r
-        xmin = -r
-        ymax = r
-        ymin = -r
-    else:
-        xmax = xs.max()
-        xmin = xs.min()
-        ymax = ys.max()
-        ymin = ys.min()
-
-    n_bins = int(0.25 * np.sqrt(n_lixel))
-
-    bins = np.zeros([steps, n_bins, n_bins])
-    xedges = np.zeros(n_bins + 1)
-    yedges = np.zeros(n_bins + 1)
-    for i in range(steps):
-        bins[i, :, :], xedges, yedges = np.histogram2d(
-            x=xs[i],
-            y=ys[i],
-            weights=intensity,
-            bins=[n_bins, n_bins],
-            range=[[xmin, xmax], [ymin, ymax]])
-
-    Imax = bins.max()
-
-    for i in range(len(xs)):
-        object_distance = object_distances[i]
-
-        fig = plt.figure(figsize=(7, 6))
-        fig, (ax0, ax1) = plt.subplots(1, 2)
-        plt.suptitle(event.simulation_truth.short_event_info())
-
-        gs = gridspec.GridSpec(1, 2, width_ratios=[1, 6])
-        ax0 = plt.subplot(gs[0])
-        ax0.set_xlim([0, 1])
-        ax0.set_ylim([0, obj_dist_max / 1e3])
-        ax0.yaxis.tick_left()
-        ax0.set_ylabel('object distance/km')
-        ax0.spines['right'].set_visible(False)
-        ax0.spines['top'].set_visible(False)
-        ax0.spines['bottom'].set_visible(False)
-        ax0.xaxis.set_visible(False)
-        ax0.plot([0, .5], [object_distance / 1e3,
-                           object_distance / 1e3], linewidth=5.0)
-        ax0.text(0.0, -1.0, format(object_distance / 1e3, '.2f') + r'\,km')
-
-        ax1 = plt.subplot(gs[1])
-        ax1.set_aspect('equal')
-        im = ax1.imshow(
-            bins[i, :, :],
-            vmin=0.0,
-            vmax=Imax,
-            interpolation='none',
-            origin='low',
-            extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-            aspect='equal')
-        im.set_cmap('viridis')
-        ax1.set_xlabel('x/m')
-        ax1.set_ylabel('y/m')
-
-        plt.savefig(os.path.join(path, 'slice_' +
-                                 str(i).zfill(6) + ".png"), dpi=180)
-        plt.close()
+    xy_lim = binning.xy_bin_centers.max()
+    img = ax.imshow(
+        intensity_volume[:,:,z_slice], 
+        cmap='viridis', 
+        extent=[-xy_lim, xy_lim, -xy_lim, xy_lim], 
+        interpolation='None')
+    img.set_clim(intensity_min, intensity_max)
+    ax.set_xlabel('x/m')
+    ax.set_ylabel('y/m')
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    plt.colorbar(img, cax=cax)
 
 
-def save_slices_video(event, path, obj_dist_min=2e3, obj_dist_max=12e3, steps=25, fps=25, use_absolute_scale=True):
+def save_slice_video(
+    event, 
+    binning, 
+    intensity_volume, 
+    output_path,
+    fps=25):
+
     with tempfile.TemporaryDirectory() as work_dir:
+        image_prefix = 'slice_'
         save_slice_stack(
-            event,
-            obj_dist_min=obj_dist_min,
-            obj_dist_max=obj_dist_max,
-            steps=steps,
-            path=work_dir,
-            use_absolute_scale=use_absolute_scale)
+            event=event,
+            binning=binning,
+            intensity_volume=intensity_volume,
+            output_path=work_dir,
+            image_prefix=image_prefix)
+        steps=binning.number_z_bins
 
         # duplicate the images and use them again in reverse order
         i = 0
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, 'slice_' + str(0).zfill(6) + ".png"),
-                os.path.join(work_dir, 'video_' + str(i).zfill(6) + ".png"))
+                os.path.join(work_dir, image_prefix+str(0).zfill(6)+'.jpg'),
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps):
             shutil.copy(
-                os.path.join(work_dir, 'slice_' + str(o).zfill(6) + ".png"),
-                os.path.join(work_dir, 'video_' + str(i).zfill(6) + ".png"))
+                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, 'slice_' +
-                             str(steps - 1).zfill(6) + ".png"),
-                os.path.join(work_dir, 'video_' + str(i).zfill(6) + ".png"))
+                os.path.join(work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
-                os.path.join(work_dir, 'slice_' + str(o).zfill(6) + ".png"),
-                os.path.join(work_dir, 'video_' + str(i).zfill(6) + ".png"))
+                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
-        avconv_command = [
-            'avconv',
-            '-y',  # force overwriting of existing output file
-            '-framerate', str(int(fps)),  # Frames per second
-            '-f', 'image2',
-            '-i', os.path.join(work_dir, 'video_%06d.png'),
-            '-c:v', 'h264',
-            #'-s', '1260x1080', # sample images down to FullHD 1080p
-            '-crf', '23',  # high quality 0 (best) to 53 (worst)
-            '-crf_max', '25',  # worst quality allowed
-            os.path.splitext(path)[0] + '.mp4'
-        ]
-        subprocess.call(avconv_command)
+        images2video(
+            image_path=os.path.join(work_dir, 'video_%06d.jpg'),
+            output_path=output_path,
+            frames_per_second=fps)
