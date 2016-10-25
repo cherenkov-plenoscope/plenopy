@@ -70,6 +70,15 @@ class AirShowerReconstruction(object):
             self.normalized_intensity_hist, 
             self.filter_kernel)
 
+    def flat_xyz_intensity(self):
+        """
+        Returns a flat array of all voxels on axis 0 and x,y,z position and 
+        intensity on axis 1.
+        """
+        xyz = self.binning.flat_xyz_voxel_positions()
+        i = self.intensity_volume.flatten()
+        return np.hstack((xyz,i))
+
     @classmethod
     def from_plenoscope_event(cls, event, valid_lixels, binning):
         #intensity_threshold = 1

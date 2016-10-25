@@ -92,6 +92,20 @@ class Binning(object):
         self.voxel_xy_area = (2.0*self.voxel_xy_radius)**2.0
         self.voxel_volume = self.voxel_xy_area*(2.0*self.voxel_z_radius)
 
+
+    def flat_xyz_voxel_positions(self):
+        x_flat = self.xy_bin_centers.repeat(
+            self.number_z_bins*self.number_xy_bins)
+        y_flat = np.repeat(
+            np.tile(
+                self.xy_bin_centers, self.number_xy_bins),
+            self.number_z_bins)
+        z_flat = np.tile(
+            self.z_bin_centers, 
+            self.number_xy_bins*self.number_xy_bins)
+        return np.array([x_flat, y_flat, z_flat]).T
+
+
     def __repr__(self):
         out = 'Binning( '
         out += str(self.total_volume/1e9)+'km^3 from '
