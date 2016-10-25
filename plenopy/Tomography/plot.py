@@ -37,7 +37,7 @@ def plot(xyzIs, xyzIs2=None):
 
         ax.scatter(
             xyzIs2[:,0], xyzIs2[:,1], xyzIs2[:,2],
-            s=inte,
+            s=inte2,
             c='r',
             depthshade=False,
             alpha=0.01,
