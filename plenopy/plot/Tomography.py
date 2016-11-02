@@ -175,3 +175,37 @@ def save_slice_video(
             image_path=os.path.join(work_dir, 'video_%06d.jpg'),
             output_path=output_path,
             frames_per_second=fps)
+
+
+def add2ax_flat(ax, xyzIs, color='b', alpha_max=1.0, steps=32, ball_size=50.0):
+    intensities = xyzIs[:,3]
+    xyzIs_sorted = xyzIs[np.argsort(intensities)]
+
+    chunk_suize = np.ceil(xyzIs.shape[0]/steps)
+
+    for step, alpha in enumerate(np.linspace(0.0025, alpha_max, steps)):
+
+        start = step*chunk_suize
+        end = start+chunk_suize
+        if end >= xyzIs.shape[0]:
+            end = xyzIs.shape[0]-1
+
+        ax.scatter(
+            xyzIs_sorted[start:end,0], xyzIs_sorted[start:end,1], xyzIs_sorted[start:end,2],
+            s=ball_size,
+            depthshade=False,
+            alpha=alpha,
+            c=color,
+            lw=0)           
+
+
+def plot_flat(xyzIs, xyzIs2=None, alpha_max=1.0, ball_size=25, steps=32):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    add2ax_flat(ax, xyzIs, color='b', steps=steps, alpha_max=alpha_max,ball_size=ball_size)
+
+    if xyzIs2 is not None:
+        add2ax_flat(ax, xyzIs2, color='r', steps=steps, alpha_max=alpha_max,ball_size=ball_size)
+
+    plt.show()
