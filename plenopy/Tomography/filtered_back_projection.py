@@ -40,6 +40,24 @@ def normalize_ray_histograms(hist_intensities, hist_rays):
 
 
 def ramp_kernel_in_frequency_space(binning):
+    """
+    ramp_pos = binning.flat_xyz_voxel_positions_in_frequency_space()
+
+    dist_to_origin = np.linalg.norm(ramp_pos, axis=1)
+
+    ramp = np.zeros(
+        binning.number_xy_bins*binning.number_xy_bins*binning.number_z_bins,
+        dtype='float64')
+    
+    d = dist_to_origin
+    #ramp = (-d**2 + 1*d)*4
+    ramp = d**2.0
+    ramp = ramp/ramp.max()
+    return ramp.reshape(
+        binning.number_xy_bins,
+        binning.number_xy_bins,
+        binning.number_z_bins)
+    """
     ramp = np.zeros(shape=(
         binning.number_xy_bins, 
         binning.number_xy_bins, 
@@ -69,7 +87,6 @@ def ramp_kernel_in_frequency_space(binning):
     
     ramp = ramp/ramp.max()
     return ramp
-
 
 def frequency_filter(hist, kernel):
     ft_hist = np.fft.fftn(hist)
