@@ -77,7 +77,8 @@ class AirShowerReconstruction(object):
         """
         xyz = self.binning.flat_xyz_voxel_positions()
         i = self.intensity_volume.flatten()
-        return np.hstack((xyz,i))
+        return np.hstack((xyz, i.reshape(i.shape[0],1)))
+
 
     @classmethod
     def from_plenoscope_event(cls, event, valid_lixels, binning):
