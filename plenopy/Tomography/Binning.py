@@ -105,6 +105,16 @@ class Binning(object):
             self.number_xy_bins*self.number_xy_bins)
         return np.array([x_flat, y_flat, z_flat]).T
 
+    def flat_xyz_voxel_positions_in_frequency_space(self):
+        x = np.linspace(-1, 1, self.number_xy_bins)
+        kx_flat = x.repeat(self.number_z_bins*self.number_xy_bins)
+        
+        ky_flat = np.repeat(
+            np.tile(x, self.number_xy_bins),
+            self.number_z_bins)
+        z = np.linspace(-1, 1, self.number_z_bins)
+        kz_flat = np.tile(z, self.number_xy_bins*self.number_xy_bins)
+        return np.array([kx_flat, ky_flat, kz_flat]).T
 
     def __repr__(self):
         out = 'Binning( '
