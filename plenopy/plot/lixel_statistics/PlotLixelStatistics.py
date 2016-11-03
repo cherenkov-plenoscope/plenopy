@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from . import add2ax
-
+from multiprocessing import Process
 
 class PlotLixelStatistics(object):
 
@@ -148,29 +148,50 @@ class PlotLixelStatistics(object):
         plt.close(fig)
 
     def save(self):
-        self.save_cx_mean()
-        self.save_cy_mean()
-        self.save_x_mean()
-        self.save_y_mean()
-        self.save_cx_stddev()
-        self.save_cy_stddev()
-        self.save_time_mean()
-        self.save_time_stddev()
-        self.save_efficiency()
-        self.save_efficiency_relative_error()
-        self.save_c_mean_vs_c_std()
-        self.save_x_y_hist2d()
-        self.save_cx_cy_hist2d()
-        self.save_sensor_plane_overview(self.lss.efficiency, 'efficiency', '1')
-        self.save_sensor_plane_overview(self.lss.x_mean, 'x_mean', 'm')
-        self.save_sensor_plane_overview(self.lss.x_std, 'x_stddev', 'm')
-        self.save_sensor_plane_overview(self.lss.y_mean, 'y_mean', 'm')
-        self.save_sensor_plane_overview(self.lss.y_std, 'y_stddev', 'm')
-        self.save_sensor_plane_overview(
-            np.rad2deg(self.lss.cx_mean), 'cx_mean', 'deg')
-        self.save_sensor_plane_overview(
-            np.rad2deg(self.lss.cx_std), 'cx_stddev', 'deg')
-        self.save_sensor_plane_overview(
-            np.rad2deg(self.lss.cy_mean), 'cy_mean', 'deg')
-        self.save_sensor_plane_overview(
-            np.rad2deg(self.lss.cy_std), 'cy_stddev', 'deg')
+
+        jobs = []
+        jobs.append({'target': self.save_cx_mean, 'args': []})
+        jobs.append({'target': self.save_cy_mean, 'args': []})
+
+        jobs.append({'target': self.save_x_mean, 'args': []})
+        jobs.append({'target': self.save_y_mean, 'args': []})
+
+        jobs.append({'target': self.save_cx_stddev, 'args': []})
+        jobs.append({'target': self.save_cy_stddev, 'args': []})
+        jobs.append({'target': self.save_time_mean, 'args': []})
+        jobs.append({'target': self.save_time_stddev, 'args': []})
+
+        jobs.append({'target': self.save_efficiency, 'args': []})
+        jobs.append({'target': self.save_efficiency_relative_error, 'args': []})
+
+        jobs.append({'target': self.save_c_mean_vs_c_std, 'args': []})
+        jobs.append({'target': self.save_x_y_hist2d, 'args': []})
+        jobs.append({'target': self.save_cx_cy_hist2d, 'args': []})
+
+        jobs.append({'target': self.save_sensor_plane_overview, 'args': [self.lss.efficiency, 'efficiency', '1']})
+
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [self.lss.x_mean, 'x_mean', 'm']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [self.lss.x_std, 'x_stddev', 'm']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [self.lss.y_mean, 'y_mean', 'm']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [self.lss.y_std, 'y_stddev', 'm']})
+
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [np.rad2deg(self.lss.cx_mean), 'cx_mean', 'deg']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [np.rad2deg(self.lss.cx_std), 'cx_stddev', 'deg']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [np.rad2deg(self.lss.cy_mean), 'cy_mean', 'deg']})
+        jobs.append({'target': self.save_sensor_plane_overview, 
+            'args': [np.rad2deg(self.lss.cy_std), 'cy_stddev', 'deg']})
+
+        processes = []
+        for job in jobs:
+            processes.append(Process(target=job['target'], args=job['args']))
+        for process in processes:
+            process.start()
+        for process in processes:
+            process.join()
