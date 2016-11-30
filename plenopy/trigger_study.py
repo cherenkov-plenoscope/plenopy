@@ -46,6 +46,13 @@ def collect_trigger_relevant_information(event):
         'max': np.max(lixel_i),
         'sum': np.sum(lixel_i)}
 
+    raw_lixel_i = event.raw_light_field_sensor_response.intensity
+    info['raw_lixel'] = {
+        'min': np.min(raw_lixel_i), 
+        'med': np.median(raw_lixel_i), 
+        'max': np.max(raw_lixel_i),
+        'sum': np.sum(raw_lixel_i)}
+
     # arrival time distribution
     lixel_t = event.light_field.arrival_time.flatten()
     start_time = 0.0
