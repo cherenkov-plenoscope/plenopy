@@ -81,7 +81,7 @@ def save_refocus_video(
             obj_dist_min=obj_dist_min,
             obj_dist_max=obj_dist_max,
             steps=steps,
-            path=work_dir,
+            output_path=work_dir,
             use_absolute_scale=use_absolute_scale,
             image_prefix=image_prefix)
 
