@@ -1,11 +1,26 @@
 import numpy as np
 import os
-import json
+import gzip, json
 from . import ImageRays
 
+
 def write_dict_to_file(dictionary, path):
-    with open(path, 'w') as outfile:
-        json.dump(dictionary, outfile)
+    """
+    Writes a dictionary into a json file. If the path extension is 'gz', then
+    a gzipped json file is written.
+
+    Parameters
+    ----------
+    dictionary      A dictionary to be written.
+
+    path            The output path of the JSON file (or gzipped) JSON file
+    """
+    if os.path.splitext(path)[1] == 'gz':
+        with gzip.open(path, mode="wt") as outfile:
+            json.dump(dictionary, outfile)
+    else:
+        with open(path, 'w') as outfile:
+            json.dump(dictionary, outfile)
 
 def un_numpyify_dictionary(dic):
     ret = {}
