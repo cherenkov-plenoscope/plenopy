@@ -15,7 +15,7 @@ def write_dict_to_file(dictionary, path):
 
     path            The output path of the JSON file (or gzipped) JSON file
     """
-    if os.path.splitext(path)[1] == 'gz':
+    if os.path.splitext(path)[1] == '.gz':
         with gzip.open(path, mode="wt") as outfile:
             json.dump(dictionary, outfile)
     else:
