@@ -136,7 +136,7 @@ class LixelStatistics(object):
 
     def _read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32)
-        ls = ls.reshape([ls.shape[0] / 12, 12])
+        ls = ls.reshape([ls.shape[0] // 12, 12])
 
         for i, attribute_name in enumerate([
                 'efficiency', 'efficiency_std',
@@ -169,7 +169,7 @@ class LixelStatistics(object):
 
     def _read_lixel_positions(self, path):
         lp = np.fromfile(path, dtype=np.float32)
-        lp = lp.reshape([lp.shape[0] / 2, 2])
+        lp = lp.reshape([lp.shape[0] // 2, 2])
         self.lixel_positions_x = lp[:, 0]
         self.lixel_positions_y = lp[:, 1]
 
