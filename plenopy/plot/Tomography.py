@@ -94,7 +94,7 @@ def add2ax_z_slice(
     else:
         image = matrix_2_rgb_image(
             intensity_volume[:,:,z_slice], 
-            color_channel=2,
+            color_channel=1,
             intensity_min=intensity_min,
             intensity_max=intensity_max) + matrix_2_rgb_image(
             intensity_volume_2[:,:,z_slice], 
