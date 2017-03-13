@@ -35,7 +35,7 @@ class PhotonBunches(object):
         """
         floats_per_photon = 8
         raw = np.fromfile(path, dtype=np.float32)
-        raw = raw.reshape([raw.shape[0]/floats_per_photon, floats_per_photon])
+        raw = raw.reshape([raw.shape[0]//floats_per_photon, floats_per_photon])
         self.x = raw[:, 0]/100 # in meters
         self.y = raw[:, 1]/100 # in meters
         self.cx = raw[:, 2] # in rad

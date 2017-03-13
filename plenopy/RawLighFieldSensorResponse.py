@@ -23,7 +23,7 @@ class RawLighFieldSensorResponse(object):
                     and intensities for each read out channel (lixel).
         """
         raw = np.fromfile(path, dtype=np.float32)
-        raw = raw.reshape([raw.shape[0] / 2, 2])
+        raw = raw.reshape([raw.shape[0] // 2, 2])
         self.arrival_time = raw[:, 0]
         self.intensity = raw[:, 1]
 
