@@ -18,7 +18,7 @@ def flatten(hist, binning, threshold=0):
     return xyzi
 
 
-def plot(xyzIs, xyzIs2=None):
+def plot(xyzIs, xyzIs2=None, alpha=0.01):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -29,7 +29,7 @@ def plot(xyzIs, xyzIs2=None):
         xyzIs[:,0], xyzIs[:,1], xyzIs[:,2],
         s=inte,
         depthshade=False,
-        alpha=0.01,
+        alpha=alpha,
         lw=0)
 
     if xyzIs2 is not None:
@@ -41,7 +41,7 @@ def plot(xyzIs, xyzIs2=None):
             s=inte2,
             c='r',
             depthshade=False,
-            alpha=0.01,
+            alpha=alpha,
             lw=0)        
 
     plt.show()
