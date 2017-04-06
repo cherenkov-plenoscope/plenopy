@@ -108,7 +108,10 @@ class LixelStatistics(object):
 
         self._read_light_field_sensor_geometry_header(
             os.path.join(path, 'light_field_sensor_geometry.header.bin'))
-        self._read_lixel_positions(os.path.join(path, 'lixel_positions.bin'))
+
+        self._read_lixel_positions(
+            os.path.join(path, 'lixel_positions.bin'))
+
         self._read_lixel_statistics(
             os.path.join(path, 'lixel_statistics.bin'))
 
@@ -120,19 +123,33 @@ class LixelStatistics(object):
         self.valid_efficiency = self.most_efficient_lixels(0.95)
 
     def _calc_pixel_and_paxel_average_positions(self):
-        self.paxel_pos_x = np.nanmean(self.x_mean, axis=0)
-        self.paxel_pos_y = np.nanmean(self.y_mean, axis=0)
+        npix = self.number_pixel
+        npax = self.number_paxel
+        self.paxel_pos_x = np.nanmean(
+            self.x_mean.reshape(npix, npax), 
+            axis=0)
+        self.paxel_pos_y = np.nanmean(
+            self.y_mean.reshape(npix, npax), 
+            axis=0)
 
-        self.pixel_pos_cx = np.nanmean(self.cx_mean, axis=1)
-        self.pixel_pos_cy = np.nanmean(self.cy_mean, axis=1)
+        self.pixel_pos_cx = np.nanmean(
+            self.cx_mean.reshape(npix, npax), 
+            axis=1)
+        self.pixel_pos_cy = np.nanmean(
+            self.cy_mean.reshape(npix, npax), 
+            axis=1)
 
         self.pixel_pos_tree = scipy.spatial.cKDTree(
             np.array([self.pixel_pos_cx, self.pixel_pos_cy]).T)
         self.paxel_pos_tree = scipy.spatial.cKDTree(
             np.array([self.paxel_pos_x, self.paxel_pos_y]).T)
 
-        self.paxel_efficiency_along_pixel = np.nanmean(self.efficiency, axis=0)
-        self.pixel_efficiency_along_paxel = np.nanmean(self.efficiency, axis=1)
+        self.paxel_efficiency_along_pixel = np.nanmean(
+            self.efficiency.reshape(npix, npax), 
+            axis=0)
+        self.pixel_efficiency_along_paxel = np.nanmean(
+            self.efficiency.reshape(npix, npax), 
+            axis=1)
 
     def _read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32)
@@ -146,11 +163,7 @@ class LixelStatistics(object):
                 'y_mean', 'y_std',
                 'time_delay_mean', 'time_delay_std'
         ]):
-            setattr(
-                self,
-                attribute_name,
-                ls[:, i].reshape(self.number_pixel, self.number_paxel)
-            )
+            setattr(self, attribute_name, ls[:, i])
 
     def _read_light_field_sensor_geometry_header(self, path):
         gh = np.fromfile(path, dtype=np.float32)
@@ -195,10 +208,10 @@ class LixelStatistics(object):
 
     def _init_lixel_rays(self):
         self.rays = LixelRays(
-            x=self.x_mean.flatten(),
-            y=self.y_mean.flatten(),
-            cx=self.cx_mean.flatten(),
-            cy=self.cy_mean.flatten())
+            x=self.x_mean,
+            y=self.y_mean,
+            cx=self.cx_mean,
+            cy=self.cy_mean)
 
     def most_efficient_lixels(self, fraction):
         """
@@ -213,11 +226,10 @@ class LixelStatistics(object):
                     efficient lixels.
         """
         number_valid_lixels = int(np.floor(self.number_lixel * fraction))
-        flat_idxs = np.argsort(self.efficiency.flatten()
-                               )[-number_valid_lixels:]
-        flat_mask = np.zeros(self.number_lixel, dtype=bool)
-        flat_mask[flat_idxs] = True
-        return flat_mask.reshape([self.number_pixel, self.number_paxel])
+        idxs = np.argsort(self.efficiency)[-number_valid_lixels:]
+        mask = np.zeros(self.number_lixel, dtype=bool)
+        mask[idxs] = True
+        return mask
 
     def __repr__(self):
         out = 'LixelStatistics( '
