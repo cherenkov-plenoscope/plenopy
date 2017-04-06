@@ -2,7 +2,7 @@ import numpy as np
 import os
 from .. import Corsika
 from .Event import Event
-from .. import FileSystemFormat
+from ..tools.acp_format import all_folders_with_digit_names_in_path
 
 class Run(object):
     """
@@ -46,7 +46,7 @@ class Run(object):
         return Event(event_path)
 
     def _event_numbers_in_run(self):
-        return FileSystemFormat.all_folders_with_digit_names_in_path(self.path)
+        return all_folders_with_digit_names_in_path(self.path)
 
     def __repr__(self):
         out = 'IdealizedPlenoscopeRun('

@@ -1,8 +1,8 @@
-from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
+from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LixelStatistics import LixelStatistics
 from .LixelRays import LixelRays
 from .ImageRays import ImageRays
-from .LightField import LightField
+from .LightFieldSequence import LightFieldSequence
 from .Event import Event
 from .Run import Run
 from .Image import Image
@@ -11,4 +11,5 @@ from . import IdealizedPlenoscope
 from . import Corsika
 from . import SimulationTruth
 from . import Tomography
+from . import tools
 from .trigger_study import *

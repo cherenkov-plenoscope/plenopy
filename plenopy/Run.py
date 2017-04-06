@@ -1,10 +1,9 @@
 import numpy as np
 import glob
 import os
-from . import FileSystemFormat
 from .LixelStatistics import LixelStatistics
 from .Event import Event
-
+from .tools.acp_format import all_folders_with_digit_names_in_path
 
 class Run(object):
     """
@@ -34,7 +33,7 @@ class Run(object):
         self.number_events = self.event_numbers.shape[0]
 
     def _event_numbers_in_run(self):
-        return FileSystemFormat.all_folders_with_digit_names_in_path(self.path)
+        return all_folders_with_digit_names_in_path(self.path)
 
     def __getitem__(self, index):
         """
