@@ -4,15 +4,16 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from .PlenoscopeGeometry import PlenoscopeGeometry
-from .RawLighFieldSensorResponse import RawLighFieldSensorResponse
-from .LightField import LightField
+from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
+from .LightFieldSequence import LightFieldSequence
 from .HeaderRepresentation import str2float
 from .HeaderRepresentation import read_float32_header
+from .Image import Image
 from .plot import Image as plt_Image
-from .plot import RawLightFieldSensorResponse as plt_RawLightFieldSensorResponse
-from .plot import LightField as plt_LightField
 from . import Corsika
 from . import SimulationTruth
+from .plot import LightField as plt_LightFieldSequence
+
 
 class Event(object):
     """
@@ -50,24 +51,26 @@ class Event(object):
     """
 
     def __init__(self, path, lixel_statistics):
-        self.__path = os.path.abspath(path)
+        self._path = os.path.abspath(path)
         self._read_event_header()
 
-        if self.type == 'SIMULATION':
-            self._read_simulation_truth()
-        
-        self.raw_light_field_sensor_response = RawLighFieldSensorResponse(
-            os.path.join(self.__path, 'raw_light_field_sensor_response.bin'))
+        self.raw_light_field_sensor_response = RawLightFieldSensorResponse(
+            os.path.join(
+                self._path, 
+                'raw_light_field_sensor_response.phs'))
 
-        self.light_field = LightField(
+        self.light_field_sequence = LightFieldSequence(
             self.raw_light_field_sensor_response,
             lixel_statistics,
             self.plenoscope_geometry)
 
-        self.number = int(os.path.basename(self.__path))
+        if self.type == 'SIMULATION':
+            self._read_simulation_truth()
+
+        self.number = int(os.path.basename(self._path))
 
     def _read_event_header(self):
-        event_header_path = os.path.join(self.__path, 'event_header.bin')
+        event_header_path = os.path.join(self._path, 'event_header.bin')
         self.header = read_float32_header(event_header_path)
         self.plenoscope_geometry = PlenoscopeGeometry(self.header)
 
@@ -91,7 +94,7 @@ class Event(object):
             self.trigger_type = 'unknown: '+str(self.header[  3-1])
 
     def _read_simulation_truth(self):
-        sim_truth_path = os.path.join(self.__path, 'simulation_truth')
+        sim_truth_path = os.path.join(self._path, 'simulation_truth')
 
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
             evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
@@ -100,13 +103,14 @@ class Event(object):
 
             try:
                 simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
-                     os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
+                    os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
                 simulation_truth_air_shower_photon_bunches = None         
 
             try:
                 simulation_truth_detector = SimulationTruth.Detector(
-                     os.path.join(sim_truth_path, 'intensity_truth.txt'))
+                    self.light_field_sequence,
+                    os.path.join(sim_truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
 
@@ -118,7 +122,6 @@ class Event(object):
 
     def __repr__(self):
         out = "Event("
-        out += "path='" + self.__path + "', "
         out += "number " + str(self.number) + ", "
         out += "type '" + self.type
         out += "')\n"
@@ -151,30 +154,46 @@ class Event(object):
         else:
             plt.suptitle('unknown event type: '+str(self.type))
 
+        pix_img_seq = self.light_field_sequence.pixel_sequence()
+        t_m = time_slice_with_max_intensity(pix_img_seq)
+        ts = np.max([t_m-1, 0])
+        te = np.min([t_m+1, pix_img_seq.shape[0]-1])
+        pixel_image = Image(
+            pix_img_seq[ts:te].sum(axis=0),
+            self.light_field_sequence.pixel_pos_cx,
+            self.light_field_sequence.pixel_pos_cy)
 
         axs[0][0].set_title('directional image')
-        plt_Image.add_pixel_image_to_ax(
-            self.light_field.pixel_sum(),
-            axs[0][0])
+        plt_Image.add_pixel_image_to_ax(pixel_image, axs[0][0])
+
+        pax_img_seq = self.light_field_sequence.paxel_sequence()
+        t_m = time_slice_with_max_intensity(pax_img_seq)
+        ts = np.max([t_m-1, 0])
+        te = np.min([t_m+1, pax_img_seq.shape[0]-1])
+        paxel_image = Image(
+            pax_img_seq[ts:te].sum(axis=0),
+            self.light_field_sequence.paxel_pos_x,
+            self.light_field_sequence.paxel_pos_y)
 
         axs[0][1].set_title('principal aperture plane')
-        plt_Image.add_paxel_image_to_ax(
-            self.light_field.paxel_sum(interpolate_central_paxel=True),
-            axs[0][1])
+        plt_Image.add_paxel_image_to_ax(paxel_image, axs[0][1])
 
-        plt_LightField.add2ax_hist_arrival_time(
-            self.light_field,
-            axs[1][0])
+        plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field_sequence, axs[1][0])
 
-        plt_RawLightFieldSensorResponse.add2ax_hist_intensity(
-            self.raw_light_field_sensor_response,
+        plt_LightFieldSequence.add2ax_hist_intensity(
+            self.light_field_sequence,
             axs[1][1])
-        plt_LightField.add2ax_hist_intensity(
-            self.light_field,
-            axs[1][1], color='green')
-        raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
-        eff_corrected_intensity_patch = mpatches.Patch(
-            color='green', label='efficiency corrected')
-        axs[1][1].legend(handles=[raw_intensity_patch,
-                                  eff_corrected_intensity_patch])
+        #raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
+        #eff_corrected_intensity_patch = mpatches.Patch(
+        #    color='green', label='efficiency corrected')
+        #axs[1][1].legend(handles=[raw_intensity_patch,
+        #                          eff_corrected_intensity_patch])
         plt.show()
+
+
+
+def time_slice_with_max_intensity(sequence):
+    max_along_slices = np.zeros(sequence.shape[0], dtype=np.uint16)
+    for s, slic in enumerate(sequence):
+        max_along_slices[s] = slic.max()
+    return np.argmax(max_along_slices)
