@@ -21,3 +21,10 @@ class PlenoscopeGeometry(object):
             [gh[13 - 1], gh[16 - 1], gh[19 - 1], gh[22 - 1]],
             [0.0,       0.0,       0.0,       1.0],
         ])
+
+    def __repr__(self):
+        out = 'PlenoscopeGeometry('
+        out += str(self.expected_imaging_system_focal_length) + ' focal length, '
+        out += str(self.expected_imaging_system_max_aperture_radius*2) + ' mirror diameter'
+        out += ')\n'
+        return out
