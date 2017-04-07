@@ -8,8 +8,6 @@ import os
 import tempfile
 import subprocess
 
-from PlotTools import FigureSize
-
 
 class FigureSize():
 
