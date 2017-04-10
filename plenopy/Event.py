@@ -61,8 +61,7 @@ class Event(object):
 
         self.light_field_sequence = LightFieldSequence(
             self.raw_light_field_sensor_response,
-            lixel_statistics,
-            self.plenoscope_geometry)
+            lixel_statistics)
 
         if self.type == 'SIMULATION':
             self._read_simulation_truth()

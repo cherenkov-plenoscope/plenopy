@@ -6,16 +6,13 @@ class LightFieldSequence(object):
     def __init__(
         self, 
         raw_light_field_sensor_response, 
-        lixel_statistics, 
-        plenoscope_geometry):
+        lixel_statistics):
         """
         Parameters
         ----------
         raw_light_field_sensor_response 
 
         lixel_statistics
-
-        plenoscope_geometry
         """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
@@ -23,7 +20,6 @@ class LightFieldSequence(object):
         """
         self.__doc__ += lixel_statistics.__doc__
 
-        self.plenoscope_geometry = plenoscope_geometry
         self.number_time_slices = raw_light_field_sensor_response.number_time_slices
         self.time_slice_duration = raw_light_field_sensor_response.time_slice_duration
     
