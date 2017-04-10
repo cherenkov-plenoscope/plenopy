@@ -5,7 +5,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 import tempfile
 import shutil
-from .FigSize import FigSize
+from .FigureSize import FigureSize
 from .ObjectDistanceRuler import add2ax_object_distance_ruler
 from .images2video import images2video
 
@@ -17,7 +17,7 @@ def save_slice_stack(
     image_prefix='slice_',
     intensity_volume_2=None):
 
-    fig_size = FigSize(dpi=200)
+    fig_size = FigureSize(dpi=200)
     fig = plt.figure(
         figsize=(fig_size.width, fig_size.hight), 
         dpi=fig_size.dpi)
