@@ -34,7 +34,7 @@ class Event(object):
                                 Additional 'true' information known from the 
                                 simulation itself 
 
-    raw_light_field_sensor_response     The raw light field sensor response
+    raw_sensor_response     The raw light field sensor response
                                         of the plenoscope
 
     sensor_plane2imaging_system     The relative orientation and position of 
@@ -46,16 +46,13 @@ class Event(object):
     def __init__(self, path, light_field_geometry):
         self._path = os.path.abspath(path)
         self._read_event_header()
-        self.raw_light_field_sensor_response = RawLightFieldSensorResponse(
-            os.path.join(self._path, 'raw_light_field_sensor_response.phs'))
-
+        raw_path = os.path.join(self._path, 'raw_light_field_sensor_response.phs')
+        self.raw_sensor_response = RawLightFieldSensorResponse(raw_path)
         self.light_field = LightField(
-            self.raw_light_field_sensor_response,
+            self.raw_sensor_response,
             light_field_geometry)
-
         if self.type == 'SIMULATION':
             self._read_simulation_truth()
-
         self.number = int(os.path.basename(self._path))
 
 
@@ -71,7 +68,6 @@ class Event(object):
 
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
-
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
             evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
             runh = Corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
