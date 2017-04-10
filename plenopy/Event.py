@@ -4,10 +4,11 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from .PlenoscopeGeometry import PlenoscopeGeometry
+from .EventType import EventType
 from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LightField import LightField
-from .HeaderRepresentation import str2float
-from .HeaderRepresentation import read_float32_header
+from .tools.HeaderRepresentation import assert_marker_of_header_is
+from .tools.HeaderRepresentation import read_float32_header
 from .Image import Image
 from .plot import Image as plt_Image
 from . import Corsika
@@ -53,7 +54,6 @@ class Event(object):
     def __init__(self, path, light_field_geometry):
         self._path = os.path.abspath(path)
         self._read_event_header()
-
         self.raw_light_field_sensor_response = RawLightFieldSensorResponse(
             os.path.join(self._path, 'raw_light_field_sensor_response.phs'))
 
@@ -66,29 +66,16 @@ class Event(object):
 
         self.number = int(os.path.basename(self._path))
 
+
     def _read_event_header(self):
-        event_header_path = os.path.join(self._path, 'event_header.bin')
-        self.header = read_float32_header(event_header_path)
-        self.plenoscope_geometry = PlenoscopeGeometry(self.header)
+        header_path = os.path.join(self._path, 'event_header.bin')
+        raw = read_float32_header(header_path)
+        assert_marker_of_header_is(raw, 'PEVT')
+        event_type = EventType(raw)   
+        self.plenoscope_geometry = PlenoscopeGeometry(raw)
+        self.type = event_type.type
+        self.trigger_type = event_type.trigger_type
 
-        # TYPE
-        assert self.header[  1-1] == str2float("PEVT")
-        if self.header[  2-1] == 0.0:
-            self.type = 'OBSERVATION'
-        elif self.header[  2-1] == 1.0:
-            self.type = 'SIMULATION'
-        else:
-            self.type = 'unknown: '+str(self.header[  2-1])
-
-        # TRIGGER TYPE
-        if self.header[  3-1] == 0.0:
-            self.trigger_type = 'SELF_TRIGGER'
-        elif self.header[  3-1] == 1.0:
-            self.trigger_type = 'EXTERNAL_RANDOM_TRIGGER'
-        elif self.header[  3-1] == 2.0:
-            self.trigger_type = 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'
-        else:
-            self.trigger_type = 'unknown: '+str(self.header[  3-1])
 
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
