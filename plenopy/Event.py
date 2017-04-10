@@ -127,6 +127,21 @@ class Event(object):
         out += "')\n"
         return out
 
+
+    def _plot_suptitle(self):
+        if self.type == "SIMULATION":
+            if self.trigger_type == "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH":
+                return self.simulation_truth.event.short_event_info()
+            elif self.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
+                return 'Extrenal random trigger, no air shower'
+            else:
+                return 'Simulation, but trigger type is unknown: '+str(self.trigger_type)
+        elif self.type == "OBSERVATION":
+            return 'Observation'
+        else:
+            return 'unknown event type: '+str(self.type)
+
+
     def plot(self):
         """
         This will open a plot showing:
@@ -142,17 +157,7 @@ class Event(object):
         4   The photo equivalent distribution accross all lixels
         """
         fig, axs = plt.subplots(2, 2)
-        if self.type == "SIMULATION":
-            if self.trigger_type == "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH":
-                plt.suptitle(self.simulation_truth.event.short_event_info())
-            elif self.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
-                plt.suptitle('Extrenal random trigger, no air shower')
-            else:
-                plt.suptitle('Simulation, but trigger type is unknown: '+str(self.trigger_type))
-        elif self.type == "OBSERVATION":
-            plt.suptitle('Observation')
-        else:
-            plt.suptitle('unknown event type: '+str(self.type))
+        plt.suptitle(self._plot_suptitle())
 
         pix_img_seq = self.light_field_sequence.pixel_sequence()
         t_m = time_slice_with_max_intensity(pix_img_seq)
