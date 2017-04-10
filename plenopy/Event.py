@@ -50,18 +50,16 @@ class Event(object):
                                     in the moment this event was recorded.
     """
 
-    def __init__(self, path, lixel_statistics):
+    def __init__(self, path, light_field_geometry):
         self._path = os.path.abspath(path)
         self._read_event_header()
 
         self.raw_light_field_sensor_response = RawLightFieldSensorResponse(
-            os.path.join(
-                self._path, 
-                'raw_light_field_sensor_response.phs'))
+            os.path.join(self._path, 'raw_light_field_sensor_response.phs'))
 
         self.light_field = LightField(
             self.raw_light_field_sensor_response,
-            lixel_statistics)
+            light_field_geometry)
 
         if self.type == 'SIMULATION':
             self._read_simulation_truth()

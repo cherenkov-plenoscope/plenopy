@@ -15,9 +15,9 @@ def test_open_run():
     assert run.path == run_path
 
     # A 'small' MAGIC 17m class ACP
-    assert run.lixel_statistics.number_lixel == 1039*19
-    assert run.lixel_statistics.number_pixel == 1039
-    assert run.lixel_statistics.number_paxel == 19
+    assert run.light_field_geometry.number_lixel == 1039*19
+    assert run.light_field_geometry.number_pixel == 1039
+    assert run.light_field_geometry.number_paxel == 19
 
 
 def test_open_event_in_run():

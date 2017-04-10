@@ -10,11 +10,11 @@ class Detector(object):
     The full simulation truth on the origin of the pulses in a read out channel
     of the light field sensor.
     """
-    def __init__(self, light_field_sequence, detector_pulse_origin_path):
+    def __init__(self, light_field, detector_pulse_origin_path):
         """
         Parameters
         ----------
-        light_field_sequence         
+        light_field
 
         detector_pulse_origin_path  The input path to the additional detector 
                                     pulse origin binary file.
@@ -24,9 +24,9 @@ class Detector(object):
         self.stream = []
 
         i = 0
-        for lixel in range(light_field_sequence.number_lixel):
+        for lixel in range(light_field.number_lixel):
             pulses_in_lixel = []
-            for pulse in range(light_field_sequence.sequence[:,lixel].sum()):
+            for pulse in range(light_field.sequence[:,lixel].sum()):
                 pulses_in_lixel.append(pulse_IDs[i])
                 i += 1
             self.stream.append(

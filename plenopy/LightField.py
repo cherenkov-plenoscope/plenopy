@@ -13,17 +13,18 @@ class LightField(object):
         """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
-        sequence        The light field sequence
+        sequence        A sequence of light fields
         """
         self.__doc__ += lixel_statistics.__doc__
 
-        self.number_time_slices = raw_light_field_sensor_response.number_time_slices
-        self.time_slice_duration = raw_light_field_sensor_response.time_slice_duration
+        raw = raw_light_field_sensor_response
+        self.number_time_slices = raw.number_time_slices
+        self.time_slice_duration = raw.time_slice_duration
     
         self.sequence = np.zeros(
             shape=(
-                raw_light_field_sensor_response.number_time_slices,
-                raw_light_field_sensor_response.number_lixel), 
+                raw.number_time_slices,
+                raw.number_lixel), 
             dtype=np.uint16)
 
 
@@ -31,9 +32,9 @@ class LightField(object):
         #print('time_delay_mean flags', time_delay_mean.flags)
 
         stream2sequence(
-            photon_stream=raw_light_field_sensor_response.photon_stream,
-            time_slice_duration=raw_light_field_sensor_response.time_slice_duration,
-            NEXT_READOUT_CHANNEL_MARKER=raw_light_field_sensor_response.NEXT_READOUT_CHANNEL_MARKER,
+            photon_stream=raw.photon_stream,
+            time_slice_duration=raw.time_slice_duration,
+            NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
             sequence=self.sequence,
             time_delay_mean=time_delay_mean)
 

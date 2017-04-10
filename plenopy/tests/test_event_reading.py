@@ -26,7 +26,7 @@ def test_read_photon_stream():
         shape=(raw.number_time_slices,raw.number_lixel), 
         dtype=np.uint16)
 
-    time_delay_mean = run.lixel_statistics.time_delay_mean.copy()
+    time_delay_mean = run.light_field_geometry.time_delay_mean.copy()
 
     pl.py_stream2sequence(
         photon_stream=raw.photon_stream,

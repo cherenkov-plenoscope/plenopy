@@ -7,10 +7,10 @@ import os
 
 
 def test_init():
-    lixel_statistics_path = pkg_resources.resource_filename(
+    light_field_geometry_path = pkg_resources.resource_filename(
         'plenopy', 
         'tests/resources/run.acp/input/plenoscope')
-    ls = pl.LixelStatistics(lixel_statistics_path)    
+    ls = pl.LightFieldGeometry(light_field_geometry_path)    
 
     # A 'small' MAGIC 17m class ACP
     number_pixel = 1039
@@ -44,13 +44,13 @@ def test_init():
 
 
 def test_plot():
-    lixel_statistics_path = pkg_resources.resource_filename(
+    light_field_geometry_path = pkg_resources.resource_filename(
         'plenopy', 
         'tests/resources/run.acp/input/plenoscope')
-    lixel_statistics = pl.LixelStatistics(lixel_statistics_path)
+    light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
-        ls_plot = pl.plot.lixel_statistics.PlotLixelStatistics.PlotLixelStatistics(lixel_statistics, tmp)
+        ls_plot = pl.plot.LightFieldGeometry.PlotLightFieldGeometry.PlotLightFieldGeometry(light_field_geometry, tmp)
         ls_plot.save()
 
         assert os.path.exists(os.path.join(tmp, 'cx_mean.png'))

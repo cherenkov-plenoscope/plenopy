@@ -1,4 +1,4 @@
-from . import lixel_statistics
+from . import LightFieldGeometry
 from . import Image
 from . import Refocus
 from . import Tomography

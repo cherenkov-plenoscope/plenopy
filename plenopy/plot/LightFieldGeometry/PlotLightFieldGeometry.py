@@ -4,7 +4,7 @@ import os
 from . import add2ax
 from multiprocessing import Process
 
-class PlotLixelStatistics(object):
+class PlotLightFieldGeometry(object):
 
     def __init__(self, lss, path):
         self.dpi = 300

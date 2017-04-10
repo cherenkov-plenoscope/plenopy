@@ -6,7 +6,7 @@ from .PlenoscopeGeometry import PlenoscopeGeometry
 from .HeaderRepresentation import assert_marker_of_header_is
 from .HeaderRepresentation import read_float32_header
 
-class LixelStatistics(object):
+class LightFieldGeometry(object):
     """
     number_lixel    The number count of light field cells (lixel)
                     This is also the number of read out channels.
@@ -232,7 +232,7 @@ class LixelStatistics(object):
         return mask
 
     def __repr__(self):
-        out = 'LixelStatistics( '
+        out = 'LightFieldGeometry( '
         out += str(self.number_lixel) + ' lixel = '
         out += str(self.number_pixel) + ' pixel x '
         out += str(self.number_paxel) + ' paxel)\n'

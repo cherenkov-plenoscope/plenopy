@@ -1,7 +1,7 @@
 import numpy as np
 import glob
 import os
-from .LixelStatistics import LixelStatistics
+from .LightFieldGeometry import LightFieldGeometry
 from .Event import Event
 from .tools.acp_format import all_folders_with_digit_names_in_path
 
@@ -28,7 +28,7 @@ class Run(object):
         self.path_input_plenoscope = os.path.join(
             self.path_input, 'plenoscope')
 
-        self.lixel_statistics = LixelStatistics(self.path_input_plenoscope)
+        self.light_field_geometry = LightFieldGeometry(self.path_input_plenoscope)
         self.event_numbers = self._event_numbers_in_run()
         self.number_events = self.event_numbers.shape[0]
 
@@ -49,7 +49,7 @@ class Run(object):
         except(IndexError):
             raise StopIteration
         event_path = os.path.join(self.path, str(event_number))
-        return Event(event_path, self.lixel_statistics)
+        return Event(event_path, self.light_field_geometry)
 
     def __repr__(self):
         out = 'Run('
