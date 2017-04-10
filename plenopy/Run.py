@@ -24,11 +24,11 @@ class Run(object):
         self.path = os.path.abspath(path)
         if not os.path.isdir(self.path):
             raise NotADirectoryError(self.path)
-        self.path_input = os.path.join(self.path, 'input')
-        self.path_input_plenoscope = os.path.join(
-            self.path_input, 'plenoscope')
+        self._path_input = os.path.join(self.path, 'input')
+        self._path_input_plenoscope = os.path.join(
+            self._path_input, 'plenoscope')
 
-        self.light_field_geometry = LightFieldGeometry(self.path_input_plenoscope)
+        self.light_field_geometry = LightFieldGeometry(self._path_input_plenoscope)
         self.event_numbers = self._event_numbers_in_run()
         self.number_events = self.event_numbers.shape[0]
 
