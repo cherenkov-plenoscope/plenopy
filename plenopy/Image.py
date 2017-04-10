@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from .plot import Image as plt_Image
+#from .plot.Image import add_pixel_image_to_ax
 
 
 class Image:
@@ -23,11 +23,7 @@ class Image:
 
     def plot(self):
         fig, ax = plt.subplots()
-        plt_Image.add2ax(
-            ax,
-            self.intensity,
-            self.pixel_pos_x,
-            self.pixel_pos_y)
+        add_pixel_image_to_ax(self)
         plt.show()
 
     def __repr__(self):

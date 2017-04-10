@@ -6,10 +6,11 @@ import os
 import tempfile
 import shutil
 from .ObjectDistanceRuler import add2ax_object_distance_ruler
-from .FigSize import FigSize
+from .FigureSize import FigureSize
 from .images2video import images2video
-from ..plot import Image as plt_Image
-
+from ..plot.Image import add_pixel_image_to_ax
+from ..ImageRays import ImageRays
+from ..Image import Image
 
 def save_refocus_stack(
     event, 
@@ -29,16 +30,23 @@ def save_refocus_stack(
         np.log10(obj_dist_max),
         steps)
 
-    images = [event.light_field.refocus(
-        object_distance) for object_distance in tqdm(object_distances)]
+    image_rays = ImageRays(event.light_field)
+
+    images = [Image(
+        event.light_field.pixel_sequence_refocus(
+            image_rays.pixel_ids_of_lixels_in_object_distance(object_distance)).sum(axis=0),
+        event.light_field.pixel_pos_cx,
+        event.light_field.pixel_pos_cy) for object_distance in tqdm(object_distances)]
+    
     intensities = [i.intensity for i in images]
+    
     if use_absolute_scale:
         vmin = np.array(intensities).min()
         vmax = np.array(intensities).max()
     else:
         vmin, vmax = None, None
 
-    fig_size = FigSize(dpi=200)
+    fig_size = FigureSize(dpi=200)
 
     fig = plt.figure(figsize=(fig_size.width, fig_size.hight))
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 6])
@@ -55,7 +63,7 @@ def save_refocus_stack(
             object_distance_max=obj_dist_max)
         
         ax_image.set_aspect('equal')
-        plt_Image.add_pixel_image_to_ax(images[i], ax_image, vmin=vmin, vmax=vmax)
+        add_pixel_image_to_ax(images[i], ax_image, vmin=vmin, vmax=vmax)
 
         plt.savefig(
             os.path.join(output_path, image_prefix+str(i).zfill(6)+'.jpg'),
