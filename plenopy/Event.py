@@ -18,9 +18,11 @@ from .plot import LightField as plt_LightFieldSequence
 
 class Event(object):
     """
-    number                      The event number in the run
+    Atmospheric Cherenkov Plenoscope (ACP) event.
 
-    type                        A string as type indicator
+    number                      The ID of this event in its run.
+
+    type                        Event type indicator (string)
                                 "simulation" in case this event was simulated
                                 "observation" in case this event was observed
 
@@ -32,10 +34,10 @@ class Event(object):
 
     simulation_truth            If type == "simulation"
                                 Additional 'true' information known from the 
-                                simulation itself 
+                                simulation itself.
 
-    raw_sensor_response     The raw light field sensor response
-                                        of the plenoscope
+    raw_sensor_response         The raw light field sensor response
+                                of the plenoscope.
 
     sensor_plane2imaging_system     The relative orientation and position of 
                                     the plenoscope's light field sensor with 
@@ -44,6 +46,15 @@ class Event(object):
     """
 
     def __init__(self, path, light_field_geometry):
+        """
+        Parameter
+        ---------
+        path                    The path of this event. Typically inside a Run 
+                                directory.
+
+        light_field_geometry    The light field geometry to calibrate the raw 
+                                sensor response of this event.
+        """
         self._path = os.path.abspath(path)
         self._read_event_header()
         raw_path = os.path.join(self._path, 'raw_light_field_sensor_response.phs')

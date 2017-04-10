@@ -13,7 +13,10 @@ class LightField(object):
         """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
-        sequence        A sequence of light fields
+    The 5 dimensional Light Field Sequence recorded by the 
+    Atmospheric Cherenkov Plenoscope (ACP).
+
+    sequence        A sequence of light fields.
         """
         self.__doc__ += lixel_statistics.__doc__
 

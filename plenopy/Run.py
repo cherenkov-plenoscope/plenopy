@@ -7,12 +7,17 @@ from .tools.acp_format import all_folders_with_digit_names_in_path
 
 class Run(object):
     """
-    A run of plenoscope events.
+    A run of Atmospheric Cherenkov Plenoscope (ACP) events.
 
-    number_events   The number count of all events in this run
+    number_events           The number count of all events in this run.
 
-    event_numbers   [number_events]
-                    All event numbers found in this run (in ascending order)
+    event_numbers           All event numbers found in this run 
+                            (in ascending order)
+
+    light_field_geometry    The Plenoscope (light field) geometry during this
+                            run.
+
+    path                    The path of this run.
     """
 
     def __init__(self, path):
@@ -37,7 +42,7 @@ class Run(object):
 
     def __getitem__(self, index):
         """
-        Returns the index-th event of the run.
+        Returns the index-th event of this run.
 
         Parameters
         ----------
@@ -53,6 +58,6 @@ class Run(object):
 
     def __repr__(self):
         out = 'Run('
-        out += "path='" + self.path + "', "
+        out += "'" + self.path + "', "
         out += str(self.number_events) + ' events)\n'
         return out

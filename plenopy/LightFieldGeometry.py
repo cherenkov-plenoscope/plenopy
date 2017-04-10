@@ -7,40 +7,34 @@ from .tools.HeaderRepresentation import read_float32_header
 
 class LightFieldGeometry(object):
     """
-    number_lixel    The number count of light field cells (lixel)
+    number_lixel    The number of light field cells (lixel)
                     This is also the number of read out channels.
-                    In this plenoscope design, each lixel is both
-                    participating to a picture cell (pixel) and 
-                    a principal aperture cell (paxel).
-                    number_lixel = number_pixel x number_paxel
 
-    number_pixel    The number of directional clusters forming
-                    the picture cells. Each pixel is composed of
-                    number_paxel paxel.
+    number_pixel    The number of directional bins forming the picture cells. 
+                    Each pixel is composed of number_paxel paxel.
 
-    number_paxel    The number of positional clusters forming 
-                    the principal aperture cells (paxel) on the 
-                    principal aperture plane
+    number_paxel    The number of positional bins forming the principal 
+                    aperture cells (paxel) on the principal aperture plane.
 
-    efficiency      [number_pixel x number_paxel]
-                    The average efficiency of a lixel cell. During 
-                    the calibration simulation, photons thrown
+    efficiency      [number_lixel]
+                    The average efficiency of a lixel. During 
+                    the calibration, photons are thrown
                     into the plenoscope. The photons are evenly 
                     spread over the aperture and the field of view.
                     The more photons reached the lixel sensor, the 
-                    higher is the efficiency. This takes losses into
+                    higher is its efficiency. This takes losses into
                     account except for the photo-electric sensor 
                     efficiency. [1]
 
     x_mean, x_std, 
-    y_mean, y_std   [number_pixel x number_paxel]
-                    The average x,y position and its spread of the spatial 
-                    lixel bin on the principal aperture plane. [m]
+    y_mean, y_std   [number_lixel]
+                    The average x,y position and its spread of positional bins 
+                    on the principal aperture plane. [m]
 
     cx_mean, cx_std, 
-    cy_mean, cy_std [number_pixel x number_paxel]
+    cy_mean, cy_std [number_lixel]
                     The average cos_x direction and its spread of the 
-                    directional lixel bin in the field of view [rad]
+                    directional bins in the field of view [rad]
 
                     The cx or cy is short for cos_x or cos_y. cx and cy are 
                     the x and y components of the normalized incomming 
@@ -49,15 +43,10 @@ class LightFieldGeometry(object):
                     vec{d} = (cx, cy, sqrt(1 - cx^2 - cy^2))
 
     time_delay_mean, 
-    time_delay_std  [number_pixel x number_paxel]
+    time_delay_std  [number_lixel]
                     The average arrival time delay and its spread for 
                     a photon to travel from the principal aperture 
                     plane to the lixel sensor. [s]
-
-    rays            The rays corresponding to all the lixels. Every lixel 
-                    defines a ray with its support x_mean, y_mean on the 
-                    principal aperture plane and its direction cx_mean, cy_mean 
-                    in the field of view.
 
     pixel_pos_cx, 
     pixel_pos_cy    [number_pixel]
