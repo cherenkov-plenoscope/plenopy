@@ -1,5 +1,5 @@
 import numpy as np
-from .. import HeaderRepresentation
+from ..tools import HeaderRepresentation
 
 class RunHeader(object):
     """

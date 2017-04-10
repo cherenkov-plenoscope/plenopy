@@ -1,5 +1,5 @@
 import numpy as np
-from .. import HeaderRepresentation
+from ..tools import HeaderRepresentation
 
 def event_header_repr(h):
     HeaderRepresentation.assert_shape_is_valid(h)

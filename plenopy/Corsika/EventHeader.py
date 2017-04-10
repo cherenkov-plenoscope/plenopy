@@ -1,5 +1,5 @@
 import numpy as np
-from .. import HeaderRepresentation
+from ..tools import HeaderRepresentation
 from .primary_particle_id2str import primary_particle_id2str
 
 class EventHeader(object):
