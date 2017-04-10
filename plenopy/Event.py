@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from .PlenoscopeGeometry import PlenoscopeGeometry
 from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
-from .LightFieldSequence import LightFieldSequence
+from .LightField import LightField
 from .HeaderRepresentation import str2float
 from .HeaderRepresentation import read_float32_header
 from .Image import Image
@@ -59,7 +59,7 @@ class Event(object):
                 self._path, 
                 'raw_light_field_sensor_response.phs'))
 
-        self.light_field_sequence = LightFieldSequence(
+        self.light_field = LightField(
             self.raw_light_field_sensor_response,
             lixel_statistics)
 
@@ -108,7 +108,7 @@ class Event(object):
 
             try:
                 simulation_truth_detector = SimulationTruth.Detector(
-                    self.light_field_sequence,
+                    self.light_field,
                     os.path.join(sim_truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
@@ -158,35 +158,33 @@ class Event(object):
         fig, axs = plt.subplots(2, 2)
         plt.suptitle(self._plot_suptitle())
 
-        pix_img_seq = self.light_field_sequence.pixel_sequence()
+        pix_img_seq = self.light_field.pixel_sequence()
         t_m = time_slice_with_max_intensity(pix_img_seq)
         ts = np.max([t_m-1, 0])
         te = np.min([t_m+1, pix_img_seq.shape[0]-1])
         pixel_image = Image(
             pix_img_seq[ts:te].sum(axis=0),
-            self.light_field_sequence.pixel_pos_cx,
-            self.light_field_sequence.pixel_pos_cy)
+            self.light_field.pixel_pos_cx,
+            self.light_field.pixel_pos_cy)
 
         axs[0][0].set_title('directional image')
         plt_Image.add_pixel_image_to_ax(pixel_image, axs[0][0])
 
-        pax_img_seq = self.light_field_sequence.paxel_sequence()
+        pax_img_seq = self.light_field.paxel_sequence()
         t_m = time_slice_with_max_intensity(pax_img_seq)
         ts = np.max([t_m-1, 0])
         te = np.min([t_m+1, pax_img_seq.shape[0]-1])
         paxel_image = Image(
             pax_img_seq[ts:te].sum(axis=0),
-            self.light_field_sequence.paxel_pos_x,
-            self.light_field_sequence.paxel_pos_y)
+            self.light_field.paxel_pos_x,
+            self.light_field.paxel_pos_y)
 
         axs[0][1].set_title('principal aperture plane')
         plt_Image.add_paxel_image_to_ax(paxel_image, axs[0][1])
 
-        plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field_sequence, axs[1][0])
+        plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field, axs[1][0])
 
-        plt_LightFieldSequence.add2ax_hist_intensity(
-            self.light_field_sequence,
-            axs[1][1])
+        plt_LightFieldSequence.add2ax_hist_intensity(self.light_field, axs[1][1])
         #raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
         #eff_corrected_intensity_patch = mpatches.Patch(
         #    color='green', label='efficiency corrected')

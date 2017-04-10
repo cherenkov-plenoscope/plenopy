@@ -2,7 +2,7 @@ from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LixelStatistics import LixelStatistics
 from .LixelRays import LixelRays
 from .ImageRays import ImageRays
-from .LightFieldSequence import LightFieldSequence
+from .LightField import LightField
 from .Event import Event
 from .Run import Run
 from .Image import Image

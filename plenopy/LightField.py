@@ -1,12 +1,9 @@
 import numpy as np
 from .cython_tools import stream2sequence
 
-class LightFieldSequence(object):
+class LightField(object):
 
-    def __init__(
-        self, 
-        raw_light_field_sensor_response, 
-        lixel_statistics):
+    def __init__(self, raw_light_field_sensor_response, lixel_statistics):
         """
         Parameters
         ----------
