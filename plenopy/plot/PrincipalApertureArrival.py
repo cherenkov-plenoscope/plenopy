@@ -7,16 +7,7 @@ import mpl_toolkits.mplot3d.art3d as art3d
 import os
 import tempfile
 import subprocess
-
-
-class FigureSize():
-
-    def __init__(self, cols, rows, dpi):
-        self.cols = cols
-        self.rows = rows
-        self.dpi = dpi
-        self.hight = self.rows / self.dpi
-        self.width = self.cols / self.dpi
+from .FigureSize import FigureSize
 
 
 def save_principal_aperture_arrival_stack(lf, path, steps=7, threshold=100):
@@ -25,7 +16,7 @@ def save_principal_aperture_arrival_stack(lf, path, steps=7, threshold=100):
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
 
-    fsz = FigureSize(1920, 1080, dpi=240)
+    fsz = FigureSize(16, 9, pixel_rows=1080, dpi=240)
     fig = plt.figure(figsize=(fsz.width, fsz.hight))
     ax = fig.gca(projection='3d')
 
