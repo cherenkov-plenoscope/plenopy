@@ -170,11 +170,6 @@ class Event(object):
         plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field, axs[1][0])
 
         plt_LightFieldSequence.add2ax_hist_intensity(self.light_field, axs[1][1])
-        #raw_intensity_patch = mpatches.Patch(color='blue', label='raw')
-        #eff_corrected_intensity_patch = mpatches.Patch(
-        #    color='green', label='efficiency corrected')
-        #axs[1][1].legend(handles=[raw_intensity_patch,
-        #                          eff_corrected_intensity_patch])
         plt.show()
 
 
