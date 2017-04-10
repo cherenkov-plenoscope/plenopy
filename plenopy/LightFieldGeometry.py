@@ -3,8 +3,8 @@ import scipy.spatial
 import os
 from .LixelRays import LixelRays
 from .PlenoscopeGeometry import PlenoscopeGeometry
-from .HeaderRepresentation import assert_marker_of_header_is
-from .HeaderRepresentation import read_float32_header
+from .tools.HeaderRepresentation import assert_marker_of_header_is
+from .tools.HeaderRepresentation import read_float32_header
 
 class LightFieldGeometry(object):
     """
@@ -232,8 +232,8 @@ class LightFieldGeometry(object):
         return mask
 
     def __repr__(self):
-        out = 'LightFieldGeometry( '
-        out += str(self.number_lixel) + ' lixel = '
-        out += str(self.number_pixel) + ' pixel x '
+        out = 'LightFieldGeometry('
+        out += str(self.number_lixel) + ' lixel, '
+        out += str(self.number_pixel) + ' pixel, '
         out += str(self.number_paxel) + ' paxel)\n'
         return out
