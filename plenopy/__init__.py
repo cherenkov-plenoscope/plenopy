@@ -1,6 +1,5 @@
 from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LightFieldGeometry import LightFieldGeometry
-from .LixelRays import LixelRays
 from .ImageRays import ImageRays
 from .LightField import LightField
 from .EventType import EventType

@@ -3,7 +3,7 @@ from .filtered_back_projection import histogram
 from .filtered_back_projection import normalize_ray_histograms 
 from .filtered_back_projection import ramp_kernel_in_frequency_space 
 from .filtered_back_projection import frequency_filter 
-from ..LixelRays import LixelRays 
+from .Rays import Rays 
 
 class AirShowerReconstruction(object):
     """
@@ -88,7 +88,7 @@ class AirShowerReconstruction(object):
         #valid_arrival_time = (event.light_field.arrival_time.flatten() > 30e-9)*(event.light_field.arrival_time.flatten() < 40e-9)
         #valid = valid_geom*valid_intensity*valid_arrival_time
 
-        rays = LixelRays(
+        rays = Rays(
             x=event.light_field.x_mean.flatten()[valid_lixels],
             y=event.light_field.y_mean.flatten()[valid_lixels],
             cx=event.light_field.cx_mean.flatten()[valid_lixels], 
@@ -100,7 +100,7 @@ class AirShowerReconstruction(object):
 
     @classmethod
     def from_idealized_plenoscope_event(cls, event, valid_photons, binning):
-        rays = LixelRays(
+        rays = Rays(
             x=event.air_shower_photons.x[valid_photons],
             y=event.air_shower_photons.y[valid_photons], 
             cx=event.air_shower_photons.cx[valid_photons], 

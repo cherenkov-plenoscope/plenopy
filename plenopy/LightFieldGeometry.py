@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.spatial
 import os
-from .LixelRays import LixelRays
 from .PlenoscopeGeometry import PlenoscopeGeometry
 from .tools.HeaderRepresentation import assert_marker_of_header_is
 from .tools.HeaderRepresentation import read_float32_header
@@ -117,7 +116,6 @@ class LightFieldGeometry(object):
 
         self._calc_pixel_and_paxel_average_positions()
         self._init_lixel_polygons()
-        self._init_lixel_rays()
 
         #self.valid_efficiency = self.efficiency > 0.10
         self.valid_efficiency = self.most_efficient_lixels(0.95)
@@ -166,8 +164,10 @@ class LightFieldGeometry(object):
             setattr(self, attribute_name, ls[:, i])
 
     def _read_light_field_sensor_geometry_header(self, path):
-        gh = np.fromfile(path, dtype=np.float32)
+        gh = read_float32_header(path)
         assert_marker_of_header_is(gh, 'PLGH')
+        self.sensor_plane2imaging_system = PlenoscopeGeometry(gh)
+
         self.number_pixel = int(gh[101 - 1])
         self.number_paxel = int(gh[102 - 1])
         self.number_lixel = self.number_pixel * self.number_paxel
@@ -178,7 +178,6 @@ class LightFieldGeometry(object):
         self.expected_focal_length_of_imaging_system = gh[23 - 1]
         self.expected_aperture_radius_of_imaging_system = gh[24 - 1]
 
-        self.sensor_plane2imaging_system = PlenoscopeGeometry(read_float32_header(path))
 
     def _read_lixel_positions(self, path):
         lp = np.fromfile(path, dtype=np.float32)
@@ -205,13 +204,6 @@ class LightFieldGeometry(object):
         ])
 
         self.lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
-
-    def _init_lixel_rays(self):
-        self.rays = LixelRays(
-            x=self.x_mean,
-            y=self.y_mean,
-            cx=self.cx_mean,
-            cy=self.cy_mean)
 
     def most_efficient_lixels(self, fraction):
         """

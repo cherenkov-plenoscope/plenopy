@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class LixelRays(object):
+class Rays(object):
     """
     support     [number_lixel x 3]
                 Support vectors of all the lixel rays on the principal aperture
@@ -33,7 +33,7 @@ class LixelRays(object):
         return pos3D[:, 0:2]
 
     def __repr__(self):
-        out = 'LixelRays('
+        out = 'Rays('
         out += str(self.support.shape[0]) + ' lixels'
         out += ')\n'
         return out
