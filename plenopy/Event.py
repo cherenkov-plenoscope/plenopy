@@ -28,19 +28,11 @@ class Event(object):
 
     light_field                 The light field recorded by the plenoscope.
                                 Created using the raw light field sensor  
-                                response and the lixel statistics appropriate 
-                                for the given sensor plane 2 imaging system 
-                                orientation and position of this event.
+                                response and the light field geometry.
 
-    simulation_truth_air_shower If type == "simulation"
+    simulation_truth            If type == "simulation"
                                 Additional 'true' information known from the 
                                 simulation itself 
-
-    simulation_truth_detector   Optional, additional information about the 
-                                electric pulse composition. Tells which air
-                                shower photons contributed to which pulse and
-                                if electric cross talk, after pulses or dark 
-                                noise pulses are present
 
     raw_light_field_sensor_response     The raw light field sensor response
                                         of the plenoscope
@@ -72,7 +64,7 @@ class Event(object):
         raw = read_float32_header(header_path)
         assert_marker_of_header_is(raw, 'PEVT')
         event_type = EventType(raw)   
-        self.plenoscope_geometry = PlenoscopeGeometry(raw)
+        self.sensor_plane2imaging_system = PlenoscopeGeometry(raw)
         self.type = event_type.type
         self.trigger_type = event_type.trigger_type
 
@@ -128,7 +120,7 @@ class Event(object):
 
     def plot(self):
         """
-        This will open a plot showing:
+        A plot figure:
 
         1   Directional intensity distribution accross the field of view
             (the classical IACT image)
@@ -170,8 +162,6 @@ class Event(object):
         plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field, axs[1][0])
 
         plt_LightFieldSequence.add2ax_hist_intensity(self.light_field, axs[1][1])
-        plt.show()
-
 
 
 def time_slice_with_max_intensity(sequence):
