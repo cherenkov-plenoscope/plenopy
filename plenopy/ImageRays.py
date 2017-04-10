@@ -12,34 +12,43 @@ class ImageRays(object):
                 imaging system.
     """
 
-    def __init__(self, light_field):
+    def __init__(self, lixel_statistics):
+        """
+        Parameters
+        ----------
+
+        lixel_statistics
+        """
 
         # All in principal aperture frame
-        x = light_field.x_mean.flatten()
-        y = light_field.y_mean.flatten()
+        x = lixel_statistics.x_mean
+        y = lixel_statistics.y_mean
 
-        cx = light_field.cx_mean.flatten()
-        cy = light_field.cy_mean.flatten()
+        cx = lixel_statistics.cx_mean
+        cy = lixel_statistics.cy_mean
 
-        self._f = light_field.expected_focal_length_of_imaging_system
-        bs = light_field.sensor_plane2imaging_system.sensor_plane_distance
-
-        number_lixel = x.shape[0]
+        self._f = lixel_statistics.expected_focal_length_of_imaging_system
+        bs = lixel_statistics.sensor_plane2imaging_system.sensor_plane_distance
 
         # 3d intersection with image sensor plane
-        img = np.array([
+        sensor_plane_intersections = np.array([
             bs*np.tan(cx), 
             bs*np.tan(cy), 
-            bs*np.ones(number_lixel)]).T
+            bs*np.ones(lixel_statistics.number_lixel)]).T
 
-        self.support = np.array([x, y, np.zeros(number_lixel)]).T
+        self.support = np.array([
+            x, 
+            y, 
+            np.zeros(lixel_statistics.number_lixel)]).T
         
-        self.direction = img - self.support
+        self.direction = sensor_plane_intersections - self.support
         no = np.linalg.norm(self.direction, axis=1)
         self.direction[:,0] /= no
         self.direction[:,1] /= no
         self.direction[:,2] /= no
 
+
+        self.pixel_pos_tree = lixel_statistics.pixel_pos_tree
 
     def cx_cy_in_object_distance(self, object_distance):
         """
@@ -61,6 +70,19 @@ class ImageRays(object):
         cx = np.arctan(ix/image_distance)
         cy = np.arctan(iy/image_distance)
         return cx, cy
+
+
+    def pixel_ids_of_lixels_in_object_distance(self, object_distance):
+        cx, cy = self.cx_cy_in_object_distance(object_distance)
+        cxy = np.vstack((cx,cy)).T
+
+        number_nearest_neighbors = 1
+
+        distances, pixel_indicies = self.pixel_pos_tree.query(
+            x=cxy, 
+            k=number_nearest_neighbors)
+
+        return pixel_indicies
 
     def __repr__(self):
         out = 'ImageRays('
