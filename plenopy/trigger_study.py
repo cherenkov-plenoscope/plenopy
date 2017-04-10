@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import gzip, json
-from . import ImageRays
 
 
 def write_dict_to_file(dictionary, path):
