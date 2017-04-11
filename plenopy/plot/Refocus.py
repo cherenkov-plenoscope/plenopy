@@ -6,7 +6,7 @@ import os
 import tempfile
 import shutil
 from .ObjectDistanceRuler import add2ax_object_distance_ruler
-from .FigureSize import FigureSize
+from ..tools import FigureSize
 from .images2video import images2video
 from ..image import Image
 from ..ImageRays import ImageRays

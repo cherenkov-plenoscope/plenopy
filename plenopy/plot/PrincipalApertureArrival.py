@@ -7,7 +7,7 @@ import mpl_toolkits.mplot3d.art3d as art3d
 import os
 import tempfile
 import subprocess
-from .FigureSize import FigureSize
+from ..tools import FigureSize
 
 
 def save_principal_aperture_arrival_stack(lf, path, steps=7, threshold=100):
