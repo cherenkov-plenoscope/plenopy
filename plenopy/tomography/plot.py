@@ -4,6 +4,22 @@ from mpl_toolkits.mplot3d import Axes3D
 import mpl_toolkits.mplot3d.art3d as art3d
 
 def flatten(hist, binning, threshold=0):
+    """
+    Returns a flat array of x,y,z positions and intensities for each voxel in
+    the 3D histogram.
+
+    Parameters
+    ----------
+    hist            A 3D intensity histogram with the shape specified in the 
+                    binning parameter.
+
+    binning         The 3D volume binning used to create the 3D intensity 
+                    histogram.
+
+
+    threshold       Voxels in the 3D intensity histogram below this threshold 
+                    are neglected.
+    """
     xyzi = []
     for x in range(hist.shape[0]):
         for y in range(hist.shape[1]):
@@ -19,6 +35,18 @@ def flatten(hist, binning, threshold=0):
 
 
 def plot(xyzIs, xyzIs2=None, alpha=0.01):
+    """
+    Plot a 3D intensity distribution. Can plot two distributions at the same 
+    time using blue and red color.
+
+    Parameters
+    ----------
+
+    xyzIs           An array of x,y,z positions and Intensities.
+
+    xyzIs2          A second (optional) array of x,y,z positions and Intensities
+                    to be plotted in red color.
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -42,6 +70,4 @@ def plot(xyzIs, xyzIs2=None, alpha=0.01):
             c='r',
             depthshade=False,
             alpha=alpha,
-            lw=0)        
-
-    plt.show()
+            lw=0)
