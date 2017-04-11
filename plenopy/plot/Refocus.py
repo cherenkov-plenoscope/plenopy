@@ -32,12 +32,21 @@ def save_refocus_stack(
 
     image_rays = ImageRays(event.light_field)
 
-    images = [Image(
-        event.light_field.pixel_sequence_refocus(
-            image_rays.pixel_ids_of_lixels_in_object_distance(object_distance)).sum(axis=0),
-        event.light_field.pixel_pos_cx,
-        event.light_field.pixel_pos_cy) for object_distance in tqdm(object_distances)]
-    
+    images = []
+
+    for object_distance in tqdm(object_distances):
+
+        lisel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
+            object_distance)
+
+        raw_img = event.light_field.pixel_sequence_refocus(lisel2pixel).sum(axis=0)
+
+        img = Image(
+            raw_img, 
+            event.light_field.pixel_pos_cx,
+            event.light_field.pixel_pos_cy)
+        images.append(img)
+
     intensities = [i.intensity for i in images]
     
     if use_absolute_scale:
