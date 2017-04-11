@@ -19,6 +19,8 @@ def test_open_run():
     assert run.light_field_geometry.number_pixel == 1039
     assert run.light_field_geometry.number_paxel == 19
 
+    assert len(run) == 32
+
 
 def test_open_event_in_run():
     run_path = pkg_resources.resource_filename(

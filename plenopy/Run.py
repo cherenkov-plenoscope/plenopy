@@ -56,6 +56,9 @@ class Run(object):
         event_path = os.path.join(self.path, str(event_number))
         return Event(event_path, self.light_field_geometry)
 
+    def __len__(self):
+        return self.number_events
+
     def __repr__(self):
         out = 'Run('
         out += "'" + self.path + "', "
