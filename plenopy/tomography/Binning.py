@@ -94,6 +94,9 @@ class Binning(object):
 
 
     def flat_xyz_voxel_positions(self):
+        """
+        Returns a flat array of the voxel's center positions.
+        """
         x_flat = self.xy_bin_centers.repeat(
             self.number_z_bins*self.number_xy_bins)
         y_flat = np.repeat(
@@ -121,6 +124,7 @@ class Binning(object):
         out += str(self.total_volume/1e9)+'km^3 from '
         out += 'z_min='+str(self.z_min)+'m to z_max='+str(self.z_max)+'m and '
         out += 'xy_diameter='+str(self.xy_diameter)+'m in '
-        out += str(self.number_xy_bins)+' x '+str(self.number_xy_bins)+' x '+str(self.number_z_bins)+' bins'
+        out += str(self.number_xy_bins)+' x '
+        out += str(self.number_xy_bins)+' x '+str(self.number_z_bins)+' bins'
         out += ' )\n'
         return out
