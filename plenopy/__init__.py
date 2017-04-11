@@ -11,4 +11,4 @@ from . import simulation_truth
 from . import tomography
 from . import tools
 from . import photon_stream
-from .trigger_study import *
+from . import trigger_study
