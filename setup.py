@@ -15,7 +15,7 @@ setup(
     packages=[
         'plenopy',
         'plenopy.plot',
-        'plenopy.plot.lixel_statistics',
+        'plenopy.plot.LightFieldGeometry',
         'plenopy.main',
     ],
     install_requires=[
