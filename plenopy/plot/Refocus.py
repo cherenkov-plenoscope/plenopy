@@ -9,7 +9,7 @@ from .ObjectDistanceRuler import add2ax_object_distance_ruler
 from ..tools import FigureSize
 from .images2video import images2video
 from ..image import Image
-from ..ImageRays import ImageRays
+from ..image import ImageRays
 from ..image.plot import add_pixel_image_to_ax
 
 def save_refocus_stack(
