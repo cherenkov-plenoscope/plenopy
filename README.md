@@ -1,5 +1,7 @@
 # plenopy
-analysis for the Atmospheric Cherenkov Plenoscope (ACP) cosmic gamma ray detector.
+Read, plot, and investigate the recorded events of the Atmospheric Cherenkov Plenoscope (ACP). Penopy reads the ACP events written by the mctracer ACP simulation.
 
-### This will blow your mind...
-if you are used to Imaging Atmospheric Cherenkov Telescopes (IACT)s.
+# install 
+```bash
+pip install git+https://github.com/TheBigLebowSky/plenopy/
+```
