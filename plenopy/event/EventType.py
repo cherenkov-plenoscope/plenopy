@@ -1,4 +1,4 @@
-from .tools import HeaderRepresentation
+from ..tools import HeaderRepresentation
 
 class EventType(object):
     """

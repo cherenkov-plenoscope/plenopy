@@ -3,18 +3,18 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from .PlenoscopeGeometry import PlenoscopeGeometry
+from ..PlenoscopeGeometry import PlenoscopeGeometry
 from .EventType import EventType
-from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
-from .LightField import LightField
-from .tools.HeaderRepresentation import assert_marker_of_header_is
-from .tools.HeaderRepresentation import read_float32_header
-from .image.Image import Image
-from .image.plot import add_paxel_image_to_ax
-from .image.plot import add_pixel_image_to_ax
-from . import Corsika
-from . import SimulationTruth
-from .plot import LightField as plt_LightFieldSequence
+from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
+from ..LightField import LightField
+from ..tools.HeaderRepresentation import assert_marker_of_header_is
+from ..tools.HeaderRepresentation import read_float32_header
+from ..image.Image import Image
+from ..image.plot import add_paxel_image_to_ax
+from ..image.plot import add_pixel_image_to_ax
+from .. import Corsika
+from .. import SimulationTruth
+from ..plot import LightField as plt_LightFieldSequence
 
 
 class Event(object):

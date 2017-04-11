@@ -2,8 +2,7 @@ from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LightFieldGeometry import LightFieldGeometry
 from .ImageRays import ImageRays
 from .LightField import LightField
-from .EventType import EventType
-from .Event import Event
+from .event.Event import Event
 from .Run import Run
 from .image.Image import Image
 from . import plot

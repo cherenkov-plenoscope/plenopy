@@ -2,7 +2,7 @@ import numpy as np
 import glob
 import os
 from .LightFieldGeometry import LightFieldGeometry
-from .Event import Event
+from .event.Event import Event
 from .tools.acp_format import all_folders_with_digit_names_in_path
 
 class Run(object):
