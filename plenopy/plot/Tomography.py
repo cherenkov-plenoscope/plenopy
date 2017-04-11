@@ -200,6 +200,18 @@ def add2ax_flat(ax, xyzIs, color='b', alpha_max=1.0, steps=32, ball_size=50.0):
 
 
 def plot_flat(xyzIs, xyzIs2=None, alpha_max=1.0, ball_size=25, steps=32):
+    """
+    Plot a 3D intensity distribution. Can plot two distributions at the same 
+    time using blue and red color.
+
+    Parameters
+    ----------
+
+    xyzIs           An array of x,y,z positions and Intensities.
+
+    xyzIs2          A second (optional) array of x,y,z positions and Intensities
+                    to be plotted in red color.
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
