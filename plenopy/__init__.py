@@ -5,7 +5,7 @@ from .LightField import LightField
 from .EventType import EventType
 from .Event import Event
 from .Run import Run
-from .Image import Image
+from .image.Image import Image
 from . import plot
 from . import IdealizedPlenoscope
 from . import Corsika

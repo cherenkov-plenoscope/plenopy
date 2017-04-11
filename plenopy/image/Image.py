@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-#from .plot.Image import add_pixel_image_to_ax
+from .plot import add_pixel_image_to_ax
 
 
 class Image:

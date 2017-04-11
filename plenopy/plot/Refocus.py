@@ -8,9 +8,9 @@ import shutil
 from .ObjectDistanceRuler import add2ax_object_distance_ruler
 from .FigureSize import FigureSize
 from .images2video import images2video
-from ..plot.Image import add_pixel_image_to_ax
+from ..image import Image
 from ..ImageRays import ImageRays
-from ..Image import Image
+from ..image.plot import add_pixel_image_to_ax
 
 def save_refocus_stack(
     event, 

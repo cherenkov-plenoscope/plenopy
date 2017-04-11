@@ -9,8 +9,8 @@ from .RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from .LightField import LightField
 from .tools.HeaderRepresentation import assert_marker_of_header_is
 from .tools.HeaderRepresentation import read_float32_header
-from .Image import Image
-from .plot import Image as plt_Image
+from .image.Image import Image
+from .plot import plot_image
 from . import Corsika
 from . import SimulationTruth
 from .plot import LightField as plt_LightFieldSequence
@@ -152,7 +152,7 @@ class Event(object):
             self.light_field.pixel_pos_cy)
 
         axs[0][0].set_title('directional image')
-        plt_Image.add_pixel_image_to_ax(pixel_image, axs[0][0])
+        plot_image.add_pixel_image_to_ax(pixel_image, axs[0][0])
 
         pax_img_seq = self.light_field.paxel_sequence()
         t_m = time_slice_with_max_intensity(pax_img_seq)
@@ -164,7 +164,7 @@ class Event(object):
             self.light_field.paxel_pos_y)
 
         axs[0][1].set_title('principal aperture plane')
-        plt_Image.add_paxel_image_to_ax(paxel_image, axs[0][1])
+        plot_image.add_paxel_image_to_ax(paxel_image, axs[0][1])
 
         plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field, axs[1][0])
 
