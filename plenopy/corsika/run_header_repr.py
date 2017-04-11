@@ -2,6 +2,14 @@ import numpy as np
 from ..tools import HeaderRepresentation
 
 def run_header_repr(h):
+    """
+    Returns a human readable string to represent the CORSIKA hun header.
+
+    Parameters
+    ----------
+
+    h           The raw CORSIKA run header float32 array.
+    """
     HeaderRepresentation.assert_shape_is_valid(h)
     HeaderRepresentation.assert_marker_of_header_is(h, 'RUNH')
 

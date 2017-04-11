@@ -2,6 +2,14 @@ import numpy as np
 from ..tools import HeaderRepresentation
 
 def event_header_repr(h):
+    """
+    Returns a human readable string to represent the CORSIKA event header.
+
+    Parameters
+    ----------
+
+    h           The raw CORSIKA event header float32 array.
+    """
     HeaderRepresentation.assert_shape_is_valid(h)
     HeaderRepresentation.assert_marker_of_header_is(h, 'EVTH')
 
