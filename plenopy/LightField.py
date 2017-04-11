@@ -79,6 +79,7 @@ class LightField(object):
         out = 'LightField('
         out += str(self.number_lixel) + ' lixel, '
         out += str(self.number_pixel) + ' pixel, '
-        out += str(self.number_paxel) + ' paxel'
+        out += str(self.number_paxel) + ' paxel, '
+        out += str(self.number_time_slices) + ' time slices'
         out += ')\n'
         return out
