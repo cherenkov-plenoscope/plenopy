@@ -9,7 +9,7 @@ from . import plot
 from . import IdealizedPlenoscope
 from . import Corsika
 from . import SimulationTruth
-from . import Tomography
+from . import tomography
 from . import tools
 from . import photon_stream
 from .trigger_study import *
