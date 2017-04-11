@@ -28,7 +28,7 @@ def test_read_photon_stream():
 
     time_delay_mean = run.light_field_geometry.time_delay_mean.copy()
 
-    pl.py_stream2sequence(
+    pl.photon_stream.py_stream2sequence(
         photon_stream=raw.photon_stream,
         time_slice_duration=raw.time_slice_duration,
         NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,

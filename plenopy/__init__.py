@@ -12,5 +12,5 @@ from . import Corsika
 from . import SimulationTruth
 from . import Tomography
 from . import tools
+from . import photon_stream
 from .trigger_study import *
-from .photon_stream_reader import py_stream2sequence
