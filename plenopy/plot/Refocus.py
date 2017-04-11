@@ -5,7 +5,7 @@ from tqdm import tqdm
 import os
 import tempfile
 import shutil
-from .ObjectDistanceRuler import add2ax_object_distance_ruler
+from ..tools import add2ax_object_distance_ruler
 from ..tools import FigureSize
 from .images2video import images2video
 from ..image import Image
