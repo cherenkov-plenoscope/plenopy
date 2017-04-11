@@ -35,7 +35,7 @@ def test_read_photon_stream():
         sequence=sequence_from_pure_python,
         time_delay_mean=time_delay_mean)
 
-    pl.cython_tools.stream2sequence(
+    pl.photon_stream.cython_reader.stream2sequence(
         photon_stream=raw.photon_stream,
         time_slice_duration=raw.time_slice_duration,
         NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
