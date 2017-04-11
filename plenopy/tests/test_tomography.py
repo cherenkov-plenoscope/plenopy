@@ -3,7 +3,7 @@ import numpy as np
 import plenopy as plp
 
 def test_binning_flat_voxel_center_positions():
-    binning = plp.Tomography.Binning(
+    binning = plp.tomography.Binning(
         z_min=0.0,
         z_max=1e3,
         number_z_bins=101,

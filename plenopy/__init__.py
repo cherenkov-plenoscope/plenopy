@@ -8,7 +8,7 @@ from .image.Image import Image
 from . import plot
 from . import IdealizedPlenoscope
 from . import Corsika
-from . import SimulationTruth
+from . import simulation_truth
 from . import tomography
 from . import tools
 from . import photon_stream

@@ -13,7 +13,7 @@ from ..image.Image import Image
 from ..image.plot import add_paxel_image_to_ax
 from ..image.plot import add_pixel_image_to_ax
 from .. import Corsika
-from .. import SimulationTruth
+from .. import simulation_truth
 from ..plot import LightField as plt_LightFieldSequence
 
 
@@ -83,7 +83,7 @@ class Event(object):
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
             evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
             runh = Corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
-            simulation_truth_event = SimulationTruth.Event(evth=evth, runh=runh)
+            simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
             try:
                 simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
@@ -92,13 +92,13 @@ class Event(object):
                 simulation_truth_air_shower_photon_bunches = None         
 
             try:
-                simulation_truth_detector = SimulationTruth.Detector(
+                simulation_truth_detector = simulation_truth.Detector(
                     self.light_field,
                     os.path.join(sim_truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
 
-            self.simulation_truth = SimulationTruth.SimulationTruth(
+            self.simulation_truth = simulation_truth.SimulationTruth(
                 event=simulation_truth_event,
                 air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
                 detector=simulation_truth_detector)

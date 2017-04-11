@@ -3,7 +3,7 @@ import os
 from .. import Corsika
 from .LightField import LightField
 from .IdealizedPlenoscopeSimulationTruthDetector import IdealizedPlenoscopeSimulationTruthDetector
-from .. import SimulationTruth
+from .. import simulation_truth
 import matplotlib.pyplot as plt
 
 class Event(object):
@@ -30,7 +30,7 @@ class Event(object):
         evth = Corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
         runh = Corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
         
-        simulation_truth_event = SimulationTruth.Event(evth=evth, runh=runh)
+        simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
         simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
                      os.path.join(self.path, 'air_shower_photon_bunches.bin'))
@@ -41,7 +41,7 @@ class Event(object):
         simulation_truth_detector = IdealizedPlenoscopeSimulationTruthDetector(
             self.light_field._ids)
 
-        self.simulation_truth = SimulationTruth.SimulationTruth(                
+        self.simulation_truth = simulation_truth.SimulationTruth(                
             event=simulation_truth_event,
             air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
             detector=simulation_truth_detector)
