@@ -1,14 +1,14 @@
 '''
 Save plots of a plenoscope light field calibration. 
-When the OUTPUT_PATH is not set, a plot folder is created in the input
+When the output_dir is not set, a plot folder is created in the input
 calibration folder.
 
 Usage:
-    LixelStatisticsPlot -i=INPUT_PATH [-o=OUTPUT_PATH]
+    LixelStatisticsPlot -i=INPUT_PATH [-o=OUTPUT_DIR]
 
 Options:
-    -o --output=OUTPUT_PATH     path to save the plots
-    -i --input=INPUT_PATH       path to plenoscope calibration
+    -o --output=OUTPUT_DIR     path to save the plots
+    -i --input=INPUT_PATH      path to plenoscope calibration
 '''
 from __future__ import absolute_import, print_function, division
 import docopt as do
@@ -21,13 +21,15 @@ from ..light_field_geometry import PlotLightFieldGeometry
 def main():
     try:
         arguments = do.docopt(__doc__)
-        output_path = arguments['--output']
-        if output_path is None:
-            output_path = os.path.join(arguments['--input'], 'plots')
-            os.mkdir(output_path)
+        output_dir = arguments['--output']
+        if output_dir is None:
+            output_dir = os.path.join(arguments['--input'], 'plots')
+            os.mkdir(output_dir)
 
         lfg = LightFieldGeometry(path=arguments['--input'])
-        lfg_plotter = PlotLightFieldGeometry(lfg, output_path)
+        lfg_plotter = PlotLightFieldGeometry(
+            light_field_geometry=lfg, 
+            out_dir=output_dir)
         lfg_plotter.save()
 
     except do.DocoptExit as e:

@@ -1,17 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from . import add2ax
+from . import plot as add2ax
 from multiprocessing import Process
 
 class PlotLightFieldGeometry(object):
+    """
+    Creates plots of the light_field_geometry and saves them to disk.
+    """
+    def __init__(self, light_field_geometry, out_dir):
+        """
+        Parameters
+        ----------
+        light_field_geometry    The light_field_geometry of the Atmospheric 
+                                Cherenkov Plenoscope (ACP).
 
-    def __init__(self, lss, path):
+        out_dir                 The output directory to save the figures in.
+
+        """
         self.dpi = 300
         self.width = 2.0 * 1920.0 / self.dpi
         self.hight = 2.0 * 1080.0 / self.dpi
-        self.lss = lss
-        self.path = path
+        
+        self.lfg = light_field_geometry
+        self.out_dir = out_dir
 
     def __style(self, ax):
         ax.spines['right'].set_visible(False)
@@ -27,109 +39,109 @@ class PlotLightFieldGeometry(object):
 
     def __save_fig(self, fig, filename):
         fig.savefig(
-            os.path.join(self.path, filename),
+            os.path.join(self.out_dir, filename),
             bbox_inches='tight',
             dpi=self.dpi)
 
     def save_cx_mean(self):
         fig, ax = self.fig_ax()
-        add2ax.cx_mean_hist(self.lss, ax)
+        add2ax.cx_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cx_mean.png')
         plt.close(fig)
 
     def save_cy_mean(self):
         fig, ax = self.fig_ax()
-        add2ax.cy_mean_hist(self.lss, ax)
+        add2ax.cy_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cy_mean.png')
         plt.close(fig)
 
     def save_x_mean(self):
         fig, ax = self.fig_ax()
-        add2ax.x_mean_hist(self.lss, ax)
+        add2ax.x_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'x_mean.png')
         plt.close(fig)
 
     def save_y_mean(self):
         fig, ax = self.fig_ax()
-        add2ax.y_mean_hist(self.lss, ax)
+        add2ax.y_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'y_mean.png')
         plt.close(fig)
 
     def save_cx_stddev(self):
         fig, ax = self.fig_ax()
-        add2ax.cx_std_hist(self.lss, ax)
+        add2ax.cx_std_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cx_stddev.png')
         plt.close(fig)
 
     def save_cy_stddev(self):
         fig, ax = self.fig_ax()
-        add2ax.cy_std_hist(self.lss, ax)
+        add2ax.cy_std_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'cy_stddev.png')
         plt.close(fig)
 
     def save_time_mean(self):
         fig, ax = self.fig_ax()
-        add2ax.time_mean_hist(self.lss, ax)
+        add2ax.time_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'time_delay_mean.png')
         plt.close(fig)
 
     def save_time_stddev(self):
         fig, ax = self.fig_ax()
-        add2ax.time_std_hist(self.lss, ax)
+        add2ax.time_std_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'time_stddev.png')
         plt.close(fig)
 
     def save_efficiency(self):
         fig, ax = self.fig_ax()
-        add2ax.efficieny_hist(self.lss, ax)
+        add2ax.efficieny_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'efficiency.png')
         plt.close(fig)
 
     def save_efficiency_relative_error(self):
         fig, ax = self.fig_ax()
-        add2ax.efficieny_relative_error_hist(self.lss, ax)
+        add2ax.efficieny_relative_error_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'efficiency_error.png')
         plt.close(fig)
 
     def save_c_mean_vs_c_std(self):
         fig, ax = self.fig_ax()
-        add2ax.c_vs_c_std(self.lss, ax)
+        add2ax.c_vs_c_std(self.lfg, ax)
         self.__save_fig(fig, 'c_mean_vs_c_std.png')
         plt.close(fig)
 
     def save_x_y_hist2d(self):
         fig, ax = self.fig_ax()
-        add2ax.x_y_hist2d(self.lss, ax)
+        add2ax.x_y_hist2d(self.lfg, ax)
         self.__save_fig(fig, 'x_y_mean_hist2d.png')
         plt.close(fig)
 
     def save_cx_cy_hist2d(self):
         fig, ax = self.fig_ax()
-        add2ax.cx_cy_hist2d(self.lss, ax)
+        add2ax.cx_cy_hist2d(self.lfg, ax)
         self.__save_fig(fig, 'cx_cy_mean_hist2d.png')
         plt.close(fig)
 
     def save_sensor_plane_overview(self, I, name='unknown', unit='unknown'):
         fig, ax = self.fig_ax()
-        coll = add2ax.colored_lixels(self.lss, I, ax)
+        coll = add2ax.colored_lixels(self.lfg, I, ax)
         ax.set_ylabel('sensor plane y/m')
         ax.set_xlabel('sensor plane x/m')
         fig.colorbar(coll, label='principal aperture ' + name + '/' + unit)
         self.__save_fig(fig, 'overview_' + name + '.png')
         # zoom center
         outer_radius = 1.0 / np.sqrt(2.0) * np.hypot(
-            self.lss.lixel_positions_x.max(),
-            self.lss.lixel_positions_y.max()
+            self.lfg.lixel_positions_x.max(),
+            self.lfg.lixel_positions_y.max()
         )
         zoom_radius = 1.0 / 10.0 * outer_radius
         ax.set_ylim([-zoom_radius, zoom_radius])
@@ -168,25 +180,25 @@ class PlotLightFieldGeometry(object):
         jobs.append({'target': self.save_x_y_hist2d, 'args': []})
         jobs.append({'target': self.save_cx_cy_hist2d, 'args': []})
 
-        jobs.append({'target': self.save_sensor_plane_overview, 'args': [self.lss.efficiency, 'efficiency', '1']})
+        jobs.append({'target': self.save_sensor_plane_overview, 'args': [self.lfg.efficiency, 'efficiency', '1']})
 
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [self.lss.x_mean, 'x_mean', 'm']})
+            'args': [self.lfg.x_mean, 'x_mean', 'm']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [self.lss.x_std, 'x_stddev', 'm']})
+            'args': [self.lfg.x_std, 'x_stddev', 'm']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [self.lss.y_mean, 'y_mean', 'm']})
+            'args': [self.lfg.y_mean, 'y_mean', 'm']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [self.lss.y_std, 'y_stddev', 'm']})
+            'args': [self.lfg.y_std, 'y_stddev', 'm']})
 
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [np.rad2deg(self.lss.cx_mean), 'cx_mean', 'deg']})
+            'args': [np.rad2deg(self.lfg.cx_mean), 'cx_mean', 'deg']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [np.rad2deg(self.lss.cx_std), 'cx_stddev', 'deg']})
+            'args': [np.rad2deg(self.lfg.cx_std), 'cx_stddev', 'deg']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [np.rad2deg(self.lss.cy_mean), 'cy_mean', 'deg']})
+            'args': [np.rad2deg(self.lfg.cy_mean), 'cy_mean', 'deg']})
         jobs.append({'target': self.save_sensor_plane_overview, 
-            'args': [np.rad2deg(self.lss.cy_std), 'cy_stddev', 'deg']})
+            'args': [np.rad2deg(self.lfg.cy_std), 'cy_stddev', 'deg']})
 
         processes = []
         for job in jobs:
