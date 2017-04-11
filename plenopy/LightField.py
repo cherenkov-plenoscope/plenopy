@@ -30,16 +30,12 @@ class LightField(object):
                 raw.number_lixel), 
             dtype=np.uint16)
 
-
-        time_delay_mean = self.time_delay_mean.copy()
-        #print('time_delay_mean flags', time_delay_mean.flags)
-
         stream2sequence(
             photon_stream=raw.photon_stream,
             time_slice_duration=raw.time_slice_duration,
             NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
             sequence=self.sequence,
-            time_delay_mean=time_delay_mean)
+            time_delay_mean=self.time_delay_mean)
 
     def _to_image_sequence(self, axis=1):
         if axis==1:

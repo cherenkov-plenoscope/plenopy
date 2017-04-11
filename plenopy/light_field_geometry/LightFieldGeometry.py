@@ -142,15 +142,22 @@ class LightFieldGeometry(object):
         ls = np.fromfile(path, dtype=np.float32)
         ls = ls.reshape([ls.shape[0] // 12, 12])
 
-        for i, attribute_name in enumerate([
-                'efficiency', 'efficiency_std',
-                'cx_mean', 'cx_std',
-                'cy_mean', 'cy_std',
-                'x_mean', 'x_std',
-                'y_mean', 'y_std',
-                'time_delay_mean', 'time_delay_std'
-        ]):
-            setattr(self, attribute_name, ls[:, i])
+        self.efficiency = ls[:,0].copy()
+        self.efficiency_std = ls[:,1].copy()
+
+        self.cx_mean = ls[:,2].copy()
+        self.cx_std = ls[:,3].copy()
+        self.cy_mean = ls[:,4].copy()
+        self.cy_std = ls[:,5].copy()
+
+        self.x_mean = ls[:,6].copy()
+        self.x_std = ls[:,7].copy()
+        self.y_mean = ls[:,8].copy()
+        self.y_std = ls[:,9].copy()
+
+        self.time_delay_mean = ls[:,10].copy()
+        self.time_delay_std = ls[:,11].copy()
+
 
     def _read_light_field_sensor_geometry_header(self, path):
         gh = read_float32_header(path)

@@ -5,6 +5,30 @@ import pkg_resources
 import tempfile
 import os
 
+def test_is_own_data():
+    light_field_geometry_path = pkg_resources.resource_filename(
+        'plenopy', 
+        'tests/resources/run.acp/input/plenoscope')
+    lfg = pl.LightFieldGeometry(light_field_geometry_path)   
+
+    assert lfg.cx_mean.flags.owndata
+    assert lfg.cx_std.flags.owndata
+
+    assert lfg.cy_mean.flags.owndata
+    assert lfg.cy_std.flags.owndata
+
+    assert lfg.x_mean.flags.owndata
+    assert lfg.x_std.flags.owndata
+
+    assert lfg.y_mean.flags.owndata
+    assert lfg.y_std.flags.owndata
+
+    assert lfg.time_delay_mean.flags.owndata
+    assert lfg.time_delay_std.flags.owndata  
+
+    assert lfg.efficiency.flags.owndata
+    assert lfg.efficiency_std.flags.owndata
+
 
 def test_init():
     light_field_geometry_path = pkg_resources.resource_filename(
