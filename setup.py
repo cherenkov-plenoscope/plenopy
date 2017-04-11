@@ -30,7 +30,7 @@ setup(
         'numpy',            # in anaconda
     ],
     entry_points={'console_scripts': [
-        'mctPlenoscopePlotLixelStatistics = plenopy.main.plot_lixel_statistics:main',
+        'plenopyPlotLightFieldGeometry = plenopy.light_field_geometry.plot_main:main',
     ]},
     zip_safe=False,
     cmdclass = {'build_ext': build_ext},

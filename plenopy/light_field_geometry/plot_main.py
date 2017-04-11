@@ -4,7 +4,7 @@ When the output_dir is not set, a plot folder is created in the input
 calibration folder.
 
 Usage:
-    LixelStatisticsPlot -i=INPUT_PATH [-o=OUTPUT_DIR]
+    plenopyPlotLightFieldGeometry -i=INPUT_PATH [-o=OUTPUT_DIR]
 
 Options:
     -o --output=OUTPUT_DIR     path to save the plots
@@ -14,8 +14,8 @@ from __future__ import absolute_import, print_function, division
 import docopt as do
 import numpy as np
 import os
-from ..light_field_geometry import LightFieldGeometry
-from ..light_field_geometry import PlotLightFieldGeometry
+from . import LightFieldGeometry
+from . import PlotLightFieldGeometry
 
 
 def main():
