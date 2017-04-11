@@ -125,12 +125,12 @@ class Event(object):
             return 'unknown event type: '+str(self.type)
 
 
-    def plot(self):
+    def show(self):
         """
-        A plot figure:
+        Shows a overview figure of the Event.
 
         1   Directional intensity distribution accross the field of view
-            (the classical IACT image)
+            (the classic IACT image)
 
         2   Positional intensity distribution on the principal aperture plane
 
@@ -165,10 +165,9 @@ class Event(object):
 
         axs[0][1].set_title('principal aperture plane')
         image.plot.add_paxel_image_to_ax(paxel_image, axs[0][1])
-
         light_field.plot.add2ax_hist_arrival_time(self.light_field, axs[1][0])
-
         light_field.plot.add2ax_hist_intensity(self.light_field, axs[1][1])
+        plt.show()
 
 
 def time_slice_with_max_intensity(sequence):
