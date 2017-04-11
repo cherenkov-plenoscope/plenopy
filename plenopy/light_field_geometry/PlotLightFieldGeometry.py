@@ -3,12 +3,13 @@ import matplotlib.pyplot as plt
 import os
 from . import plot as add2ax
 from multiprocessing import Process
+from ..tools import FigureSize
 
 class PlotLightFieldGeometry(object):
     """
     Creates plots of the light_field_geometry and saves them to disk.
     """
-    def __init__(self, light_field_geometry, out_dir):
+    def __init__(self, light_field_geometry, out_dir, figure_size=None):
         """
         Parameters
         ----------
@@ -17,11 +18,18 @@ class PlotLightFieldGeometry(object):
 
         out_dir                 The output directory to save the figures in.
 
+        figure_size             The output figure size and resolution.
+                                [optional]
         """
-        self.dpi = 300
-        self.width = 2.0 * 1920.0 / self.dpi
-        self.hight = 2.0 * 1080.0 / self.dpi
-        
+        if figure_size is None:
+            self.figure_size = FigureSize(
+                relative_width=16,
+                relative_hight=9,
+                pixel_rows=2*1080,
+                dpi=300)
+        else:
+            self.figure_size = figure_size
+
         self.lfg = light_field_geometry
         self.out_dir = out_dir
 
@@ -32,7 +40,8 @@ class PlotLightFieldGeometry(object):
         ax.xaxis.tick_bottom()
 
     def fig_ax(self):
-        fig = plt.figure(figsize=(self.width, self.hight))
+        fig = plt.figure(
+            figsize=(self.figure_size.width, self.figure_size.hight))
         ax = fig.gca()
         self.__style(ax)
         return fig, ax
@@ -41,7 +50,7 @@ class PlotLightFieldGeometry(object):
         fig.savefig(
             os.path.join(self.out_dir, filename),
             bbox_inches='tight',
-            dpi=self.dpi)
+            dpi=self.figure_size.dpi)
 
     def save_cx_mean(self):
         fig, ax = self.fig_ax()

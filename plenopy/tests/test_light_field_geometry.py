@@ -73,8 +73,17 @@ def test_plot():
         'tests/resources/run.acp/input/plenoscope')
     light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
+    figure_size = pl.tools.FigureSize(
+        relative_width=16,
+        relative_hight=9,
+        pixel_rows=480,
+        dpi=50)
+
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
-        ls_plot = pl.light_field_geometry.PlotLightFieldGeometry(light_field_geometry, tmp)
+        ls_plot = pl.light_field_geometry.PlotLightFieldGeometry(
+            light_field_geometry=light_field_geometry, 
+            out_dir=tmp,
+            figure_size=figure_size)
         ls_plot.save()
 
         assert os.path.exists(os.path.join(tmp, 'cx_mean.png'))
