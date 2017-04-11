@@ -13,4 +13,4 @@ from . import SimulationTruth
 from . import Tomography
 from . import tools
 from .trigger_study import *
-from .py_stream2sequence import *
+from .photon_stream_reader import py_stream2sequence
