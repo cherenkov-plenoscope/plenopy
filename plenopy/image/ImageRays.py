@@ -12,34 +12,34 @@ class ImageRays(object):
                 imaging system.
     """
 
-    def __init__(self, lixel_statistics):
+    def __init__(self, light_field_geometry):
         """
         Parameters
         ----------
 
-        lixel_statistics
+        light_field_geometry
         """
 
         # All in principal aperture frame
-        x = lixel_statistics.x_mean
-        y = lixel_statistics.y_mean
+        x = light_field_geometry.x_mean
+        y = light_field_geometry.y_mean
 
-        cx = lixel_statistics.cx_mean
-        cy = lixel_statistics.cy_mean
+        cx = light_field_geometry.cx_mean
+        cy = light_field_geometry.cy_mean
 
-        self._f = lixel_statistics.expected_focal_length_of_imaging_system
-        bs = lixel_statistics.sensor_plane2imaging_system.sensor_plane_distance
+        self._f = light_field_geometry.expected_focal_length_of_imaging_system
+        bs = light_field_geometry.sensor_plane2imaging_system.sensor_plane_distance
 
         # 3d intersection with image sensor plane
         sensor_plane_intersections = np.array([
             bs*np.tan(cx), 
             bs*np.tan(cy), 
-            bs*np.ones(lixel_statistics.number_lixel)]).T
+            bs*np.ones(light_field_geometry.number_lixel)]).T
 
         self.support = np.array([
             x, 
             y, 
-            np.zeros(lixel_statistics.number_lixel)]).T
+            np.zeros(light_field_geometry.number_lixel)]).T
         
         self.direction = sensor_plane_intersections - self.support
         no = np.linalg.norm(self.direction, axis=1)
@@ -48,7 +48,7 @@ class ImageRays(object):
         self.direction[:,2] /= no
 
 
-        self.pixel_pos_tree = lixel_statistics.pixel_pos_tree
+        self.pixel_pos_tree = light_field_geometry.pixel_pos_tree
 
     def cx_cy_in_object_distance(self, object_distance):
         """
