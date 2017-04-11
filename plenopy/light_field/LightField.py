@@ -1,5 +1,5 @@
 import numpy as np
-from .photon_stream.cython_reader import stream2sequence
+from ..photon_stream.cython_reader import stream2sequence
 
 class LightField(object):
 

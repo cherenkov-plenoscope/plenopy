@@ -6,7 +6,7 @@ import matplotlib.patches as mpatches
 from .EventType import EventType
 from ..light_field_geometry import PlenoscopeGeometry
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
-from ..LightField import LightField
+from ..light_field.LightField import LightField
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
 from ..tools.HeaderRepresentation import read_float32_header
 from ..image.Image import Image
