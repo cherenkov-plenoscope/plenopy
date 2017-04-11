@@ -10,11 +10,10 @@ from ..light_field.LightField import LightField
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
 from ..tools.HeaderRepresentation import read_float32_header
 from ..image.Image import Image
-from ..image.plot import add_paxel_image_to_ax
-from ..image.plot import add_pixel_image_to_ax
+from .. import image
 from .. import corsika
 from .. import simulation_truth
-from ..plot import LightField as plt_LightFieldSequence
+from .. import light_field
 
 
 class Event(object):
@@ -153,7 +152,7 @@ class Event(object):
             self.light_field.pixel_pos_cy)
 
         axs[0][0].set_title('directional image')
-        plot_image.add_pixel_image_to_ax(pixel_image, axs[0][0])
+        image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
 
         pax_img_seq = self.light_field.paxel_sequence()
         t_m = time_slice_with_max_intensity(pax_img_seq)
@@ -165,11 +164,11 @@ class Event(object):
             self.light_field.paxel_pos_y)
 
         axs[0][1].set_title('principal aperture plane')
-        plot_image.add_paxel_image_to_ax(paxel_image, axs[0][1])
+        image.plot.add_paxel_image_to_ax(paxel_image, axs[0][1])
 
-        plt_LightFieldSequence.add2ax_hist_arrival_time(self.light_field, axs[1][0])
+        light_field.plot.add2ax_hist_arrival_time(self.light_field, axs[1][0])
 
-        plt_LightFieldSequence.add2ax_hist_intensity(self.light_field, axs[1][1])
+        light_field.plot.add2ax_hist_intensity(self.light_field, axs[1][1])
 
 
 def time_slice_with_max_intensity(sequence):
