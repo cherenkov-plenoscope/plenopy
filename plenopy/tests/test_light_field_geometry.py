@@ -50,7 +50,7 @@ def test_plot():
     light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
-        ls_plot = pl.plot.LightFieldGeometry.PlotLightFieldGeometry.PlotLightFieldGeometry(light_field_geometry, tmp)
+        ls_plot = pl.light_field_geometry.PlotLightFieldGeometry(light_field_geometry, tmp)
         ls_plot.save()
 
         assert os.path.exists(os.path.join(tmp, 'cx_mean.png'))

@@ -14,8 +14,8 @@ from __future__ import absolute_import, print_function, division
 import docopt as do
 import numpy as np
 import os
-from ..LixelStatistics import LixelStatistics
-from ..plot.lixel_statistics.PlotLixelStatistics import PlotLixelStatistics
+from ..light_field_geometry import LightFieldGeometry
+from ..light_field_geometry import PlotLightFieldGeometry
 
 
 def main():
@@ -26,9 +26,9 @@ def main():
             output_path = os.path.join(arguments['--input'], 'plots')
             os.mkdir(output_path)
 
-        ls = LixelStatistics(path=arguments['--input'])
-        ls_plotter = PlotLixelStatistics(ls, output_path)
-        ls_plotter.save()
+        lfg = LightFieldGeometry(path=arguments['--input'])
+        lfg_plotter = PlotLightFieldGeometry(lfg, output_path)
+        lfg_plotter.save()
 
     except do.DocoptExit as e:
         print(e)

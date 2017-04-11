@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.spatial
 import os
-from .event.PlenoscopeGeometry import PlenoscopeGeometry
-from .tools.HeaderRepresentation import assert_marker_of_header_is
-from .tools.HeaderRepresentation import read_float32_header
+from ..event.PlenoscopeGeometry import PlenoscopeGeometry
+from ..tools.HeaderRepresentation import assert_marker_of_header_is
+from ..tools.HeaderRepresentation import read_float32_header
 
 class LightFieldGeometry(object):
     """

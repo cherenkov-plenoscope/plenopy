@@ -1,7 +1,7 @@
 import numpy as np
 import glob
 import os
-from .LightFieldGeometry import LightFieldGeometry
+from .light_field_geometry.LightFieldGeometry import LightFieldGeometry
 from .event.Event import Event
 from .tools.acp_format import all_folders_with_digit_names_in_path
 
