@@ -3,8 +3,8 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from .PlenoscopeGeometry import PlenoscopeGeometry
 from .EventType import EventType
+from ..light_field_geometry import PlenoscopeGeometry
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..LightField import LightField
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
