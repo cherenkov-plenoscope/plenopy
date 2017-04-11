@@ -12,7 +12,7 @@ from ..tools.HeaderRepresentation import read_float32_header
 from ..image.Image import Image
 from ..image.plot import add_paxel_image_to_ax
 from ..image.plot import add_pixel_image_to_ax
-from .. import Corsika
+from .. import corsika
 from .. import simulation_truth
 from ..plot import LightField as plt_LightFieldSequence
 
@@ -81,12 +81,12 @@ class Event(object):
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
-            evth = Corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
-            runh = Corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
+            evth = corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
+            runh = corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
             simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
             try:
-                simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
+                simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
                     os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
                 simulation_truth_air_shower_photon_bunches = None         

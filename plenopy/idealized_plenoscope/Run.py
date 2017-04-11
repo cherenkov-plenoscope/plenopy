@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .. import Corsika
+from .. import corsika
 from .Event import Event
 from ..tools.acp_format import all_folders_with_digit_names_in_path
 

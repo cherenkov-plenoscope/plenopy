@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .. import Corsika
+from .. import corsika
 from .LightField import LightField
 from .IdealizedPlenoscopeSimulationTruthDetector import IdealizedPlenoscopeSimulationTruthDetector
 from .. import simulation_truth
@@ -27,12 +27,12 @@ class Event(object):
     def __init__(self, path):
         self.path = path
 
-        evth = Corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
-        runh = Corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
+        evth = corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
+        runh = corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
         
         simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
-        simulation_truth_air_shower_photon_bunches = Corsika.PhotonBunches(
+        simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
                      os.path.join(self.path, 'air_shower_photon_bunches.bin'))
 
         self.light_field = LightField(

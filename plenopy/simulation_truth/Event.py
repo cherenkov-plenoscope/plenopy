@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .. import Corsika
+from .. import corsika
 
 class Event(object):
     """
@@ -17,12 +17,12 @@ class Event(object):
 
     def __repr__(self):
         out = ''
-        out += Corsika.run_header_repr(self.corsika_run_header.raw)
+        out += corsika.run_header_repr(self.corsika_run_header.raw)
         out += '\n'
-        out += Corsika.event_header_repr(self.corsika_event_header.raw)
+        out += corsika.event_header_repr(self.corsika_event_header.raw)
         return out
 
     def short_event_info(self):
-        return Corsika.short_event_info(
+        return corsika.short_event_info(
             self.corsika_run_header.raw,
             self.corsika_event_header.raw)

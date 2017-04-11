@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .. import Corsika
+from .. import corsika
 
 class SimulationTruth(object):
     """
