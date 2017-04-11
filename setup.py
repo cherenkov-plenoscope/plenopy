@@ -26,9 +26,15 @@ setup(
     ]},
     zip_safe=False,
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("plenopy.cython_tools",
-                            sources=["plenopy/cython_tools.pyx", "plenopy/photon_stream_reader.cpp"],
-                            include_dirs=[numpy.get_include(), "plenopy"],
-                            language="c++",
-                            extra_compile_args=['-std=c++0x'])],
+    ext_modules = [
+        Extension(
+            "plenopy.cython_tools",
+            sources=[
+                "plenopy/cython_tools.pyx", 
+                "plenopy/photon_stream_reader.cpp"],
+            include_dirs=[numpy.get_include(), "plenopy"],
+            language="c++",
+            extra_compile_args=['-std=c++0x']
+        )
+    ],
 )
