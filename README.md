@@ -15,3 +15,4 @@ run = pl.Run('plenopy/plenopy/tests/resources/run.acp/')
 event = run[3]
 event.show()
 ```
+![img](readme/example_event_show.png)
