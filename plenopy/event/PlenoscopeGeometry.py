@@ -1,5 +1,5 @@
 import numpy as np
-from .tools import HeaderRepresentation
+from ..tools import HeaderRepresentation
 
 class PlenoscopeGeometry(object):
     """

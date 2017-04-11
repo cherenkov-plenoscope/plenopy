@@ -3,7 +3,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from ..PlenoscopeGeometry import PlenoscopeGeometry
+from .PlenoscopeGeometry import PlenoscopeGeometry
 from .EventType import EventType
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..LightField import LightField
