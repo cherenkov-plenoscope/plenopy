@@ -9,7 +9,8 @@ cdef extern void c_stream2sequence (
     unsigned short* sequence,
     unsigned int number_time_slices,
     unsigned int number_lixel,
-    float *time_delay_mean)
+    float *time_delay_mean,
+    float time_slice_duration)
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -36,6 +37,7 @@ def stream2sequence(
         &sequence[0,0],
         number_time_slices,
         number_lixel,
-        &time_delay_mean[0])
+        &time_delay_mean[0],
+        time_slice_duration)
 
     return None
