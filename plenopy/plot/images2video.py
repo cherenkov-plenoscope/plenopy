@@ -1,6 +1,5 @@
 import os
 import subprocess
-import tempfile
 
 
 def images2video(image_path, output_path ,frames_per_second=25):
