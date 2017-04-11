@@ -10,7 +10,8 @@ from .LightField import LightField
 from .tools.HeaderRepresentation import assert_marker_of_header_is
 from .tools.HeaderRepresentation import read_float32_header
 from .image.Image import Image
-from .plot import plot_image
+from .image.plot import add_paxel_image_to_ax
+from .image.plot import add_pixel_image_to_ax
 from . import Corsika
 from . import SimulationTruth
 from .plot import LightField as plt_LightFieldSequence
