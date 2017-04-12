@@ -11,13 +11,15 @@ from .images2video import images2video
 from ..image import Image
 from ..image import ImageRays
 from ..image.plot import add_pixel_image_to_ax
+from ..light_field import sequence
 
 def save_refocus_stack(
     event, 
     output_path, 
     obj_dist_min=2e3, 
-    obj_dist_max=12e3, 
-    steps=10, 
+    obj_dist_max=27e3,
+    time_slices_window_radius=1,
+    steps=16, 
     use_absolute_scale=True,
     image_prefix='refocus_'):
 
@@ -34,12 +36,18 @@ def save_refocus_stack(
 
     images = []
 
+    pix_img_seq = event.light_field.pixel_sequence()
+    time_max = sequence.time_slice_with_max_intensity(pix_img_seq)
+    time_start = np.max([time_max-time_slices_window_radius, 0])
+    time_end = np.min([time_max+time_slices_window_radius, pix_img_seq.shape[0]-1])
+
     for object_distance in tqdm(object_distances):
 
         lisel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
             object_distance)
 
-        raw_img = event.light_field.pixel_sequence_refocus(lisel2pixel).sum(axis=0)
+        raw_img_sequence = event.light_field.pixel_sequence_refocus(lisel2pixel)
+        raw_img = raw_img_sequence[time_start:time_end].sum(axis=0)
 
         img = Image(
             raw_img, 
@@ -86,7 +94,7 @@ def save_refocus_video(
     event, 
     output_path, 
     obj_dist_min=2e3, 
-    obj_dist_max=12e3, 
+    obj_dist_max=27e3, 
     steps=25, 
     fps=25, 
     use_absolute_scale=True):

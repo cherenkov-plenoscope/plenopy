@@ -7,6 +7,7 @@ from .EventType import EventType
 from ..light_field_geometry import PlenoscopeGeometry
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..light_field.LightField import LightField
+from ..light_field import sequence
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
 from ..tools.HeaderRepresentation import read_float32_header
 from ..image.Image import Image
@@ -127,7 +128,7 @@ class Event(object):
 
     def show(self):
         """
-        Shows a overview figure of the Event.
+        Shows an overview figure of the Event.
 
         1   Directional intensity distribution accross the field of view
             (the classic IACT image)
@@ -143,7 +144,7 @@ class Event(object):
         plt.suptitle(self._plot_suptitle())
 
         pix_img_seq = self.light_field.pixel_sequence()
-        t_m = time_slice_with_max_intensity(pix_img_seq)
+        t_m = sequence.time_slice_with_max_intensity(pix_img_seq)
         ts = np.max([t_m-1, 0])
         te = np.min([t_m+1, pix_img_seq.shape[0]-1])
         pixel_image = Image(
@@ -155,7 +156,7 @@ class Event(object):
         image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
 
         pax_img_seq = self.light_field.paxel_sequence()
-        t_m = time_slice_with_max_intensity(pax_img_seq)
+        t_m = sequence.time_slice_with_max_intensity(pax_img_seq)
         ts = np.max([t_m-1, 0])
         te = np.min([t_m+1, pax_img_seq.shape[0]-1])
         paxel_image = Image(
@@ -168,10 +169,3 @@ class Event(object):
         light_field.plot.add2ax_hist_arrival_time(self.light_field, axs[1][0])
         light_field.plot.add2ax_hist_intensity(self.light_field, axs[1][1])
         plt.show()
-
-
-def time_slice_with_max_intensity(sequence):
-    max_along_slices = np.zeros(sequence.shape[0], dtype=np.uint16)
-    for s, slic in enumerate(sequence):
-        max_along_slices[s] = slic.max()
-    return np.argmax(max_along_slices)
