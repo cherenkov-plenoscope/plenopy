@@ -17,7 +17,7 @@ import tqdm
 import os
 import pickle
 from .filtered_back_projection import max_intensity_vs_z
-from .filtered_back_projection import histogram 
+from .filtered_back_projection import histogram
 
 
 class NarrowAngleTomography(object):
@@ -36,19 +36,21 @@ class NarrowAngleTomography(object):
         self.ray_threshold = ray_threshold
         self._psf_cache_dir = psf_cache_dir
 
-        if show_progress:
+        self.show_progress = show_progress
+
+        if self.show_progress:
             print('Estimate tomographic point spread function')
 
         psf, i_psf = cached_tomographic_point_spread_function(
             rays=rays, 
             binning=self.binning, 
-            show_progress=show_progress,
+            show_progress=self.show_progress,
             path=self._psf_cache_dir)
 
         self.psf = psf
         self.i_psf = i_psf
 
-        if show_progress:
+        if self.show_progress:
             print('Estimate thinning of rays in cartesian space based on max number of rays in a voxel per altitude slice in reconstruction volume')
 
         ray_count_hist = histogram(
@@ -56,53 +58,49 @@ class NarrowAngleTomography(object):
             binning=self.binning)
         self.max_ray_count_vs_z =  max_intensity_vs_z(ray_count_hist)
 
-        if show_progress:
+        if self.show_progress:
             print('Exclude voxels from reconstruction with less than '+str(ray_threshold)+' rays')
 
         self.psf_mask = mask_voxels_with_minimum_number_of_rays(
             psf=psf, 
             ray_threshold=ray_threshold)
 
-        if show_progress:
+        if self.show_progress:
             print('Init empty intensity volume')
 
         self.rec_I_vol = np.zeros(self.binning.number_bins, dtype=np.float32)
 
         self.iteration = 0
         initial_diff = 0.0
-        while True:
-            if show_progress:
-                print('Reconstruction iteration '+str(self.iteration))
 
-            rec_I_vol_n = update_narrow_beam(
-                vol_I=self.rec_I_vol, 
-                measured_I=self.intensities,
-                psf=self.psf,
-                psf_mask=self.psf_mask,
-                i_psf=self.i_psf,
-                max_ray_count_vs_z=self.max_ray_count_vs_z,
-                binning=self.binning,
-                show_progress=show_progress)
 
-            diff = np.abs(rec_I_vol_n - self.rec_I_vol).sum()
-            if self.iteration == 0:
-                initial_diff = diff
+    def one_more_iteration(self):
+        if self.show_progress:
+            print('Reconstruction iteration '+str(self.iteration))
 
-            if show_progress:
-                print('Intensity difference to previous iteration '+str(diff))
+        rec_I_vol_n = update_narrow_beam(
+            vol_I=self.rec_I_vol, 
+            measured_I=self.intensities,
+            psf=self.psf,
+            psf_mask=self.psf_mask,
+            i_psf=self.i_psf,
+            max_ray_count_vs_z=self.max_ray_count_vs_z,
+            binning=self.binning,
+            show_progress=self.show_progress)
 
-            if diff < 0.1*initial_diff:
-                break
+        diff = np.abs(rec_I_vol_n - self.rec_I_vol).sum()
+        if self.iteration == 0:
+            initial_diff = diff
 
-            self.rec_I_vol = rec_I_vol_n
-            self.iteration += 1
+        if self.show_progress:
+            print('Intensity difference to previous iteration '+str(diff))
 
-        if show_progress:
-            print('Iteration complete')
+        self.rec_I_vol = rec_I_vol_n
+        self.iteration += 1
 
         self.intensity_volume = flat_volume_intensity_3d_reshape(
-            vol_I=rec_I_vol, 
-            binning=self.binning)
+            vol_I=self.rec_I_vol, 
+            binning=self.binning)    
 
 
 def tomographic_point_spread_function(rays, binning, show_progress=False):
