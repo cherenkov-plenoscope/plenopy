@@ -41,9 +41,9 @@ def un_numpyify_dictionary(dic):
 def collect_trigger_relevant_information(event):
     info = {}
 
-    pixel_sequence = event.light_field_sequence.pixel_sequence()
-    paxel_sequence = event.light_field_sequence.paxel_sequence()
-    lixel_sequence = event.light_field_sequence.sequence
+    pixel_sequence = event.light_field.pixel_sequence()
+    paxel_sequence = event.light_field.paxel_sequence()
+    lixel_sequence = event.light_field.sequence
 
     pixel_i = np.sum(pixel_sequence, axis=0)
     info['raw_pixel'] = {
@@ -93,12 +93,12 @@ def export_trigger_information(event):
     info['acp'] = {
         'response': collect_trigger_relevant_information(event),
         'light_field_sensor': {
-            'expected_focal_length': event.light_field_sequence.expected_focal_length_of_imaging_system,
-            'expected_aperture_radius': event.light_field_sequence.expected_aperture_radius_of_imaging_system,
-            'number_pixel': event.light_field_sequence.number_pixel,
-            'number_paxel': event.light_field_sequence.number_paxel,
-            'time_slice_duration': event.light_field_sequence.time_slice_duration,
-            'number_time_slices': event.light_field_sequence.number_time_slices,
+            'expected_focal_length': event.light_field.expected_focal_length_of_imaging_system,
+            'expected_aperture_radius': event.light_field.expected_aperture_radius_of_imaging_system,
+            'number_pixel': event.light_field.number_pixel,
+            'number_paxel': event.light_field.number_paxel,
+            'time_slice_duration': event.light_field.time_slice_duration,
+            'number_time_slices': event.light_field.number_time_slices,
         }
     }
 
