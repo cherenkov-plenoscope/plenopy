@@ -3,6 +3,18 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 import numpy
+import os
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+setup_py_path = os.path.realpath(__file__)
+setup_py_dir = os.path.dirname(setup_py_path)
+extra_files = package_files(os.path.join(setup_py_dir,'plenopy','tests'))
 
 setup(
     name='plenopy',
@@ -20,12 +32,14 @@ setup(
         'plenopy.image',
         'plenopy.light_field',
         'plenopy.light_field_geometry',
+        'plenopy.tomography',
         'plenopy.main',
         'plenopy.photon_stream',
         'plenopy.plot',
         'plenopy.simulation_truth',
         'plenopy.tools',
     ],
+    package_data={'plenopy': extra_files},
     install_requires=[
         'numpy',            # in anaconda
     ],
