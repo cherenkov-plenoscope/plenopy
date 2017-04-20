@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
-import plenopy as plp
+import plenopy as pl
 
 def test_binning_flat_voxel_center_positions():
-    binning = plp.Tomography.Binning(
+    binning = pl.tomography.Binning(
         z_min=0.0,
         z_max=1e3,
         number_z_bins=101,
@@ -24,7 +24,7 @@ def test_binning_flat_voxel_center_positions():
 
 def test_matrix_2_image_shape():
     matrix2d = np.eye(3)
-    image_bgr = plp.plot.Tomography.matrix_2_rgb_image(matrix=matrix2d)
+    image_bgr = pl.tomography.plot.matrix_2_rgb_image(matrix=matrix2d)
 
     assert matrix2d.shape[0] == image_bgr.shape[0]
     assert matrix2d.shape[1] == image_bgr.shape[1]
@@ -34,7 +34,7 @@ def test_matrix_2_image_shape():
 
 def test_matrix_2_image_rectangular_shape():
     matrix2d = np.ones(shape=(16,9))
-    image_bgr = plp.plot.Tomography.matrix_2_rgb_image(matrix=matrix2d)
+    image_bgr = pl.tomography.plot.matrix_2_rgb_image(matrix=matrix2d)
 
     assert matrix2d.shape[0] == image_bgr.shape[0]
     assert matrix2d.shape[1] == image_bgr.shape[1]
@@ -45,7 +45,7 @@ def test_matrix_2_image_rectangular_shape():
 def test_matrix_2_image_color_channel():
     for color_channel in range(3):
         matrix2d = np.eye(3)
-        image_bgr = plp.plot.Tomography.matrix_2_rgb_image(
+        image_bgr = pl.tomography.plot.matrix_2_rgb_image(
             matrix=matrix2d,
             color_channel=color_channel)
 
@@ -71,7 +71,7 @@ def test_matrix_2_image_color_channel():
 def test_matrix_2_image_min_max():
     color_channel = 1
     matrix2d = np.diag([0,0, 0.365, 1.0])
-    image_bgr = plp.plot.Tomography.matrix_2_rgb_image(
+    image_bgr = pl.tomography.plot.matrix_2_rgb_image(
         matrix=matrix2d,
         color_channel=color_channel)
 

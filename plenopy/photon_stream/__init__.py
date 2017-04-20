@@ -1,0 +1,1 @@
+from .reader import py_stream2sequence

@@ -1,7 +1,6 @@
 import numpy as np
 import os
 import gzip, json
-from . import ImageRays
 
 
 def write_dict_to_file(dictionary, path):
@@ -42,94 +41,29 @@ def un_numpyify_dictionary(dic):
 def collect_trigger_relevant_information(event):
     info = {}
 
-    pixel_i = np.sum(event.light_field.intensity, axis=1)
-    info['pixel'] = {
+    pixel_sequence = event.light_field.pixel_sequence()
+    paxel_sequence = event.light_field.paxel_sequence()
+    lixel_sequence = event.light_field.sequence
+
+    pixel_i = np.sum(pixel_sequence, axis=0)
+    info['raw_pixel'] = {
         'min': np.min(pixel_i), 
         'med': np.median(pixel_i), 
         'max': np.max(pixel_i)}
 
-    paxel_i = np.sum(event.light_field.intensity, axis=0)
-    info['paxel'] = {
+    paxel_i = np.sum(paxel_sequence, axis=0)
+    info['raw_paxel'] = {
         'min': np.min(paxel_i), 
         'med': np.median(paxel_i), 
         'max': np.max(paxel_i)}
 
-    lixel_i = event.light_field.intensity.flatten()
-    info['lixel'] = {
+    lixel_i = np.sum(lixel_sequence, axis=0)
+    info['raw_lixel'] = {
         'min': np.min(lixel_i), 
         'med': np.median(lixel_i), 
         'max': np.max(lixel_i),
         'sum': np.sum(lixel_i)}
 
-    raw_lixel_i = event.raw_light_field_sensor_response.intensity
-    info['raw_lixel'] = {
-        'min': np.min(raw_lixel_i), 
-        'med': np.median(raw_lixel_i), 
-        'max': np.max(raw_lixel_i),
-        'sum': np.sum(raw_lixel_i)}
-
-    """
-    # arrival time distribution
-    lixel_t = event.light_field.arrival_time.flatten()
-    start_time = 0.0
-    end_time = 50e-9
-    steps = 50
-    bins = np.linspace(start_time, end_time, steps)
-    info['arrival_time_histogram'] = {
-        'start_time': start_time, 
-        'end_time': end_time,
-        'histogram': np.histogram(lixel_t, weights=lixel_i, bins=bins)[0]}
-
-    # light field refocus trigger
-    f = event.light_field.expected_focal_length_of_imaging_system
-    start_obj_dist = 10*f
-    end_obj_dist = 200*f
-    number_refocuses = int(np.ceil(0.25*event.light_field.number_lixel**(1/3)))
-
-    object_distances = np.logspace(
-        np.log10(start_obj_dist),
-        np.log10(end_obj_dist),
-        number_refocuses)
-
-    valid = event.light_field.valid_lixel.flatten()
-    intensity = event.light_field.intensity.flatten()
-    
-    fov_radius_pixel = event.plenoscope_geometry.pixel_FoV_hex_flat2flat/2.0
-    fov_radius = event.plenoscope_geometry.max_FoV_diameter
-
-    number_pixel_on_diagonal = int(np.ceil(fov_radius/fov_radius_pixel))
-    bins = np.linspace(-fov_radius, fov_radius, number_pixel_on_diagonal)
-
-    in_round_fov = np.zeros(
-        shape=(number_pixel_on_diagonal-1,number_pixel_on_diagonal-1), 
-        dtype=np.bool)
-    for x in range(number_pixel_on_diagonal-1):
-        for y in range(number_pixel_on_diagonal-1):
-            if np.hypot(bins[x], bins[y]) < fov_radius:
-                in_round_fov[x,y] = True
-
-    image_rays = ImageRays(event.light_field)
-    refocus_nodes = []
-    for object_distance in object_distances:
-        cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
-
-        image = np.histogram2d(
-            cx[valid], 
-            cy[valid], 
-            weights=intensity[valid],
-            bins=(bins,bins))[0]
-
-        refocus_nodes.append({
-            'object_distance': object_distance,
-            'max': np.max(image[in_round_fov]),
-            'med': np.median(image[in_round_fov]),
-            'min': np.min(image[in_round_fov])})
-
-    info['refocussing'] = {
-        'square_pixel_fov': 2*fov_radius_pixel,
-        'fov': 2*fov_radius,
-        'image_intensity': refocus_nodes}
-    """
     return info
 
 def export_trigger_information(event):
@@ -163,115 +97,9 @@ def export_trigger_information(event):
             'expected_aperture_radius': event.light_field.expected_aperture_radius_of_imaging_system,
             'number_pixel': event.light_field.number_pixel,
             'number_paxel': event.light_field.number_paxel,
+            'time_slice_duration': event.light_field.time_slice_duration,
+            'number_time_slices': event.light_field.number_time_slices,
         }
     }
 
     return un_numpyify_dictionary(info)
-
-
-def refocus_info(event):
-    info = np.zeros(273, dtype=np.float32)
-
-    # light field refocus trigger
-    f = event.light_field.expected_focal_length_of_imaging_system
-    start_obj_dist = 10*f
-    end_obj_dist = 200*f
-    number_refocuses = int(np.ceil(0.25*event.light_field.number_lixel**(1/3)))
-    if number_refocuses > 89:
-        number_refocuses = 89
-    
-    info[0] = start_obj_dist
-    info[1] = end_obj_dist
-    info[2] = number_refocuses
-
-    object_distances = np.logspace(
-        np.log10(start_obj_dist),
-        np.log10(end_obj_dist),
-        number_refocuses)
-
-    valid = event.light_field.valid_lixel.flatten()
-    intensity = event.light_field.intensity.flatten()
-    
-    fov_radius_pixel = event.plenoscope_geometry.pixel_FoV_hex_flat2flat/2.0
-    fov_radius = event.plenoscope_geometry.max_FoV_diameter
-
-    info[3] = fov_radius_pixel
-    info[4] = fov_radius
-
-    number_pixel_on_diagonal = int(np.ceil(fov_radius/fov_radius_pixel))
-    bins = np.linspace(-fov_radius, fov_radius, number_pixel_on_diagonal)
-
-    in_round_fov = np.zeros(
-        shape=(number_pixel_on_diagonal-1,number_pixel_on_diagonal-1), 
-        dtype=np.bool)
-    for x in range(number_pixel_on_diagonal-1):
-        for y in range(number_pixel_on_diagonal-1):
-            if np.hypot(bins[x], bins[y]) < fov_radius:
-                in_round_fov[x,y] = True
-
-    image_rays = ImageRays(event.light_field)
-
-    for i, object_distance in enumerate(object_distances):
-        cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
-
-        image = np.histogram2d(
-            cx[valid], 
-            cy[valid], 
-            weights=intensity[valid],
-            bins=(bins,bins))[0]
-
-        info[5+i*3] = object_distance
-        info[6+i*3] = np.max(image[in_round_fov])
-        info[7+i*3] = np.median(image[in_round_fov])
-
-    return info
-
-
-def acp_response_header(event):
-    info = np.zeros(273, dtype=np.float32)
-    info[0] = event.light_field.expected_focal_length_of_imaging_system
-    info[1] = event.light_field.expected_aperture_radius_of_imaging_system
-    info[2] = event.light_field.number_pixel
-    info[3] = event.light_field.number_paxel
-
-    pixel = np.sum(event.light_field.intensity, axis=1)
-    info[4] = np.min(pixel)
-    info[5] = np.median(pixel)
-    info[6] = np.max(pixel)
-
-    paxel = np.sum(event.light_field.intensity, axis=0)
-    info[7] = np.min(paxel)
-    info[8] = np.median(paxel)
-    info[9] = np.max(paxel)
-
-    lixel = event.light_field.intensity.flatten()
-    info[10] = np.min(lixel)
-    info[11] = np.median(lixel)
-    info[12] = np.max(lixel)
-    info[13] = np.max(lixel)
-
-    raw_lixel = event.raw_light_field_sensor_response.intensity
-    info[14] = np.min(raw_lixel)
-    info[15] = np.median(raw_lixel)
-    info[16] = np.max(raw_lixel)
-    info[17] = np.max(raw_lixel)
-
-    # arrival time distribution
-    lixel_t = event.light_field.arrival_time.flatten()
-    start_time = 0.0
-    end_time = 50e-9
-    steps = 50
-    bins_edges = np.linspace(start_time, end_time, steps)
-    info[18] = start_time
-    info[19] = end_time
-    info[19:19+50] = np.histogram(lixel_t, weights=lixel, bins=bins_edges)[0]
-    return info
-
-
-def export_array(event):
-    info = np.zeros(1092, dtype=np.float32)
-    info[0  : 273-1] = event.simulation_truth.event.corsika_run_header.raw
-    info[273: 546-1] = event.simulation_truth.event.corsika_event_header.raw
-    info[546: 819-1] = acp_response_header(event)
-    info[819:1092-1] = refocus_info(event)
-    return info
