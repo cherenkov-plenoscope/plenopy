@@ -33,7 +33,6 @@ setup(
         'plenopy.light_field',
         'plenopy.light_field_geometry',
         'plenopy.tomography',
-        'plenopy.main',
         'plenopy.photon_stream',
         'plenopy.plot',
         'plenopy.simulation_truth',
