@@ -5,7 +5,7 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None):
+def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None, colorbar=True):
 
     if vmin is None:
         vmin = I.min()
@@ -37,22 +37,29 @@ def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=No
     p.set_array(I)
     p.set_clim([vmin, vmax])
 
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    plt.colorbar(p, cax=cax)
+    if colorbar:
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(p, cax=cax)
 
     ax.add_collection(p)
     ax.set_aspect('equal')
     return p
 
 
-def add_pixel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
+def add_pixel_image_to_ax(
+    img, 
+    ax, 
+    colormap="viridis", 
+    vmin=None, 
+    vmax=None, 
+    colorbar=True):
     ax.set_xlabel('x/deg')
     ax.set_ylabel('y/deg')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    add2ax(
+    return add2ax(
         ax=ax,
         I=img.intensity,
         px=np.rad2deg(img.pixel_pos_x),
@@ -61,16 +68,23 @@ def add_pixel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
         hexrotation=30,
         vmin=vmin,
         vmax=vmax,
+        colorbar=colorbar
     )
 
 
-def add_paxel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
+def add_paxel_image_to_ax(
+    img, 
+    ax, 
+    colormap="viridis", 
+    vmin=None, 
+    vmax=None, 
+    colorbar=True):
     ax.set_xlabel('x/m')
     ax.set_ylabel('y/m')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
-    add2ax(
+    return add2ax(
         ax=ax,
         I=img.intensity,
         px=img.pixel_pos_x,
@@ -79,4 +93,5 @@ def add_paxel_image_to_ax(img, ax, colormap="viridis", vmin=None, vmax=None):
         hexrotation=0,
         vmin=vmin,
         vmax=vmax,
+        colorbar=colorbar
     )
