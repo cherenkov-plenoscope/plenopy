@@ -152,7 +152,7 @@ class Event(object):
             self.light_field.pixel_pos_cx,
             self.light_field.pixel_pos_cy)
 
-        axs[0][0].set_title('directional image')
+        axs[0][0].set_title('directional image at time slice '+str(t_m))
         image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
 
         pax_img_seq = self.light_field.paxel_sequence()
