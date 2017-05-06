@@ -44,20 +44,30 @@ def save_side_by_side(
     object_distances, 
     output_path,
     tims_slice_range,
-    cx_range=None,
-    cy_range=None,
+    cx_limit=None,
+    cy_limit=None,
     use_absolute_scale=True,
-    dpi=250,
-    pixel_rows_per_image=1920):
+    dpi=400,
+    scale=4):
 
-    fig_size = FigureSize(
-        dpi=dpi, 
-        pixel_rows=pixel_rows_per_image*len(object_distances),
-        relative_hight=1*len(object_distances),
-        relative_width=1)
-    fig = plt.figure(figsize=(fig_size.width, fig_size.hight))
-    N = 12
-    gs = gridspec.GridSpec(N*len(object_distances)+1, N//2)
+    ruler_w = 0.2*scale
+    ruler_h = 1.0*scale
+    image_w = 1.0*scale
+    image_h = 1.0*scale
+    colorbar_h = 0.05*scale
+
+    l_margin = 0.05*scale
+    r_margin = 0.05*scale
+    t_margin = 0.05*scale
+    b_margin = 0.05*scale
+
+    space_h = 0.13*scale
+    space_w = 0.1*scale
+
+    fig_w = l_margin + ruler_w + space_w + image_w + r_margin
+    fig_h = t_margin + len(object_distances)*(image_h+space_h) + colorbar_h + b_margin
+    fig = plt.figure(figsize=(fig_w, fig_h), dpi=dpi)
+
     images = refocus_images(
         light_field=event.light_field, 
         object_distances=object_distances, 
@@ -73,19 +83,28 @@ def save_side_by_side(
         vmin, vmax = None, None
 
     for i, img in enumerate(images):
-        st = i*N
-        en = (i+1)*N
 
-        ax_ruler = plt.subplot(gs[st:en,0])
-        ax_image = plt.subplot(gs[st:en,1:])
+        l_anchor = l_margin
+        b_anchor = fig_h - t_margin - (i+1)*ruler_h - i*space_h
+        ax_ruler = fig.add_axes((
+            l_anchor/fig_w, 
+            b_anchor/fig_h, 
+            ruler_w/fig_w, 
+            ruler_h/fig_h))
+        ax_image = fig.add_axes((
+            (l_anchor+space_w+ruler_w)/fig_w, 
+            b_anchor/fig_h, 
+            image_w/fig_w, 
+            image_h/fig_h))
 
         add2ax_object_distance_ruler(
             ax=ax_ruler,
             object_distance=object_distances[i],
-            object_distance_min=np.min(object_distances),
-            object_distance_max=np.max(object_distances),
+            object_distance_min=np.min(object_distances)*0.95,
+            object_distance_max=np.max(object_distances)*1.05,
             label='',
-            print_value=False)
+            print_value=False,
+            color='black')
         
         ax_ruler.set_aspect('equal')
         ax_image.set_aspect('equal')
@@ -96,17 +115,41 @@ def save_side_by_side(
             vmax=vmax, 
             colorbar=False)
 
+        if cx_limit:
+            ax_image.set_xlim(cx_limit)
+
+        if cy_limit:
+            ax_image.set_ylim(cy_limit)
+
+    i+1
+
+    colorbar_ax = fig.add_axes((
+        (l_anchor+space_w+ruler_w)/fig_w, 
+        (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
+        image_w/fig_w, 
+        (colorbar_h)/fig_h
+    ))
     plt.colorbar(
         patch_collection, 
-        cax=plt.subplot(gs[en,1:]), 
+        cax=colorbar_ax,
         orientation='horizontal',)
 
-    obj_dist_label_ax = plt.subplot(gs[en,0])
-    obj_dist_label_ax.axis('off')                                     
-    obj_dist_label_ax.text(0.0, 0.0, 'object\ndistance\nkm')
-
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=fig_size.dpi)
+    obj_dist_label_ax = fig.add_axes((
+        l_anchor/fig_w, 
+        (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
+        ruler_w/fig_w,
+        (colorbar_h)/fig_h
+    ))
+    obj_dist_label_ax.axis('off')                   
+    obj_dist_label_ax.text(
+        x=0.45, y=1.6, 
+        s='object\ndistance/km', 
+        horizontalalignment='center')
+    obj_dist_label_ax.text(
+        x=0.9, y=0.2, 
+        s='photons/1', 
+        horizontalalignment='center')
+    plt.savefig(output_path, dpi=dpi)
     return fig
 
 def save_refocus_stack(
