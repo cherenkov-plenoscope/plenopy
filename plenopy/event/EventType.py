@@ -33,5 +33,5 @@ class EventType(object):
 
     def __repr__(self):
         out = 'EventType('
-        out+= str(self.type)+', Trigger: '+str(self.trigger_type)+')\n'
+        out+= str(self.type)+', Trigger: '+str(self.trigger_type)+')'
         return out

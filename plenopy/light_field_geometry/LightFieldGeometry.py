@@ -223,5 +223,5 @@ class LightFieldGeometry(object):
         out = 'LightFieldGeometry('
         out += str(self.number_lixel) + ' lixel, '
         out += str(self.number_pixel) + ' pixel, '
-        out += str(self.number_paxel) + ' paxel)\n'
+        out += str(self.number_paxel) + ' paxel)'
         return out

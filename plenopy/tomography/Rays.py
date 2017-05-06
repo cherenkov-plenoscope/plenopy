@@ -53,5 +53,5 @@ class Rays(object):
     def __repr__(self):
         out = 'Rays('
         out += str(self.support.shape[0]) + ' lixels'
-        out += ')\n'
+        out += ')'
         return out

@@ -49,5 +49,5 @@ class PhotonBunches(object):
         out = 'AirShowerPhotonBunches( '
         out += str(self.x.shape[0])+' bunches, '
         out += str(self.probability_to_reach_observation_level.sum())+' photons'
-        out += ' )\n'
+        out += ' )'
         return out

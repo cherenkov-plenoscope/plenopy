@@ -126,5 +126,5 @@ class Binning(object):
         out += 'xy_diameter='+str(self.xy_diameter)+'m in '
         out += str(self.number_xy_bins)+' x '
         out += str(self.number_xy_bins)+' x '+str(self.number_z_bins)+' bins'
-        out += ' )\n'
+        out += ' )'
         return out

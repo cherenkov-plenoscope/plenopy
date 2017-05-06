@@ -62,5 +62,5 @@ class Run(object):
     def __repr__(self):
         out = 'Run('
         out += "'" + self.path + "', "
-        out += str(self.number_events) + ' events)\n'
+        out += str(self.number_events) + ' events)'
         return out

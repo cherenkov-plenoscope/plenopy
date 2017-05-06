@@ -27,5 +27,5 @@ class EventHeader(object):
         out += 'number: '+str(self.number)+', '
         out += 'primary: '+self.primary_particle+', '
         out += 'energy: '+str(self.total_energy_GeV)+'GeV'
-        out += ' )\n'
+        out += ' )'
         return out

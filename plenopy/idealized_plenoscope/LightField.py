@@ -57,5 +57,5 @@ class LightField(object):
     def __repr__(self):
         out = 'IdealizedLightField( '
         out += str(self.x.shape[0])+' photons'
-        out += ' )\n'
+        out += ' )'
         return out

@@ -70,5 +70,5 @@ class PlenoscopeGeometry(object):
         out += 'm focal length, '
         out += str(self.expected_imaging_system_max_aperture_radius*2) 
         out += 'm mirror diameter'
-        out += ')\n'
+        out += ')'
         return out

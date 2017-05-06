@@ -51,5 +51,5 @@ class Run(object):
     def __repr__(self):
         out = 'IdealizedPlenoscopeRun('
         out += "path='" + self.path + "', "
-        out += str(self.number_events) + ' events)\n'
+        out += str(self.number_events) + ' events)'
         return out

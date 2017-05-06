@@ -43,5 +43,5 @@ class Detector(object):
     def __repr__(self):
         out = 'SimulationTruthDetector('
         out += str(self.number_air_shower_pulses())+' air-shower pulses'
-        out += ')\n'
+        out += ')'
         return out

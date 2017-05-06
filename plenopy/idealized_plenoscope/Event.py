@@ -52,7 +52,7 @@ class Event(object):
     def __repr__(self):
         out = 'IdealizedPlenoscopeEvent( '
         out += "path='" + self.path
-        out += ' )\n'
+        out += ' )'
         return out
 
     def plot(self):

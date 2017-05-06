@@ -87,5 +87,5 @@ class ImageRays(object):
     def __repr__(self):
         out = 'ImageRays('
         out += str(self.support.shape[0]) + ' image rays'
-        out += ')\n'
+        out += ')'
         return out

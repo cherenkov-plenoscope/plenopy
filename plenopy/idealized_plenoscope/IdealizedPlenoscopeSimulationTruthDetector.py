@@ -5,5 +5,5 @@ class IdealizedPlenoscopeSimulationTruthDetector(object):
     def __repr__(self):
         out = 'IdealizedPlenoscopeSimulationTruthDetector( '
         out += str(self.air_shower.shape[0])+'lixels'
-        out += ' )\n'
+        out += ' )'
         return out

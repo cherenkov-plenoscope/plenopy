@@ -30,5 +30,5 @@ class Image:
         out = 'Image('
         out += str(self.intensity.shape[0]) + ' channels, '
         out += 'Sum_intensity ' + str(round(self.intensity.sum())) + ' p.e.'
-        out += ')\n'
+        out += ')'
         return out

@@ -108,7 +108,7 @@ class Event(object):
         out = "Event("
         out += "number " + str(self.number) + ", "
         out += "type '" + self.type
-        out += "')\n"
+        out += "')"
         return out
 
 

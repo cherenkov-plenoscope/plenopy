@@ -23,5 +23,5 @@ class RunHeader(object):
     def __repr__(self):
         out = 'CorsikaRunHeader( '
         out +='number '+str(self.number)
-        out += ' )\n'
+        out += ' )'
         return out
