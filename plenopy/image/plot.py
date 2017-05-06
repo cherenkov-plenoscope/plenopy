@@ -54,8 +54,8 @@ def add_pixel_image_to_ax(
     vmin=None, 
     vmax=None, 
     colorbar=True):
-    ax.set_xlabel('x/deg')
-    ax.set_ylabel('y/deg')
+    ax.set_xlabel('cx/deg')
+    ax.set_ylabel('cy/deg')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
 
