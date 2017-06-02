@@ -54,6 +54,18 @@ def cy_std_hist(lss, ax):
     ax.set_xlabel('incoming direction stddev c' + 'y' + '/deg')
 
 
+def x_std_hist(lss, ax):
+    x_std = lss.x_std[lss.efficiency > 0.0]
+    symmetric_hist(x_std, ax)
+    ax.set_xlabel('principal apertur stddev ' + 'x' + '/m')
+
+
+def y_std_hist(lss, ax):
+    y_std = lss.y_std[lss.efficiency > 0.0]
+    symmetric_hist(y_std, ax)
+    ax.set_xlabel('principal apertur stddev ' + 'y' + '/m')
+
+
 def time_mean_hist(lss, ax):
     time_delay_mean = lss.time_delay_mean[lss.efficiency > 0.0]
     symmetric_hist(time_delay_mean, ax)

@@ -73,11 +73,25 @@ class PlotLightFieldGeometry(object):
         self.__save_fig(fig, 'x_mean.png')
         plt.close(fig)
 
+    def save_x_stddev(self):
+        fig, ax = self.fig_ax()
+        add2ax.x_std_hist(self.lfg, ax)
+        ax.semilogy()
+        self.__save_fig(fig, 'x_stddev.png')
+        plt.close(fig)
+
     def save_y_mean(self):
         fig, ax = self.fig_ax()
         add2ax.y_mean_hist(self.lfg, ax)
         ax.semilogy()
         self.__save_fig(fig, 'y_mean.png')
+        plt.close(fig)
+
+    def save_y_stddev(self):
+        fig, ax = self.fig_ax()
+        add2ax.y_std_hist(self.lfg, ax)
+        ax.semilogy()
+        self.__save_fig(fig, 'y_stddev.png')
         plt.close(fig)
 
     def save_cx_stddev(self):
@@ -179,6 +193,10 @@ class PlotLightFieldGeometry(object):
 
         jobs.append({'target': self.save_cx_stddev, 'args': []})
         jobs.append({'target': self.save_cy_stddev, 'args': []})
+
+        jobs.append({'target': self.save_x_stddev, 'args': []})
+        jobs.append({'target': self.save_y_stddev, 'args': []})
+
         jobs.append({'target': self.save_time_mean, 'args': []})
         jobs.append({'target': self.save_time_stddev, 'args': []})
 
