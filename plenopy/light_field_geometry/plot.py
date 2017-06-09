@@ -5,7 +5,7 @@ from matplotlib.collections import PolyCollection
 
 def symmetric_hist(vals, ax, nbins=None):
     if nbins == None:
-        nbins = np.floor(np.sqrt(vals.shape[0]))
+        nbins = int(np.floor(np.sqrt(vals.shape[0])))
     bins, bin_esdges = np.histogram(vals, bins=nbins)
     bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])
     ax.set_xlim([1.025 * bin_esdges[0], 1.025 * bin_esdges[-1]])
@@ -95,8 +95,8 @@ def efficieny_relative_error_hist(lss, ax):
 
 
 def hist_2d(x, y, ax, aspect='auto'):
-    nbins_x = np.sqrt(x.shape[0])
-    nbins_y = np.sqrt(y.shape[0])
+    nbins_x = int(np.floor(np.sqrt(x.shape[0])))
+    nbins_y = int(np.floor(np.sqrt(y.shape[0])))
     bins, xedges, yedges = np.histogram2d(x, y, bins=[nbins_x, nbins_y])
     im = ax.imshow(
         bins.T,
