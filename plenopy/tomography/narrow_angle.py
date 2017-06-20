@@ -209,15 +209,12 @@ def update_narrow_beam(
     i = 0
     voxel_diffs = np.zeros(vol_I.shape[0], dtype=np.float32)
     for voxel_index in tqdm.tqdm(psf_mask_indicies, disable=(not show_progress)):
+        number_of_voxels_in_psf = calc_number_of_voxels(voxel_index, psf, i_psf)
+
+        rays_in_voxel = psf[voxel_index]
+        measured_I_of_voxel = measured_I[rays_in_voxel].sum()/number_of_voxels_in_psf
 
         voxel_z_index = flat_voxel_index_to_z_index(voxel_index, binning)
-        rays_in_voxel = psf[voxel_index]
-
-        number_of_voxels_in_psf = 0
-        for ray in rays_in_voxel:
-            number_of_voxels_in_psf += len(i_psf[ray])
-
-        measured_I_of_voxel = measured_I[rays_in_voxel].sum()/number_of_voxels_in_psf
         image_2_cartesian_norm = (max_ray_count_vs_z[voxel_z_index])**(1/3)
         measured_I_of_voxel *= image_2_cartesian_norm
 
@@ -303,3 +300,12 @@ def cached_tomographic_point_spread_function(
             i_psf = pickle.load(f)
 
     return psf, i_psf
+
+
+def calc_number_of_voxels(voxel_index, psf, i_psf):
+    rays_in_voxel = psf[voxel_index]
+
+    number_of_voxels_in_psf = 0
+    for ray in rays_in_voxel:
+        number_of_voxels_in_psf += len(i_psf[ray])
+    return number_of_voxels_in_psf
