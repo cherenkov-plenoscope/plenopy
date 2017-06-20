@@ -144,9 +144,9 @@ def tomographic_point_spread_function(rays, binning, show_progress=False):
             # lowest and uppermost bins
             if (
                 x_bins[i] > 0 and
-                x_bins[i] < binning.number_xy_bins-1 and
+                x_bins[i] < len(binning.xy_bin_edges) and
                 y_bins[i] > 0 and
-                y_bins[i] < binning.number_xy_bins-1
+                y_bins[i] < len(binning.xy_bin_edges)
             ):
 
                 x_bin = x_bins[i] - 1
