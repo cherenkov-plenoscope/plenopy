@@ -17,10 +17,10 @@ class Rays(object):
         Parameters
         ----------
 
-        x, y        The x and y intersections of the rays on the principal 
+        x, y        The x and y intersections of the rays on the principal
                     aperture plane.
 
-        cx, cy      The cos x and cos y direction components of the rays 
+        cx, cy      The cos x and cos y direction components of the rays
                     relative to the principal aperture plane.
         """
         number_lixel = x.shape[0]
@@ -32,14 +32,14 @@ class Rays(object):
     @classmethod
     def from_light_field_geometry(cls, light_field_geometry):
         return cls(
-            x=light_field_geometry.x_mean, 
-            y=light_field_geometry.y_mean, 
-            cx=light_field_geometry.cx_mean, 
+            x=light_field_geometry.x_mean,
+            y=light_field_geometry.y_mean,
+            cx=light_field_geometry.cx_mean,
             cy=light_field_geometry.cy_mean)
 
     def xy_intersections_in_object_distance(self, object_distance):
         """
-        Returns the x,y intersections of the lixel rays with the x,y plane 
+        Returns the x,y intersections of the lixel rays with the x,y plane
         at z=object_distance.
 
         Parameters
