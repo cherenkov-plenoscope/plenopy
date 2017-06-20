@@ -45,10 +45,27 @@ class Rays(object):
         Parameters
         ----------
         object_distance     The distance to the principal aperture plane.
+                            scalar or 1D array.
+
+        Returns
+        --------
+
+        intersections:
+
+        if `object_distance` is a scalar returns a 2D array (M, 2)
+            M: number of rays
+        else it returns a 2D array (M, N, 2)
+            M: number of rays
+            N: number of object distances
         """
+        object_distance = np.atleast_3d(object_distance)
         scale_factors = object_distance / self.direction[:, 2]
-        pos3D = self.support - (scale_factors * self.direction.T).T
-        return pos3D[:, 0:2]
+        pos3D = self.support[:, None, :] - (
+            scale_factors * self.direction.T[:, None, :]).T
+        if object_distance.shape[1] == 1:
+            return pos3D[:, 0, 0:2]
+        else:
+            return pos3D[..., 0:2]
 
     def __repr__(self):
         out = 'Rays('
