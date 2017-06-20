@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import plenopy as pl
+import pkg_resources
 
 def test_binning_flat_voxel_center_positions():
     binning = pl.tomography.Binning(
@@ -78,3 +79,32 @@ def test_matrix_2_image_min_max():
     assert matrix2d[0,0] == image_bgr[0,0,color_channel]
     assert matrix2d[1,1] == image_bgr[1,1,color_channel]
     assert matrix2d[2,2] == image_bgr[2,2,color_channel]
+
+
+def test_psf():
+    run_path = pkg_resources.resource_filename(
+        'plenopy',
+        'tests/resources/run.acp')
+    r = pl.Run(run_path)
+    rays = pl.tomography.Rays.from_light_field_geometry(r.light_field_geometry)
+    binning = pl.tomography.Binning(
+        z_min=1e3,
+        z_max=6e3,
+        number_z_bins=16,
+        xy_diameter=1e3,
+        number_xy_bins=16
+    )
+    rays_in_voxels, _ = pl.tomography.narrow_angle.tomographic_point_spread_function(
+        rays=rays,
+        binning=binning
+    )
+
+    psf = pl.tomography.narrow_angle.tomographic_point_spread_function_sparse(
+        rays=rays,
+        binning=binning
+    )
+
+    for voxel_id, ray in enumerate(rays_in_voxels):
+        for ray_id in ray:
+            assert psf[voxel_id, ray_id] == 1.
+
