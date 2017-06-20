@@ -28,7 +28,8 @@ class NarrowAngleTomography(object):
         binning,
         ray_threshold=10,
         show_progress=False,
-        psf_cache_dir='.'):
+        psf_cache_dir='.'
+    ):
 
         self.rays = rays
         self.binning = binning
@@ -56,7 +57,7 @@ class NarrowAngleTomography(object):
         ray_count_hist = histogram(
             rays=self.rays,
             binning=self.binning)
-        self.max_ray_count_vs_z =  max_intensity_vs_z(ray_count_hist)
+        self.max_ray_count_vs_z = max_intensity_vs_z(ray_count_hist)
 
         if self.show_progress:
             print('Exclude voxels from reconstruction with less than '+str(ray_threshold)+' rays')
@@ -71,8 +72,6 @@ class NarrowAngleTomography(object):
         self.rec_I_vol = np.zeros(self.binning.number_bins, dtype=np.float32)
 
         self.iteration = 0
-        initial_diff = 0.0
-
 
     def one_more_iteration(self):
         if self.show_progress:
@@ -89,8 +88,6 @@ class NarrowAngleTomography(object):
             show_progress=self.show_progress)
 
         diff = np.abs(rec_I_vol_n - self.rec_I_vol).sum()
-        if self.iteration == 0:
-            initial_diff = diff
 
         if self.show_progress:
             print('Intensity difference to previous iteration '+str(diff))
@@ -138,17 +135,19 @@ def tomographic_point_spread_function(rays, binning, show_progress=False):
 
     for z_bin, z in tqdm.tqdm(enumerate(binning.z_bin_centers), disable=(not show_progress)):
         xys = rays.xy_intersections_in_object_distance(z)
-        x_bins = np.digitize(x=xys[:,0], bins=binning.xy_bin_edges)
-        y_bins = np.digitize(x=xys[:,1], bins=binning.xy_bin_edges)
+        x_bins = np.digitize(x=xys[:, 0], bins=binning.xy_bin_edges)
+        y_bins = np.digitize(x=xys[:, 1], bins=binning.xy_bin_edges)
 
         for i in range(number_of_rays):
 
             # np.digitize has no over and under flow bins, so we ignore the
             # lowest and uppermost bins
-            if (x_bins[i] > 0 and
+            if (
+                x_bins[i] > 0 and
                 x_bins[i] < binning.number_xy_bins-1 and
                 y_bins[i] > 0 and
-                y_bins[i] < binning.number_xy_bins-1):
+                y_bins[i] < binning.number_xy_bins-1
+            ):
 
                 x_bin = x_bins[i] - 1
                 y_bin = y_bins[i] - 1
@@ -172,7 +171,8 @@ def update_narrow_beam(
     i_psf,
     max_ray_count_vs_z,
     binning,
-    show_progress=False):
+    show_progress=False
+):
     """
     Returns an updated copy of the intensitiy volume 'vol_I'.
 
@@ -261,7 +261,12 @@ def flat_volume_intensity_3d_reshape(vol_I, binning):
         binning.number_z_bins), order='F')
 
 
-def cached_tomographic_point_spread_function(rays, binning, show_progress=False, path='.'):
+def cached_tomographic_point_spread_function(
+    rays,
+    binning,
+    show_progress=False,
+    path='.'
+):
     """
     Caches the tomographic point spread function.
 
