@@ -112,49 +112,43 @@ def tomographic_point_spread_function_sparse(rays, binning):
     Here 'rays_in_voxels' is the estimate of which rays participate to which
     volume cells (voxels).
     """
-    number_of_voxels = binning.number_bins
-    number_of_rays = rays.support.shape[0]
 
-    intersections = rays.xy_intersections_in_object_distance(binning.z_bin_centers)
+    intersections = rays.intersections_with_xy_plane(
+        binning.z_bin_centers
+    ).reshape(-1, 3)
+    # intersections = (n_rays * n_planes, 3)
 
-    x_bins = np.digitize(x=intersections[:, :, 0], bins=binning.xy_bin_edges)-1
-    y_bins = np.digitize(x=intersections[:, :, 1], bins=binning.xy_bin_edges)-1
+    bins = np.ones_like(intersections, dtype=np.int32)
+    bins[:, 0] = np.digitize(intersections[:, 0], binning.xy_bin_edges)-1
+    bins[:, 1] = np.digitize(intersections[:, 1], binning.xy_bin_edges)-1
+    bins[:, 2] = np.digitize(intersections[:, 2], binning.z_bin_edges)-1
 
-    list_of_ray_ids = []
-    list_of_voxel_ids = []
+    ray_ids = np.arange(rays.support.shape[0]).repeat(binning.number_z_bins)
 
-    for ray_id in range(number_of_rays):
-        x_bins_of_ray = x_bins[ray_id]
-        y_bins_of_ray = y_bins[ray_id]
-        z_bins_of_ray = np.arange(len(binning.z_bin_centers))
+    good = (bins[:, 0] >= 0) & (bins[:, 1] >= 0) & (bins[:, 2] >= 0)
+    good &= (bins[:, 0] < binning.number_xy_bins)
+    good &= (bins[:, 1] < binning.number_xy_bins)
+    good &= (bins[:, 2] < binning.number_z_bins)
 
-        good = (x_bins_of_ray >= 0) & (x_bins_of_ray < binning.number_xy_bins)
-        good &= (y_bins_of_ray >= 0) & (y_bins_of_ray < binning.number_xy_bins)
+    bins = bins[good]
+    ray_ids = ray_ids[good]
 
-        voxel_indices = np.ravel_multi_index(
-            [
-                x_bins_of_ray[good],
-                y_bins_of_ray[good],
-                z_bins_of_ray[good]
-            ],
-            dims=binning.dims,
-            order='F'
-        )
-
-        list_of_voxel_ids.append(voxel_indices)
-        list_of_ray_ids.append(
-            np.ones_like(voxel_indices) * ray_id
-        )
-
-    voxel_ids = np.concatenate(list_of_voxel_ids)
-    ray_ids = np.concatenate(list_of_ray_ids)
+    voxel_ids = np.ravel_multi_index(
+        bins.T,
+        dims=binning.dims,
+        order='F'
+    )
 
     psf = coo_matrix(
         (
             np.ones_like(voxel_ids),
             (voxel_ids, ray_ids)
         ),
-        shape=(number_of_voxels, number_of_rays)
+        shape=(
+            binning.number_bins,
+            rays.support.shape[0]
+        ),
+        dtype=np.float32
     )
 
     return psf.tocsr()
