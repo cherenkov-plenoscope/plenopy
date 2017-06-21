@@ -13,9 +13,6 @@ This 'narrow angle tomography' or '3D deconvolution' is inspired by:
 }
 """
 import numpy as np
-import tqdm
-import os
-import pickle
 import shelve
 from scipy.sparse import coo_matrix
 from .filtered_back_projection import max_intensity_vs_z
