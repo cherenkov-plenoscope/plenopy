@@ -13,10 +13,16 @@ This 'narrow angle tomography' or '3D deconvolution' is inspired by:
 }
 """
 import numpy as np
-import shelve
 from scipy.sparse import coo_matrix
 from .filtered_back_projection import max_intensity_vs_z
 from .filtered_back_projection import histogram
+
+import os
+from joblib import Memory
+
+cachedir = '/tmp/joblib_cache_plenopy'
+os.makedirs(cachedir, exist_ok=True)
+memory = Memory(cachedir=cachedir, verbose=0)
 
 
 class NarrowAngleTomography(object):
@@ -35,10 +41,9 @@ class NarrowAngleTomography(object):
         self._psf_cache_dir = psf_cache_dir
         self.iteration = 0
 
-        self.psf = cached_tomographic_point_spread_function(
+        self.psf = tomographic_point_spread_function_sparse(
             rays=rays,
-            binning=self.binning,
-            path=self._psf_cache_dir)
+            binning=self.binning)
 
         self.psf_mask = mask_voxels_with_minimum_number_of_rays(
             psf=self.psf,
@@ -77,6 +82,7 @@ class NarrowAngleTomography(object):
             binning=self.binning)
 
 
+@memory.cache
 def tomographic_point_spread_function_sparse(rays, binning):
     """
     returns a 2D scipy.sparse.coo_matrix of
@@ -180,29 +186,6 @@ def unmask_intensity_volume(vol_I, psf_mask, binning):
 
 def flat_volume_intensity_3d_reshape(vol_I, binning):
     return vol_I.reshape(binning.dims, order='F')
-
-
-def cached_tomographic_point_spread_function(
-    rays,
-    binning,
-    path='.'
-):
-    """
-    Caches the tomographic point spread function.
-
-    Parameters
-    ----------
-
-    path                The path to the directory where the hidden cache files
-                        shall be written to.
-    """
-    with shelve.open(path+'_psf.shelve') as db:
-        if 'psf' not in db:
-            db['psf'] = tomographic_point_spread_function_sparse(
-                rays=rays,
-                binning=binning)
-
-        return db['psf']
 
 
 def precompute__max_ray_count_vs_z(rays, psf, binning):
