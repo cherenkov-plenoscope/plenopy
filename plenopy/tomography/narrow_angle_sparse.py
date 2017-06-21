@@ -159,14 +159,11 @@ def update_narrow_beam(
     number_of_voxels_in_psf_per_voxel,
 ):
 
-    measured_I_of_voxel = (
-            psf.dot(measured_I) * max_ray_count_vs_z /
-            number_of_voxels_in_psf_per_voxel
-            )
-
-    proj_I_of_voxel = psf.dot(psf.T.dot(vol_I)) / number_of_voxels_in_psf_per_voxel
+    measured_I_of_voxel = (psf.dot(measured_I) * max_ray_count_vs_z)
+    proj_I_of_voxel = psf.dot(psf.T.dot(vol_I))
 
     voxel_diffs = measured_I_of_voxel - proj_I_of_voxel
+    voxel_diffs /= number_of_voxels_in_psf_per_voxel
 
     vol_I += voxel_diffs
     vol_I[vol_I < 0.0] = 0.0
