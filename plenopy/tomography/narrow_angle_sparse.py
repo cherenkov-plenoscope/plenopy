@@ -40,23 +40,21 @@ class NarrowAngleTomography(object):
             binning=self.binning,
             path=self._psf_cache_dir)
 
-        self.number_of_voxels_in_psf_per_voxel = self.psf.dot(
-            self.psf.T.sum(axis=1)
-        ).A[:, 0]
-
         self.psf_mask = mask_voxels_with_minimum_number_of_rays(
             psf=self.psf,
             ray_threshold=ray_threshold)
+
+        self.number_of_voxels_in_psf_per_voxel = self.psf.dot(
+            self.psf.T.sum(axis=1)
+        ).A[:, 0][self.psf_mask]
 
         self.max_ray_count_vs_z = precompute__max_ray_count_vs_z(
             rays=self.rays,
             psf=self.psf,
             binning=self.binning,
-        )
+        )[self.psf_mask]
 
-        self.max_ray_count_vs_z = self.max_ray_count_vs_z[self.psf_mask]
         self.psf = self.psf[self.psf_mask]
-        self.number_of_voxels_in_psf_per_voxel = self.number_of_voxels_in_psf_per_voxel[self.psf_mask]
         self.rec_I_vol = np.zeros(self.psf.shape[0], dtype=np.float32)
 
     def one_more_iteration(self):
