@@ -48,15 +48,10 @@ class NarrowAngleTomography(object):
             psf=self.psf,
             ray_threshold=ray_threshold)
 
-        ray_count_hist = histogram(
-            rays=self.rays,
-            binning=self.binning)
-        self.max_ray_count_vs_z = max_intensity_vs_z(ray_count_hist)
-
         self.max_ray_count_vs_z = precompute__max_ray_count_vs_z(
+            rays=self.rays,
             psf=self.psf,
             binning=self.binning,
-            max_ray_count_vs_z=self.max_ray_count_vs_z
         )
 
         self.max_ray_count_vs_z = self.max_ray_count_vs_z[self.psf_mask]
@@ -203,12 +198,18 @@ def cached_tomographic_point_spread_function(
         return db['psf']
 
 
-def precompute__max_ray_count_vs_z(psf, binning, max_ray_count_vs_z):
+def precompute__max_ray_count_vs_z(rays, psf, binning):
     '''
     A normalization factor needed when reconstructing
     directly in cartesian space to counter act the thinning
     of rays with rising altitude.
     '''
+    ray_count_hist = histogram(
+            rays=rays,
+            binning=binning)
+
+    max_ray_count_vs_z = max_intensity_vs_z(ray_count_hist)
+
     flat_voxel_indices = np.arange(psf.shape[0])
     voxel_z_indices = np.unravel_index(
         flat_voxel_indices,
@@ -216,4 +217,3 @@ def precompute__max_ray_count_vs_z(psf, binning, max_ray_count_vs_z):
         order='F'
     )[2]
     return max_ray_count_vs_z[voxel_z_indices]**(1/3)
-
