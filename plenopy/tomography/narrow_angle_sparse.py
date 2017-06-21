@@ -177,10 +177,7 @@ def mask_voxels_with_minimum_number_of_rays(psf, ray_threshold):
 
 
 def flat_volume_intensity_3d_reshape(vol_I, binning):
-    return vol_I.reshape((
-        binning.number_xy_bins,
-        binning.number_xy_bins,
-        binning.number_z_bins), order='F')
+    return vol_I.reshape(binning.dims, order='F')
 
 
 def cached_tomographic_point_spread_function(
