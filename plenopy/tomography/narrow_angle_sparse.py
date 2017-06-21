@@ -38,10 +38,14 @@ class NarrowAngleTomography(object):
         self._psf_cache_dir = psf_cache_dir
         self.iteration = 0
 
-        self.psf, self.number_of_voxels_in_psf_per_voxel = cached_tomographic_point_spread_function(
+        self.psf = cached_tomographic_point_spread_function(
             rays=rays,
             binning=self.binning,
             path=self._psf_cache_dir)
+
+        self.number_of_voxels_in_psf_per_voxel = self.psf.dot(
+            self.psf.T.sum(axis=1)
+        ).A[:, 0]
 
         self.psf_mask = mask_voxels_with_minimum_number_of_rays(
             psf=self.psf,
@@ -215,25 +219,7 @@ def cached_tomographic_point_spread_function(
                 binning=binning,
                 show_progress=show_progress)
 
-        psf = db['psf']
-
-        # ~12min on my machine (DN)
-        if 'number_of_voxels_in_psf_per_voxel' not in db:
-            db['number_of_voxels_in_psf_per_voxel'] = precompute__number_of_voxels_in_psf(psf, chunksize=2000)
-
-        return psf, db['number_of_voxels_in_psf_per_voxel']
-
-
-def precompute__number_of_voxels_in_psf(psf, chunksize=1000):
-    n = np.zeros(psf.shape[0])
-    n_chunks = int(np.ceil(psf.shape[0] / chunksize))
-    for i in range(n_chunks):
-        chunk = slice(
-            i*chunksize,
-            (i+1)*chunksize if (i+1)*chunksize < psf.shape[0] else None)
-        x = psf.dot(psf[chunk].T).sum(axis=0)
-        n[chunk] = x[:]
-    return n
+        return db['psf']
 
 
 def precompute__max_ray_count_vs_z(psf, binning, max_ray_count_vs_z):
