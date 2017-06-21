@@ -87,7 +87,7 @@ class NarrowAngleTomography(object):
             binning=self.binning)
 
 
-def tomographic_point_spread_function_sparse(rays, binning, show_progress=False):
+def tomographic_point_spread_function_sparse(rays, binning):
     """
     returns a 2D scipy.sparse.coo_matrix of
         shape=(N_voxels, N_rays) and
@@ -108,8 +108,6 @@ def tomographic_point_spread_function_sparse(rays, binning, show_progress=False)
 
     binning         The binning of the cartesian volume above the principal
                     aperture plane.
-
-    show_progress   Prints a progressbar to std out. (Default: False)
 
     Here 'rays_in_voxels' is the estimate of which rays participate to which
     volume cells (voxels).
@@ -200,7 +198,6 @@ def flat_volume_intensity_3d_reshape(vol_I, binning):
 def cached_tomographic_point_spread_function(
     rays,
     binning,
-    show_progress=False,
     path='.'
 ):
     """
@@ -216,8 +213,7 @@ def cached_tomographic_point_spread_function(
         if 'psf' not in db:
             db['psf'] = tomographic_point_spread_function_sparse(
                 rays=rays,
-                binning=binning,
-                show_progress=show_progress)
+                binning=binning)
 
         return db['psf']
 
