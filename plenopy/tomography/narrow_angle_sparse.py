@@ -71,11 +71,11 @@ class NarrowAngleTomography(object):
         self.rec_I_vol = rec_I_vol_n
         self.iteration += 1
 
-        foo = np.zeros(self.binning.number_bins, dtype=np.float32)
-        foo[self.psf_mask] = self.rec_I_vol[:]
-
         self.intensity_volume = flat_volume_intensity_3d_reshape(
-            vol_I=foo,
+            vol_I=unmask_intensity_volume(
+                self.rec_I_vol,
+                self.psf_mask,
+                self.binning),
             binning=self.binning)
 
 
@@ -169,6 +169,15 @@ def update_narrow_beam(
 def mask_voxels_with_minimum_number_of_rays(psf, ray_threshold):
     mask = psf.sum(axis=1).A[:, 0] > ray_threshold
     return mask
+
+
+def unmask_intensity_volume(vol_I, psf_mask, binning):
+    foo = np.zeros(
+        binning.number_bins,
+        dtype=np.float32
+    )
+    foo[psf_mask] = vol_I[:]
+    return foo
 
 
 def flat_volume_intensity_3d_reshape(vol_I, binning):
