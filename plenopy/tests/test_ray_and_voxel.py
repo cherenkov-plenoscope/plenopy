@@ -468,3 +468,35 @@ def test_overlap_in_octtree_space_edge_cases():
     assert len(ol['y']) == 0
     assert len(ol['z']) == 0
     assert len(ol['overlap']) == 0
+
+
+def test_non_straight_overlaps():
+    ol = pl.tomography.ray_and_voxel.overlap_of_ray_with_voxels(
+        support=np.array([-1,-1,-1]), 
+        direction=np.array([1,1,1]), 
+        x_bin_edges=np.linspace(-1,1,3), 
+        y_bin_edges=np.linspace(-1,1,3), 
+        z_bin_edges=np.linspace(-1,1,3)
+    )
+    assert len(ol['x']) == 2
+    assert len(ol['y']) == 2
+    assert len(ol['z']) == 2
+    assert len(ol['overlap']) == 2
+    assert ol['x'][0] == 0
+    assert ol['x'][1] == 1
+    assert ol['y'][0] == 0
+    assert ol['y'][1] == 1
+    assert ol['z'][0] == 0
+    assert ol['z'][1] == 1
+    assert np.abs(ol['overlap'][0] - np.linalg.norm(np.array([1,1,1]))) < 1e-6
+    assert np.abs(ol['overlap'][1] - np.linalg.norm(np.array([1,1,1]))) < 1e-6
+
+
+def test_non_linear_voxel_space():
+    ol = pl.tomography.ray_and_voxel.overlap_of_ray_with_voxels(
+        support=np.array([0,.1,0]), 
+        direction=np.array([.1,.5,1]), 
+        x_bin_edges=np.logspace(0,1,10), 
+        y_bin_edges=np.logspace(0,1,10), 
+        z_bin_edges=np.logspace(0,1,10)
+    )
