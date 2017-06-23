@@ -468,13 +468,3 @@ def test_overlap_in_octtree_space_edge_cases():
     assert len(ol['y']) == 0
     assert len(ol['z']) == 0
     assert len(ol['overlap']) == 0
-
-"""
-def random_directions(n):
-    x = np.random.uniform(-1,1, int(n))
-    y = np.random.uniform(-1,1, int(n))
-    z = np.random.uniform(-1,1, int(n))
-    r = np.sqrt(x*x+y*y+z*z)
-    v = (r<=1.0)*(r>0.0)
-    return np.array([x[v]/r[v],y[v]/r[v],z[v]/r[v]]).T
-"""
