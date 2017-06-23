@@ -11,14 +11,15 @@ def overlap_of_ray_with_voxels(
 ):  
     '''
     Returns lists of the x,y, and z bin indices and the distance overlap of a
-    ray and volume cells.
+    ray and voxel.
+
 
     Parameters
     ----------
 
-    support         3D support vector of ray
+    support         3D support vector of the ray
 
-    direction       3D direction vector of ray
+    direction       3D direction vector of the ray
 
     x_bin_edges     1D array of bin edge positions in x
 
@@ -63,11 +64,9 @@ def _overlap_of_ray_with_voxels(
     y_partitions = _next_space_partitions(y_range)
     z_partitions = _next_space_partitions(z_range)
 
-
     for xp in x_partitions:
         for yp in y_partitions:
             for zp in z_partitions:
-
                 overlap = _ray_box_overlap(
                     support=support, 
                     direction=direction, 
@@ -78,8 +77,6 @@ def _overlap_of_ray_with_voxels(
                     zl=z_bin_edges[zp[0]],
                     zu=z_bin_edges[zp[1]]
                 )
-
-                #print(xp,yp,zp,overlap)
 
                 if (
                     xp[1]-xp[0]==1 and 
@@ -188,12 +185,15 @@ def _intersection_plane(support, direction, off, dim):
 
 
 def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
+    '''
+    For plotting using the xyzI representation.
+    Returns a 2D matrix (Nx4) of N overlaps of a ray with xoxels. Each row is 
+    [x,y,z positions and overlapping distance].
+    '''
     x_bin_centers = (x_bin_edges[0:-1] + x_bin_edges[1:])/2
     y_bin_centers = (y_bin_edges[0:-1] + y_bin_edges[1:])/2
     z_bin_centers = (z_bin_edges[0:-1] + z_bin_edges[1:])/2
-
     xyzI = np.zeros(shape=(len(overlap['overlap']),4))
-
     for i in range(len(overlap['overlap'])):
         xyzI[i] = np.array([
             x_bin_centers[overlap['x'][i]],
@@ -201,5 +201,4 @@ def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
             z_bin_centers[overlap['z'][i]],
             overlap['overlap'][i],
         ])
-
     return xyzI
