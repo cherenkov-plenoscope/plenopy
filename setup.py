@@ -49,13 +49,24 @@ setup(
     cmdclass = {'build_ext': build_ext},
     ext_modules = [
         Extension(
-            "plenopy.photon_stream.cython_reader",
+            "plenopy.tomography.cython_ray_and_voxel",
             sources=[
-                "plenopy/photon_stream/cython_reader.pyx", 
-                "plenopy/photon_stream/reader.cpp"],
+                "plenopy/tomography/cython_ray_and_voxel.pyx",
+                "plenopy/tomography/ray_and_voxel.cpp",
+            ],
             include_dirs=[numpy.get_include(), "plenopy"],
             language="c++",
             extra_compile_args=['-std=c++0x']
-        )
+        ),
+        Extension(
+            "plenopy.photon_stream.cython_reader",
+            sources=[
+                "plenopy/photon_stream/cython_reader.pyx", 
+                "plenopy/photon_stream/reader.cpp"
+            ],
+            include_dirs=[numpy.get_include(), "plenopy"],
+            language="c++",
+            extra_compile_args=['-std=c++0x']
+        ),
     ],
 )

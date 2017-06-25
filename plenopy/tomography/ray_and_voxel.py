@@ -1,5 +1,7 @@
 import numpy as np
 import array as ar
+from .cython_ray_and_voxel import ray_box_overlap as _c_ray_box_overlap
+from .cython_ray_and_voxel import overlap_of_ray_with_voxels as _c_overlap_of_ray_with_voxels
 
 
 def overlap_of_ray_with_voxels(
@@ -27,6 +29,8 @@ def overlap_of_ray_with_voxels(
 
     z_bin_edges     1D array of bin edge positions in z
     '''
+
+    """
     overlaps = {
         'x': ar.array('L'),
         'y': ar.array('L'),
@@ -47,6 +51,17 @@ def overlap_of_ray_with_voxels(
     )
 
     return overlaps
+    """
+    return _c_overlap_of_ray_with_voxels(
+        support=np.ascontiguousarray(support, dtype=np.float64), 
+        direction=np.ascontiguousarray(direction, dtype=np.float64), 
+        x_bin_edges=np.ascontiguousarray(x_bin_edges, dtype=np.float64), 
+        y_bin_edges=np.ascontiguousarray(y_bin_edges, dtype=np.float64), 
+        z_bin_edges=np.ascontiguousarray(z_bin_edges, dtype=np.float64),
+        x_range=np.ascontiguousarray(np.array([0, len(x_bin_edges) - 1]), dtype=np.uint32),
+        y_range=np.ascontiguousarray(np.array([0, len(y_bin_edges) - 1]), dtype=np.uint32),
+        z_range=np.ascontiguousarray(np.array([0, len(z_bin_edges) - 1]), dtype=np.uint32),       
+    )
 
 
 def _overlap_of_ray_with_voxels(
@@ -67,9 +82,9 @@ def _overlap_of_ray_with_voxels(
     for xp in x_partitions:
         for yp in y_partitions:
             for zp in z_partitions:
-                overlap = _ray_box_overlap(
-                    support=support, 
-                    direction=direction, 
+                overlap = _c_ray_box_overlap(
+                    support=support,
+                    direction=direction,
                     xl=x_bin_edges[xp[0]], 
                     xu=x_bin_edges[xp[1]], 
                     yl=y_bin_edges[yp[0]], 
@@ -148,29 +163,28 @@ def _ray_box_overlap(support, direction, xl, xu, yl, yu, zl, zu):
         if (izu[0]>=xl and izu[0]<=xu) and (izu[1]>=yl and izu[1]<=yu):
             hits_u.append(izu)
 
-
-    #print('l', hits_l,'u', hits_u)
+    norm = np.linalg.norm
 
     if   len(hits_l) == 2 and len(hits_u) == 0:
-        return np.linalg.norm(hits_l[0] - hits_l[1])
+        return norm(hits_l[0] - hits_l[1])
 
     elif len(hits_l) == 0 and len(hits_u) == 2:
-        return np.linalg.norm(hits_u[0] - hits_u[1])
+        return norm(hits_u[0] - hits_u[1])
 
     elif len(hits_l) == 1 and len(hits_u) == 1:
-        return np.linalg.norm(hits_u[0] - hits_l[0])
+        return norm(hits_u[0] - hits_l[0])
 
     elif len(hits_l) == 3 and len(hits_u) == 3:
-        return np.linalg.norm(hits_u[0] - hits_l[0])
+        return norm(hits_u[0] - hits_l[0])
 
     elif len(hits_l) == 2 and len(hits_u) == 2:
-        return np.linalg.norm(hits_u[0] - hits_l[0])
+        return norm(hits_u[0] - hits_l[0])
 
     elif len(hits_l) == 3 and len(hits_u) == 0:
         return np.sqrt((xu-xl)**2 + (yu-yl)**2 + (zu-zl)**2)
 
     elif len(hits_l) > 0 and len(hits_u) > 0:
-        return np.linalg.norm(hits_u[0] - hits_l[0])
+        return norm(hits_u[0] - hits_l[0])
 
     elif len(hits_l) == 0 and len(hits_u) == 3:
         return np.sqrt((xu-xl)**2 + (yu-yl)**2 + (zu-zl)**2)    
