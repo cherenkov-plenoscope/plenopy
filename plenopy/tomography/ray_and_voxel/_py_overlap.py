@@ -1,7 +1,5 @@
 import numpy as np
 import array as ar
-from .cython_ray_and_voxel import ray_box_overlap as _c_ray_box_overlap
-from .cython_ray_and_voxel import overlap_of_ray_with_voxels as _c_overlap_of_ray_with_voxels
 
 
 def overlap_of_ray_with_voxels(
@@ -9,7 +7,10 @@ def overlap_of_ray_with_voxels(
     direction, 
     x_bin_edges, 
     y_bin_edges, 
-    z_bin_edges
+    z_bin_edges,
+    x_range,
+    y_range,
+    z_range,
 ):  
     '''
     Returns lists of the x,y, and z bin indices and the distance overlap of a
@@ -29,8 +30,6 @@ def overlap_of_ray_with_voxels(
 
     z_bin_edges     1D array of bin edge positions in z
     '''
-
-    """
     overlaps = {
         'x': ar.array('L'),
         'y': ar.array('L'),
@@ -45,23 +44,16 @@ def overlap_of_ray_with_voxels(
         y_bin_edges=y_bin_edges, 
         z_bin_edges=z_bin_edges,
         overlaps=overlaps,
-        x_range=[0, len(x_bin_edges) - 1],
-        y_range=[0, len(y_bin_edges) - 1],
-        z_range=[0, len(z_bin_edges) - 1],
+        x_range=x_range,
+        y_range=y_range,
+        z_range=z_range,
     )
-
-    return overlaps
-    """
-    return _c_overlap_of_ray_with_voxels(
-        support=np.ascontiguousarray(support, dtype=np.float64), 
-        direction=np.ascontiguousarray(direction, dtype=np.float64), 
-        x_bin_edges=np.ascontiguousarray(x_bin_edges, dtype=np.float64), 
-        y_bin_edges=np.ascontiguousarray(y_bin_edges, dtype=np.float64), 
-        z_bin_edges=np.ascontiguousarray(z_bin_edges, dtype=np.float64),
-        x_range=np.ascontiguousarray(np.array([0, len(x_bin_edges) - 1]), dtype=np.uint32),
-        y_range=np.ascontiguousarray(np.array([0, len(y_bin_edges) - 1]), dtype=np.uint32),
-        z_range=np.ascontiguousarray(np.array([0, len(z_bin_edges) - 1]), dtype=np.uint32),       
-    )
+    return {
+        'x': np.array(overlaps['x']),
+        'y': np.array(overlaps['y']),
+        'z': np.array(overlaps['z']),
+        'overlap': np.array(overlaps['overlap']),
+    }
 
 
 def _overlap_of_ray_with_voxels(
@@ -82,7 +74,7 @@ def _overlap_of_ray_with_voxels(
     for xp in x_partitions:
         for yp in y_partitions:
             for zp in z_partitions:
-                overlap = _c_ray_box_overlap(
+                overlap = _ray_box_overlap(
                     support=support,
                     direction=direction,
                     xl=x_bin_edges[xp[0]], 
