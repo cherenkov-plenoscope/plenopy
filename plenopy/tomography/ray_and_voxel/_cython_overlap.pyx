@@ -74,7 +74,7 @@ def overlap_of_ray_with_voxels(
     z_range_width = z_range[1] - z_range[0]
     
     maximal_number_of_overlaps = int(
-        3.0*np.sqrt(
+        4.0*np.sqrt(
            x_range_width**2 + 
            y_range_width**2 + 
            z_range_width**2
