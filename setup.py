@@ -49,10 +49,10 @@ setup(
     cmdclass = {'build_ext': build_ext},
     ext_modules = [
         Extension(
-            "plenopy.tomography.cython_ray_and_voxel",
+            "plenopy.tomography.ray_and_voxel.overlap",
             sources=[
-                "plenopy/tomography/cython_ray_and_voxel.pyx",
-                "plenopy/tomography/ray_and_voxel.cpp",
+                "plenopy/tomography/ray_and_voxel/_c_overlap.pyx",
+                "plenopy/tomography/ray_and_voxel/_c_overlap.cpp",
             ],
             include_dirs=[numpy.get_include(), "plenopy"],
             language="c++",
