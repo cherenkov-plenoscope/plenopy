@@ -84,35 +84,35 @@ def overlap_of_ray_with_voxels(
                     (optional)
     '''
     assert support is not None
-    assert support.shape[0] == 3
+    assert len(support) == 3
     cdef np.ndarray[double ,mode="c"] _support = np.ascontiguousarray(
         support, 
         dtype=np.float64
     ) 
 
     assert direction is not None
-    assert direction.shape[0] == 3
+    assert len(direction) == 3
     cdef np.ndarray[double ,mode="c"] _direction = np.ascontiguousarray(
         direction, 
         dtype=np.float64
     )
 
     assert x_bin_edges is not None
-    assert x_bin_edges.shape[0] >= 2
+    assert len(x_bin_edges) >= 2
     cdef np.ndarray[double ,mode="c"] _x_bin_edges = np.ascontiguousarray(
         x_bin_edges, 
         dtype=np.float64
     )
 
     assert y_bin_edges is not None
-    assert y_bin_edges.shape[0] >= 2
+    assert len(y_bin_edges) >= 2
     cdef np.ndarray[double ,mode="c"] _y_bin_edges = np.ascontiguousarray(
         y_bin_edges, 
         dtype=np.float64
     ) 
 
     assert z_bin_edges is not None
-    assert z_bin_edges.shape[0] >= 2
+    assert len(z_bin_edges) >= 2
     cdef np.ndarray[double ,mode="c"] _z_bin_edges = np.ascontiguousarray(
         z_bin_edges, 
         dtype=np.float64
