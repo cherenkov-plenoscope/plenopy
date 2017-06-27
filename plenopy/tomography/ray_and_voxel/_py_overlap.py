@@ -8,9 +8,9 @@ def overlap_of_ray_with_voxels(
     x_bin_edges, 
     y_bin_edges, 
     z_bin_edges,
-    x_range,
-    y_range,
-    z_range,
+    x_range=None,
+    y_range=None,
+    z_range=None,
 ):  
     '''
     Returns lists of the x,y, and z bin indices and the distance overlap of a
@@ -30,6 +30,13 @@ def overlap_of_ray_with_voxels(
 
     z_bin_edges     1D array of bin edge positions in z
     '''
+    if x_range is None:
+        x_range = np.array([0, len(x_bin_edges) - 1])
+    if y_range is None:
+        y_range = np.array([0, len(y_bin_edges) - 1])
+    if z_range is None:
+        z_range = np.array([0, len(z_bin_edges) - 1])
+
     overlaps = {
         'x': ar.array('L'),
         'y': ar.array('L'),
