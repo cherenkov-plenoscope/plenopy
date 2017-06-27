@@ -51,27 +51,90 @@ cdef extern void c_overlap_of_ray_with_voxels(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def overlap_of_ray_with_voxels(
-    np.ndarray[double, ndim=1, mode="c"] support not None,
-    np.ndarray[double, ndim=1, mode="c"] direction not None,
-    np.ndarray[double, ndim=1, mode="c"] x_bin_edges not None,
-    np.ndarray[double, ndim=1, mode="c"] y_bin_edges not None,
-    np.ndarray[double, ndim=1, mode="c"] z_bin_edges not None,
-    np.ndarray[unsigned int, ndim=1, mode="c"] x_range not None,
-    np.ndarray[unsigned int, ndim=1, mode="c"] y_range not None,
-    np.ndarray[unsigned int, ndim=1, mode="c"] z_range not None
+    support,
+    direction,
+    x_bin_edges,
+    y_bin_edges,
+    z_bin_edges,
+    x_range=None,
+    y_range=None,
+    z_range=None
 ):
+    assert support is not None
     assert support.shape[0] == 3
-    assert direction.shape[0] == 3
-    assert x_range.shape[0] == 2
-    assert y_range.shape[0] == 2
-    assert z_range.shape[0] == 2
-    assert x_range[1] <= x_bin_edges.shape[0]
-    assert y_range[1] <= y_bin_edges.shape[0]
-    assert z_range[1] <= z_bin_edges.shape[0]
+    cdef np.ndarray[double ,mode="c"] _support = np.ascontiguousarray(
+        support, 
+        dtype=np.float64
+    ) 
 
-    x_range_width = x_range[1] - x_range[0]
-    y_range_width = y_range[1] - y_range[0]
-    z_range_width = z_range[1] - z_range[0]
+    assert direction is not None
+    assert direction.shape[0] == 3
+    cdef np.ndarray[double ,mode="c"] _direction = np.ascontiguousarray(
+        direction, 
+        dtype=np.float64
+    )
+
+    assert x_bin_edges is not None
+    assert x_bin_edges.shape[0] >= 2
+    cdef np.ndarray[double ,mode="c"] _x_bin_edges = np.ascontiguousarray(
+        x_bin_edges, 
+        dtype=np.float64
+    )
+
+    assert y_bin_edges is not None
+    assert y_bin_edges.shape[0] >= 2
+    cdef np.ndarray[double ,mode="c"] _y_bin_edges = np.ascontiguousarray(
+        y_bin_edges, 
+        dtype=np.float64
+    ) 
+
+    assert z_bin_edges is not None
+    assert z_bin_edges.shape[0] >= 2
+    cdef np.ndarray[double ,mode="c"] _z_bin_edges = np.ascontiguousarray(
+        z_bin_edges, 
+        dtype=np.float64
+    ) 
+
+    cdef np.ndarray[unsigned int ,mode="c"] _x_range = np.ascontiguousarray(
+        np.array([0,0]), 
+        dtype=np.uint32
+    ) 
+    if x_range is None:
+        _x_range[0] = 0
+        _x_range[1] = len(_x_bin_edges) - 1
+    else:
+        _x_range[0] = x_range[0]
+        _x_range[1] = x_range[1]      
+
+    cdef np.ndarray[unsigned int ,mode="c"] _y_range = np.ascontiguousarray(
+        np.array([0,0]), 
+        dtype=np.uint32
+    ) 
+    if y_range is None:
+        _y_range[0] = 0
+        _y_range[1] = len(_y_bin_edges) - 1
+    else:
+        _y_range[0] = y_range[0]
+        _y_range[1] = y_range[1] 
+
+    cdef np.ndarray[unsigned int ,mode="c"] _z_range = np.ascontiguousarray(
+        np.array([0,0]), 
+        dtype=np.uint32
+    ) 
+    if z_range is None:
+        _z_range[0] = 0
+        _z_range[1] = len(_z_bin_edges) - 1
+    else:
+        _z_range[0] = z_range[0]
+        _z_range[1] = z_range[1] 
+
+    assert _x_range[1] <= _x_bin_edges.shape[0]
+    assert _y_range[1] <= _y_bin_edges.shape[0]
+    assert _z_range[1] <= _z_bin_edges.shape[0]
+
+    x_range_width = _x_range[1] - _x_range[0]
+    y_range_width = _y_range[1] - _y_range[0]
+    z_range_width = _z_range[1] - _z_range[0]
     
     maximal_number_of_overlaps = int(
         4.0*np.sqrt(
@@ -96,14 +159,14 @@ def overlap_of_ray_with_voxels(
     cdef unsigned int number_overlaps = 0
 
     c_overlap_of_ray_with_voxels(
-        &support[0],
-        &direction[0],
-        &x_bin_edges[0],
-        &y_bin_edges[0],
-        &z_bin_edges[0],
-        &x_range[0],
-        &y_range[0],
-        &z_range[0],
+        &_support[0],
+        &_direction[0],
+        &_x_bin_edges[0],
+        &_y_bin_edges[0],
+        &_z_bin_edges[0],
+        &_x_range[0],
+        &_y_range[0],
+        &_z_range[0],
         &number_overlaps,
         &x_idxs[0],
         &y_idxs[0],
