@@ -1,6 +1,7 @@
 import numpy as np
 cimport numpy as np
 cimport cython
+from ._py_overlap import overlap_of_ray_with_voxels as py_overlap_of_ray_with_voxels
 
 cdef extern double c_ray_box_overlap (        
     double *support,

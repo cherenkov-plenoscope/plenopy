@@ -13,22 +13,26 @@ def overlap_of_ray_with_voxels(
     z_range=None,
 ):  
     '''
-    Returns lists of the x,y, and z bin indices and the distance overlap of a
-    ray and voxel.
+    Returns the voxel indices and overlap distances for one single ray 
+    (defined by support and direction) with voxels defined by the bin_edges
+    in x,y and z.
 
+    support         3D support vector of ray.
 
-    Parameters
-    ----------
+    direction       3D direction vector of ray.
 
-    support         3D support vector of the ray
+    x_bin_edges     voxel bin edge positions in x.
 
-    direction       3D direction vector of the ray
+    y_bin_edges     voxel bin edge positions in y.
 
-    x_bin_edges     1D array of bin edge positions in x
+    z_bin_edges     voxel bin edge positions in z.
 
-    y_bin_edges     1D array of bin edge positions in y
-
-    z_bin_edges     1D array of bin edge positions in z
+    x_range         lower and upper bin indices to truncate voxels in x 
+                    (optional)
+    y_range         lower and upper bin indices to truncate voxels in y 
+                    (optional)
+    z_range         lower and upper bin indices to truncate voxels in z 
+                    (optional)
     '''
     if x_range is None:
         x_range = np.array([0, len(x_bin_edges) - 1])
