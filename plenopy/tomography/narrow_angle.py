@@ -16,19 +16,21 @@ import numpy as np
 import tqdm
 import os
 import pickle
+from scipy.sparse import coo_matrix
 from .filtered_back_projection import max_intensity_vs_z
 from .filtered_back_projection import histogram
 
 
 class NarrowAngleTomography(object):
     def __init__(
-        self, 
-        rays, 
-        intensities, 
-        binning, 
+        self,
+        rays,
+        intensities,
+        binning,
         ray_threshold=10,
-        show_progress=False, 
-        psf_cache_dir='.'):
+        show_progress=False,
+        psf_cache_dir='.'
+    ):
 
         self.rays = rays
         self.binning = binning
@@ -42,8 +44,8 @@ class NarrowAngleTomography(object):
             print('Estimate tomographic point spread function')
 
         psf, i_psf = cached_tomographic_point_spread_function(
-            rays=rays, 
-            binning=self.binning, 
+            rays=rays,
+            binning=self.binning,
             show_progress=self.show_progress,
             path=self._psf_cache_dir)
 
@@ -54,15 +56,15 @@ class NarrowAngleTomography(object):
             print('Estimate thinning of rays in cartesian space based on max number of rays in a voxel per altitude slice in reconstruction volume')
 
         ray_count_hist = histogram(
-            rays=self.rays, 
+            rays=self.rays,
             binning=self.binning)
-        self.max_ray_count_vs_z =  max_intensity_vs_z(ray_count_hist)
+        self.max_ray_count_vs_z = max_intensity_vs_z(ray_count_hist)
 
         if self.show_progress:
             print('Exclude voxels from reconstruction with less than '+str(ray_threshold)+' rays')
 
         self.psf_mask = mask_voxels_with_minimum_number_of_rays(
-            psf=psf, 
+            psf=psf,
             ray_threshold=ray_threshold)
 
         if self.show_progress:
@@ -71,15 +73,13 @@ class NarrowAngleTomography(object):
         self.rec_I_vol = np.zeros(self.binning.number_bins, dtype=np.float32)
 
         self.iteration = 0
-        initial_diff = 0.0
-
 
     def one_more_iteration(self):
         if self.show_progress:
             print('Reconstruction iteration '+str(self.iteration))
 
         rec_I_vol_n = update_narrow_beam(
-            vol_I=self.rec_I_vol, 
+            vol_I=self.rec_I_vol,
             measured_I=self.intensities,
             psf=self.psf,
             psf_mask=self.psf_mask,
@@ -89,8 +89,6 @@ class NarrowAngleTomography(object):
             show_progress=self.show_progress)
 
         diff = np.abs(rec_I_vol_n - self.rec_I_vol).sum()
-        if self.iteration == 0:
-            initial_diff = diff
 
         if self.show_progress:
             print('Intensity difference to previous iteration '+str(diff))
@@ -99,13 +97,12 @@ class NarrowAngleTomography(object):
         self.iteration += 1
 
         self.intensity_volume = flat_volume_intensity_3d_reshape(
-            vol_I=self.rec_I_vol, 
-            binning=self.binning)    
-
+            vol_I=self.rec_I_vol,
+            binning=self.binning)
 
 def tomographic_point_spread_function(rays, binning, show_progress=False):
     """
-    Returns a list of lists of rays in voxels and a list of lists of voxels in 
+    Returns a list of lists of rays in voxels and a list of lists of voxels in
     rays.
 
     Parameters
@@ -113,16 +110,16 @@ def tomographic_point_spread_function(rays, binning, show_progress=False):
 
     rays            The rays of a light field in cartesian space.
 
-    binning         The binning of the cartesian volume above the principal 
+    binning         The binning of the cartesian volume above the principal
                     aperture plane.
 
     show_progress   Prints a progressbar to std out. (Default: False)
 
-    Here 'rays_in_voxels' is the estimate of which rays participate to which 
-    volume cells (voxels). The voxels are defined by the binning parameter. 
-    Here the estimate is rather crude in a binary fashion. Either a ray is 
-    assigned to a cell by 100 percent or by 0 percent. The second return value 
-    'voxels_in_rays' is the inverse mapping along the rays and the voxels 
+    Here 'rays_in_voxels' is the estimate of which rays participate to which
+    volume cells (voxels). The voxels are defined by the binning parameter.
+    Here the estimate is rather crude in a binary fashion. Either a ray is
+    assigned to a cell by 100 percent or by 0 percent. The second return value
+    'voxels_in_rays' is the inverse mapping along the rays and the voxels
     assigned to these rays.
     """
     number_of_voxels = binning.number_bins
@@ -138,69 +135,72 @@ def tomographic_point_spread_function(rays, binning, show_progress=False):
 
     for z_bin, z in tqdm.tqdm(enumerate(binning.z_bin_centers), disable=(not show_progress)):
         xys = rays.xy_intersections_in_object_distance(z)
-        x_bins = np.digitize(x=xys[:,0], bins=binning.xy_bin_edges)
-        y_bins = np.digitize(x=xys[:,1], bins=binning.xy_bin_edges)
+        x_bins = np.digitize(x=xys[:, 0], bins=binning.xy_bin_edges)
+        y_bins = np.digitize(x=xys[:, 1], bins=binning.xy_bin_edges)
 
         for i in range(number_of_rays):
 
-            # np.digitize has no over and under flow bins, so we ignore the 
+            # np.digitize has no over and under flow bins, so we ignore the
             # lowest and uppermost bins
-            if (x_bins[i] > 0 and 
-                x_bins[i] < binning.number_xy_bins-1 and 
-                y_bins[i] > 0 and 
-                y_bins[i] < binning.number_xy_bins-1):
+            if (
+                x_bins[i] > 0 and
+                x_bins[i] < len(binning.xy_bin_edges) and
+                y_bins[i] > 0 and
+                y_bins[i] < len(binning.xy_bin_edges)
+            ):
 
                 x_bin = x_bins[i] - 1
                 y_bin = y_bins[i] - 1
 
                 flat_voxel_index = (
-                    x_bin + 
-                    y_bin*binning.number_xy_bins + 
+                    x_bin +
+                    y_bin*binning.number_xy_bins +
                     z_bin*binning.number_xy_bins*binning.number_xy_bins)
 
                 rays_in_voxels[flat_voxel_index].append(i)
                 voxels_in_rays[i].append(flat_voxel_index)
-    
+
     return rays_in_voxels, voxels_in_rays
 
 
 def update_narrow_beam(
-    vol_I, 
-    measured_I, 
-    psf, 
-    psf_mask, 
-    i_psf, 
-    max_ray_count_vs_z, 
+    vol_I,
+    measured_I,
+    psf,
+    psf_mask,
+    i_psf,
+    max_ray_count_vs_z,
     binning,
-    show_progress=False):
+    show_progress=False
+):
     """
     Returns an updated copy of the intensitiy volume 'vol_I'.
 
     Parameters
     ----------
 
-    vol_I               The current intensity volume. A 1D array with the 
+    vol_I               The current intensity volume. A 1D array with the
                         intensities of the voxels.
 
-    measured_I          The measured intensity of the lighfield. A 1D array 
+    measured_I          The measured intensity of the lighfield. A 1D array
                         with the intensities of the light field rays.
 
     psf                 A list of rays in the voxels.
 
-    psf_mask            A boolean array of the voxels which shall be taken into 
-                        account. Here a threshold on a minimum number of rays 
+    psf_mask            A boolean array of the voxels which shall be taken into
+                        account. Here a threshold on a minimum number of rays
                         per voxel can be applied.
 
-    i_psf               A list of voxels on the rays. The inverse representation 
+    i_psf               A list of voxels on the rays. The inverse representation
                         of 'psf'.
 
-    max_ray_count_vs_z  A normalization factor needed when reconstructing 
-                        directly in cartesian space to counter act the thinning 
+    max_ray_count_vs_z  A normalization factor needed when reconstructing
+                        directly in cartesian space to counter act the thinning
                         of rays with rising altitude.
 
-    binning             The binning of the cartesian volume above the principal 
-                        aperture plane. This binning MUST match the binning used 
-                        to create 'psf' and 'i_psf'.     
+    binning             The binning of the cartesian volume above the principal
+                        aperture plane. This binning MUST match the binning used
+                        to create 'psf' and 'i_psf'.
 
     show_progress       Prints a progressbar to std out. (Default: False)
     """
@@ -209,15 +209,12 @@ def update_narrow_beam(
     i = 0
     voxel_diffs = np.zeros(vol_I.shape[0], dtype=np.float32)
     for voxel_index in tqdm.tqdm(psf_mask_indicies, disable=(not show_progress)):
+        number_of_voxels_in_psf = calc_number_of_voxels(voxel_index, psf, i_psf)
+
+        rays_in_voxel = psf[voxel_index]
+        measured_I_of_voxel = measured_I[rays_in_voxel].sum()/number_of_voxels_in_psf
 
         voxel_z_index = flat_voxel_index_to_z_index(voxel_index, binning)
-        rays_in_voxel = psf[voxel_index]
-
-        number_of_voxels_in_psf = 0
-        for ray in rays_in_voxel:
-            number_of_voxels_in_psf += len(i_psf[ray])
-
-        measured_I_of_voxel = measured_I[rays_in_voxel].sum()/number_of_voxels_in_psf
         image_2_cartesian_norm = (max_ray_count_vs_z[voxel_z_index])**(1/3)
         measured_I_of_voxel *= image_2_cartesian_norm
 
@@ -244,7 +241,7 @@ def update_narrow_beam(
 
 def flat_voxel_index_to_z_index(flat_index, binning):
     return flat_index // (binning.number_xy_bins*binning.number_xy_bins)
-     
+
 
 def mask_voxels_with_minimum_number_of_rays(psf, ray_threshold):
     mask = np.zeros(len(psf), dtype=np.bool8)
@@ -256,19 +253,24 @@ def mask_voxels_with_minimum_number_of_rays(psf, ray_threshold):
 
 def flat_volume_intensity_3d_reshape(vol_I, binning):
     return vol_I.reshape((
-        binning.number_xy_bins, 
-        binning.number_xy_bins, 
+        binning.number_xy_bins,
+        binning.number_xy_bins,
         binning.number_z_bins), order='F')
 
 
-def cached_tomographic_point_spread_function(rays, binning, show_progress=False, path='.'):
+def cached_tomographic_point_spread_function(
+    rays,
+    binning,
+    show_progress=False,
+    path='.'
+):
     """
     Caches the tomographic point spread function.
 
     Parameters
     ----------
 
-    path                The path to the directory where the hidden cache files 
+    path                The path to the directory where the hidden cache files
                         shall be written to.
     """
     psf_path = path+'_psf.pkl'
@@ -279,7 +281,7 @@ def cached_tomographic_point_spread_function(rays, binning, show_progress=False,
             print('Estimate psf from scratch and write it to '+psf_path)
 
         psf, i_psf = tomographic_point_spread_function(
-            rays=rays, 
+            rays=rays,
             binning=binning,
             show_progress=show_progress)
         with open(psf_path, 'wb') as f:
@@ -298,3 +300,12 @@ def cached_tomographic_point_spread_function(rays, binning, show_progress=False,
             i_psf = pickle.load(f)
 
     return psf, i_psf
+
+
+def calc_number_of_voxels(voxel_index, psf, i_psf):
+    rays_in_voxel = psf[voxel_index]
+
+    number_of_voxels_in_psf = 0
+    for ray in rays_in_voxel:
+        number_of_voxels_in_psf += len(i_psf[ray])
+    return number_of_voxels_in_psf

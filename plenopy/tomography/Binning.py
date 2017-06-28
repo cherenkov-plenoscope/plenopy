@@ -4,10 +4,10 @@ class Binning(object):
     """
     Binning of the 3D atmospheric detector volume
 
-    The binned volume is defined in the frame of the principal aperture plane, 
-    i.e. distances in positive z correspond to positve object distances. 
+    The binned volume is defined in the frame of the principal aperture plane,
+    i.e. distances in positive z correspond to positve object distances.
 
-                                          
+
                                          /\z-axis
                                           |
                                           |
@@ -48,18 +48,18 @@ class Binning(object):
         """
         Parameters
         ----------
-        z_min               Lower starting height of histogram above principal 
+        z_min               Lower starting height of histogram above principal
                             aperture plane
 
-        z_max               Upper ending height of histogram above principal 
+        z_max               Upper ending height of histogram above principal
                             aperture plane
 
-        number_z_bins       Number of bins along the z-axis 
+        number_z_bins       Number of bins along the z-axis
 
         xy_diameter         Edge length of the quadratic histogram in x and y.
                             The histogram is centered around the z-axis
 
-        number_xy_bins      Number of bins along the x- and y-axis 
+        number_xy_bins      Number of bins along the x- and y-axis
         """
 
         self.z_min = z_min
@@ -72,13 +72,13 @@ class Binning(object):
         self.number_bins =  self.number_z_bins*self.number_xy_bins**2
 
         self.xy_bin_edges = np.linspace(
-            -xy_diameter/2.0, 
-            xy_diameter/2.0, 
+            -xy_diameter/2.0,
+            xy_diameter/2.0,
             number_xy_bins+1)
 
         self.z_bin_edges = np.linspace(
-            z_min, 
-            z_max, 
+            z_min,
+            z_max,
             number_z_bins+1)
 
         self.voxel_xy_radius = 0.5*xy_diameter/number_xy_bins
@@ -92,6 +92,10 @@ class Binning(object):
         self.voxel_xy_area = (2.0*self.voxel_xy_radius)**2.0
         self.voxel_volume = self.voxel_xy_area*(2.0*self.voxel_z_radius)
 
+        self.dims = (
+            self.number_xy_bins,
+            self.number_xy_bins,
+            self.number_z_bins)
 
     def flat_xyz_voxel_positions(self):
         """
@@ -104,14 +108,14 @@ class Binning(object):
                 self.xy_bin_centers, self.number_xy_bins),
             self.number_z_bins)
         z_flat = np.tile(
-            self.z_bin_centers, 
+            self.z_bin_centers,
             self.number_xy_bins*self.number_xy_bins)
         return np.array([x_flat, y_flat, z_flat]).T
 
     def flat_xyz_voxel_positions_in_frequency_space(self):
         x = np.linspace(-1, 1, self.number_xy_bins)
         kx_flat = x.repeat(self.number_z_bins*self.number_xy_bins)
-        
+
         ky_flat = np.repeat(
             np.tile(x, self.number_xy_bins),
             self.number_z_bins)
