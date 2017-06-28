@@ -181,7 +181,7 @@ def add2ax_flat(ax, xyzIs, color='b', alpha_max=1.0, steps=32, ball_size=50.0):
     intensities = xyzIs[:,3]
     xyzIs_sorted = xyzIs[np.argsort(intensities)]
 
-    chunk_suize = np.ceil(xyzIs.shape[0]/steps)
+    chunk_suize = int(np.ceil(xyzIs.shape[0]/steps))
 
     for step, alpha in enumerate(np.linspace(0.0025, alpha_max, steps)):
 
