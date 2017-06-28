@@ -18,7 +18,7 @@ extra_files = package_files(os.path.join(setup_py_dir,'plenopy','tests'))
 
 setup(
     name='plenopy',
-    version='0.1.0',
+    version='0.1.1',
     description='View and work on plenoscope events',
     url='',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
@@ -42,6 +42,7 @@ setup(
     package_data={'plenopy': extra_files},
     install_requires=[
         'numpy',            # in anaconda
+        'joblib',
     ],
     entry_points={'console_scripts': [
         'plenopyPlotLightFieldGeometry = plenopy.light_field_geometry.plot_main:main',
