@@ -33,6 +33,7 @@ setup(
         'plenopy.light_field',
         'plenopy.light_field_geometry',
         'plenopy.tomography',
+        'plenopy.tomography.ray_and_voxel',
         'plenopy.photon_stream',
         'plenopy.plot',
         'plenopy.simulation_truth',
@@ -49,13 +50,24 @@ setup(
     cmdclass = {'build_ext': build_ext},
     ext_modules = [
         Extension(
-            "plenopy.photon_stream.cython_reader",
+            "plenopy.tomography.ray_and_voxel.cython_overlap",
             sources=[
-                "plenopy/photon_stream/cython_reader.pyx", 
-                "plenopy/photon_stream/reader.cpp"],
+                "plenopy/tomography/ray_and_voxel/_cython_overlap.pyx",
+                "plenopy/tomography/ray_and_voxel/_c_overlap.cpp",
+            ],
             include_dirs=[numpy.get_include(), "plenopy"],
             language="c++",
             extra_compile_args=['-std=c++0x']
-        )
+        ),
+        Extension(
+            "plenopy.photon_stream.cython_reader",
+            sources=[
+                "plenopy/photon_stream/cython_reader.pyx", 
+                "plenopy/photon_stream/reader.cpp"
+            ],
+            include_dirs=[numpy.get_include(), "plenopy"],
+            language="c++",
+            extra_compile_args=['-std=c++0x']
+        ),
     ],
 )
