@@ -180,7 +180,6 @@ def save_slice_video(
 def add2ax_flat(ax, xyzIs, color='b', alpha_max=1.0, steps=32, ball_size=50.0):
     intensities = xyzIs[:,3]
     xyzIs_sorted = xyzIs[np.argsort(intensities)]
-
     chunk_suize = int(np.ceil(xyzIs.shape[0]/steps))
 
     for step, alpha in enumerate(np.linspace(0.0025, alpha_max, steps)):
@@ -191,12 +190,15 @@ def add2ax_flat(ax, xyzIs, color='b', alpha_max=1.0, steps=32, ball_size=50.0):
             end = xyzIs.shape[0]-1
 
         ax.scatter(
-            xyzIs_sorted[start:end,0], xyzIs_sorted[start:end,1], xyzIs_sorted[start:end,2],
+            xyzIs_sorted[start:end,0], 
+            xyzIs_sorted[start:end,1], 
+            xyzIs_sorted[start:end,2],
             s=ball_size,
             depthshade=False,
             alpha=alpha,
             c=color,
-            lw=0)           
+            lw=0
+        )           
 
 
 def plot_flat(xyzIs, xyzIs2=None, alpha_max=1.0, ball_size=25, steps=32):
