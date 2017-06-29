@@ -4,7 +4,7 @@ import plenopy as pl
 import pkg_resources
 
 def test_array_chnunking():
-    chunking = pl.tomography.plot._start_and_end_slices_for_1D_array_chunking
+    chunking = pl.tomography.plot_xyzI._start_and_end_slices_for_1D_array_chunking
 
     (s,e) = chunking(number_of_chunks=10, array_length=10)
     assert len(s) == 10
