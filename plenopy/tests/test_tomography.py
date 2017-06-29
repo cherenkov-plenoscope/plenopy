@@ -4,7 +4,7 @@ import plenopy as pl
 import pkg_resources
 
 def test_array_chnunking():
-    chunking = pl.tomography.plot_xyzI._start_and_end_slices_for_1D_array_chunking
+    chunking = pl.plot.xyzI._start_and_end_slices_for_1D_array_chunking
 
     (s,e) = chunking(number_of_chunks=10, array_length=10)
     assert len(s) == 10
@@ -41,7 +41,7 @@ def test_binning_flat_voxel_center_positions():
 
 def test_matrix_2_image_shape():
     matrix2d = np.eye(3)
-    image_bgr = pl.tomography.plot.matrix_2_rgb_image(matrix=matrix2d)
+    image_bgr = pl.plot.slices.matrix_2_rgb_image(matrix=matrix2d)
 
     assert matrix2d.shape[0] == image_bgr.shape[0]
     assert matrix2d.shape[1] == image_bgr.shape[1]
@@ -51,7 +51,7 @@ def test_matrix_2_image_shape():
 
 def test_matrix_2_image_rectangular_shape():
     matrix2d = np.ones(shape=(16,9))
-    image_bgr = pl.tomography.plot.matrix_2_rgb_image(matrix=matrix2d)
+    image_bgr = pl.plot.slices.matrix_2_rgb_image(matrix=matrix2d)
 
     assert matrix2d.shape[0] == image_bgr.shape[0]
     assert matrix2d.shape[1] == image_bgr.shape[1]
@@ -62,7 +62,7 @@ def test_matrix_2_image_rectangular_shape():
 def test_matrix_2_image_color_channel():
     for color_channel in range(3):
         matrix2d = np.eye(3)
-        image_bgr = pl.tomography.plot.matrix_2_rgb_image(
+        image_bgr = pl.plot.slices.matrix_2_rgb_image(
             matrix=matrix2d,
             color_channel=color_channel)
 
@@ -88,7 +88,7 @@ def test_matrix_2_image_color_channel():
 def test_matrix_2_image_min_max():
     color_channel = 1
     matrix2d = np.diag([0,0, 0.365, 1.0])
-    image_bgr = pl.tomography.plot.matrix_2_rgb_image(
+    image_bgr = pl.plot.slices.matrix_2_rgb_image(
         matrix=matrix2d,
         color_channel=color_channel)
 
