@@ -10,8 +10,9 @@ from ..tools import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 
 def save_slice_stack(
-    event, 
-    binning, 
+    event_info_repr, 
+    xy_extent,
+    z_bin_centers,
     intensity_volume, 
     output_path, 
     image_prefix='slice_',
@@ -35,14 +36,14 @@ def save_slice_stack(
         intensity_max_2 = None
         intensity_min_2 = None
 
-    for z_slice in range(binning.number_z_bins):
+    for z_slice in range(intensity_volume.shape[2]):
 
-        fig.suptitle(event.simulation_truth.event.short_event_info())
+        fig.suptitle(event_info_repr)
 
         add2ax_z_slice(
             ax=ax_histogram,
             z_slice=z_slice,
-            binning=binning, 
+            xy_extent=xy_extent, 
             intensity_volume=intensity_volume,
             intensity_min=intensity_min,
             intensity_max=intensity_max,
@@ -53,9 +54,9 @@ def save_slice_stack(
 
         add2ax_object_distance_ruler(
             ax=ax_object_distance_ruler,
-            object_distance=binning.z_bin_centers[z_slice],
-            object_distance_min=binning.z_min,
-            object_distance_max=binning.z_max)
+            object_distance=z_bin_centers[z_slice],
+            object_distance_min=z_bin_centers.z_min,
+            object_distance_max=z_bin_centers.z_max)
 
         plt.savefig(
             os.path.join(output_path, image_prefix+str(z_slice).zfill(6)+".jpg"), 
@@ -69,7 +70,7 @@ def save_slice_stack(
 def add2ax_z_slice(
     ax, 
     z_slice, 
-    binning, 
+    xy_extent=[-500,500,-500,500], 
     intensity_volume,
     intensity_min=None, 
     intensity_max=None,
@@ -79,8 +80,6 @@ def add2ax_z_slice(
     xlabel='x/m',
     ylabel='y/m',
 ):
-    
-    xy_lim = binning.xy_bin_centers.max()
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
 
@@ -88,7 +87,7 @@ def add2ax_z_slice(
         img = ax.imshow(
             intensity_volume[:,:,z_slice], 
             cmap='viridis', 
-            extent=[-xy_lim, xy_lim, -xy_lim, xy_lim], 
+            extent=xy_extent, 
             interpolation='None')
         img.set_clim(intensity_min, intensity_max)
         divider = make_axes_locatable(ax)
@@ -106,7 +105,7 @@ def add2ax_z_slice(
             intensity_max=intensity_max_2) 
         img = ax.imshow(
             image, 
-            extent=[-xy_lim, xy_lim, -xy_lim, xy_lim], 
+            extent=xy_extent, 
             interpolation='None')
 
 
