@@ -75,11 +75,14 @@ def add2ax_z_slice(
     intensity_max=None,
     intensity_volume_2=None,
     intensity_min_2=None, 
-    intensity_max_2=None):
+    intensity_max_2=None
+    xlabel='x/m',
+    ylabel='y/m',
+):
     
     xy_lim = binning.xy_bin_centers.max()
-    ax.set_xlabel('x/m')
-    ax.set_ylabel('y/m')
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
     if intensity_volume_2 is None:
         img = ax.imshow(
