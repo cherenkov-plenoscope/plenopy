@@ -16,7 +16,10 @@ def save_slice_stack(
     intensity_volume, 
     output_path, 
     image_prefix='slice_',
-    intensity_volume_2=None):
+    intensity_volume_2=None
+    xlabel='x/m',
+    ylabel='y/m',
+):
 
     fig_size = FigureSize(dpi=200)
     fig = plt.figure(
@@ -50,7 +53,9 @@ def save_slice_stack(
             intensity_volume_2=intensity_volume_2,
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
-            )
+            xlabel=xlabel,
+            ylabel=ylabel,
+        )
 
         add2ax_object_distance_ruler(
             ax=ax_object_distance_ruler,
