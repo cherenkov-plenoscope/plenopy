@@ -52,7 +52,7 @@ def save_slice_stack(
             image=intensity_volume[:,:,z_slice],
             intensity_min=intensity_min,
             intensity_max=intensity_max,
-            image=intensity_volume_2[:,:,z_slice],
+            image_2=intensity_volume_2[:,:,z_slice],
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
         )
@@ -144,7 +144,7 @@ def save_slice_video(
     intensity_volume, 
     output_path,
     fps=25,
-    intensity_volume_2=None
+    intensity_volume_2=None,
     xlabel='x/m',
     ylabel='y/m',
 ):
