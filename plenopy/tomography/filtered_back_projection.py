@@ -39,38 +39,17 @@ def normalize_ray_histograms(hist_intensities, hist_rays):
     return hist_nrom
 
 
-def ramp_kernel_in_frequency_space(binning):
-    """
-    ramp_pos = binning.flat_xyz_voxel_positions_in_frequency_space()
+def ramp_kernel_in_frequency_space(x_num, y_num, z_num):
 
-    dist_to_origin = np.linalg.norm(ramp_pos, axis=1)
+    ramp = np.zeros(shape=(x_num, y_num, z_num), dtype='float64')
 
-    ramp = np.zeros(
-        binning.number_xy_bins*binning.number_xy_bins*binning.number_z_bins,
-        dtype='float64')
-    
-    d = dist_to_origin
-    #ramp = (-d**2 + 1*d)*4
-    ramp = d**2.0
-    ramp = ramp/ramp.max()
-    return ramp.reshape(
-        binning.number_xy_bins,
-        binning.number_xy_bins,
-        binning.number_z_bins)
-    """
-    ramp = np.zeros(shape=(
-        binning.number_xy_bins, 
-        binning.number_xy_bins, 
-        binning.number_z_bins),
-        dtype='float64')
-
-    xw = np.linspace(1,-1,binning.number_xy_bins)
+    xw = np.linspace(1,-1,x_num)
     xw = np.abs(xw)
 
-    yw = np.linspace(1,-1,binning.number_xy_bins)
+    yw = np.linspace(1,-1,y_num)
     yw = np.abs(yw)
 
-    zw = np.linspace(1,-1,binning.number_z_bins)
+    zw = np.linspace(1,-1,z_num)
     zw = np.abs(zw)
 
     for x in range(ramp.shape[0]):

@@ -65,7 +65,11 @@ class AirShowerReconstruction(object):
             self.intensity_hist, 
             self.ray_count_hist)
 
-        self.filter_kernel = ramp_kernel_in_frequency_space(self.binning)
+        self.filter_kernel = ramp_kernel_in_frequency_space(
+            x_num=self.binning.number_xy_bins,
+            y_num=self.binning.number_xy_bins,
+            z_num=self.binning.number_z_bins,
+        )
         self.intensity_volume = frequency_filter(
             self.normalized_intensity_hist, 
             self.filter_kernel)
