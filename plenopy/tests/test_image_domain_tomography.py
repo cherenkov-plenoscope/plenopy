@@ -5,20 +5,20 @@ import pkg_resources
 
 
 def test_default_image_domain_binning():
-    binning = pl.tomography.image_domain.Binning()
-    assert binning.cx_num == 32
-    assert binning.cy_num == 32
-    assert binning.obj_num == 32
+    b = pl.tomography.image_domain.DepthOfFieldBinning()
+    assert b.x_img_num == 32
+    assert b.y_img_num == 32
+    assert b.b_img_num == 32
 
-    assert len(binning.cx_bin_edges) == 33
-    assert len(binning.cy_bin_edges) == 33
-    assert len(binning.obj_bin_edges) == 33
+    assert len(b.x_img_bin_edges) == 33
+    assert len(b.y_img_bin_edges) == 33
+    assert len(b.b_img_bin_edges) == 33
 
-    assert len(binning.cx_bin_centers) == 32
-    assert len(binning.cy_bin_centers) == 32
-    assert len(binning.obj_bin_centers) == 32
+    assert len(b.x_img_bin_centers) == 32
+    assert len(b.y_img_bin_centers) == 32
+    assert len(b.b_img_bin_centers) == 32
 
 
 def test_image_domain_binning_repr():
-    binning = pl.tomography.image_domain.Binning()
-    print(binning)
+    b = pl.tomography.image_domain.DepthOfFieldBinning()
+    print(b)
