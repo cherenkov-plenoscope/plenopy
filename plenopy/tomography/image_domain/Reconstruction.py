@@ -10,6 +10,8 @@ from joblib import Memory
 import os
 from ..simulation_truth import emission_positions_of_photon_bunches
 from . import transform
+from ..filtered_back_projection import ramp_kernel_in_frequency_space 
+from ..filtered_back_projection import frequency_filter 
 
 cachedir = '/tmp/plenopy'
 os.makedirs(cachedir, exist_ok=True)
@@ -18,7 +20,7 @@ memory = Memory(cachedir=cachedir, verbose=0)
 
 class Reconstruction(object):
 
-    def __init__(self, event, dof_binning=None):
+    def __init__(self, event, dof_binning=None, apply_frequency_filter=False):
         if dof_binning == None:
             focal_length = event.light_field.expected_focal_length_of_imaging_system
             self.binning = DepthOfFieldBinning(
@@ -63,6 +65,13 @@ class Reconstruction(object):
             radius=0.85
         )
 
+        self._apply_frequency_filter = apply_frequency_filter
+        if self._apply_frequency_filter:
+            self._ramp_filter_kernel = ramp_kernel_in_frequency_space(
+                x_num=self.binning.x_img_num,
+                y_num=self.binning.y_img_num,
+                z_num=self.binning.b_img_num,
+            )
 
 
     def reconstructed_depth_of_field_intesities(self):
@@ -91,7 +100,23 @@ class Reconstruction(object):
         print('Intensity difference to previous iteration '+str(diff))
 
         self.rec_vol_I = rec_vol_I_n.copy()
+
+        if self._apply_frequency_filter:
+            self.apply_high_pass_filter()
+
         self.iteration += 1
+
+
+    def apply_high_pass_filter(self):
+        rec_vol_I_3d = self.reconstructed_depth_of_field_intesities()
+        rec_vol_I_3d = frequency_filter(
+            hist=rec_vol_I_3d, 
+            kernel=self._ramp_filter_kernel
+        )
+        self.rec_vol_I = rec_vol_I_3d.reshape(
+            self.binning.bin_num,
+            order='C'
+        )
 
 
     def simulation_truth_depth_of_field_intesities(self):
