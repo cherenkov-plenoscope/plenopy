@@ -12,10 +12,11 @@ class Reconstruction(object):
         self.binning = binning
 
         # integrate over time in photon-stream
-        self.lixel_intensities = lixel_intensities_at_arrival_peak(
-            light_field_sequece=event.light_field.sequence,
+        self.lixel_intensities = light_field.sequence.integrate_around_arrival_peak(
+            sequence=event.light_field.sequence,
             integration_radius=1
-        )
+        )['integral']
+
         self._focal_length = self.event.light_field.expected_focal_length_of_imaging_system
         
         self.img_x_bin_edges = self._focal_length*np.tan(self.binning.cx_bin_edges)
@@ -39,7 +40,7 @@ class Reconstruction(object):
         self.vol_I = np.zeros(self.binning.bins_num, dtype=np.float32)
 
 
-    def save_vol_I_plot(self):
+    def save_vol_I_plot(self, path='.'):
 
         image_stack = self.vol_I.reshape(
             shape=(
@@ -55,19 +56,6 @@ class Reconstruction(object):
             ax.set_xlabel('x/m')
             ax.set_ylabel('y/m')
 
-
-
-def lixel_intensities_at_arrival_peak(
-    light_field_sequece, 
-    integration_radius=1
-):
-    t_peak = light_field.sequence.time_slice_with_max_intensity(
-        sequence=light_field_sequece
-    )
-    t_start = np.max([t_peak - integration_radius, 0])
-    t_stop = np.min([t_peak + integration_radius + 1, light_field_sequece.shape[0]-1])
-
-    return np.sum(light_field_sequece[t_start:t_stop,:], axis=0)
 
 
 def update(vol_I, psf, measured_I):
