@@ -16,7 +16,6 @@ import numpy as np
 import tqdm
 import os
 import pickle
-from scipy.sparse import coo_matrix
 from .filtered_back_projection import max_intensity_vs_z
 from .filtered_back_projection import histogram
 
