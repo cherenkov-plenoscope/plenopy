@@ -43,6 +43,9 @@ def save_slice_stack(
 
         fig.suptitle(event_info_repr)
 
+        ax_histogram.set_xlabel(xlabel)
+        ax_histogram.set_ylabel(ylabel)
+
         add2ax_z_slice(
             ax=ax_histogram,
             z_slice=z_slice,
@@ -53,8 +56,6 @@ def save_slice_stack(
             intensity_volume_2=intensity_volume_2,
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
-            xlabel=xlabel,
-            ylabel=ylabel,
         )
 
         add2ax_object_distance_ruler(
@@ -83,12 +84,7 @@ def add2ax_z_slice(
     intensity_volume_2=None,
     intensity_min_2=None, 
     intensity_max_2=None,
-    xlabel='x/m',
-    ylabel='y/m',
 ):
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-
     if intensity_volume_2 is None:
         img = ax.imshow(
             intensity_volume[:,:,z_slice], 
