@@ -46,13 +46,17 @@ def save_slice_stack(
         ax_histogram.set_xlabel(xlabel)
         ax_histogram.set_ylabel(ylabel)
 
+        image_2 = None
+        if intensity_volume_2 is not None:
+            image_2 = intensity_volume_2[:,:,z_slice]
+
         add2ax_image(
             ax=ax_histogram,
             xy_extent=xy_extent, 
             image=intensity_volume[:,:,z_slice],
             intensity_min=intensity_min,
             intensity_max=intensity_max,
-            image_2=intensity_volume_2[:,:,z_slice],
+            image_2=image_2,
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
         )
@@ -60,8 +64,8 @@ def save_slice_stack(
         add2ax_object_distance_ruler(
             ax=ax_object_distance_ruler,
             object_distance=z_bin_centers[z_slice],
-            object_distance_min=z_bin_centers.z_min,
-            object_distance_max=z_bin_centers.z_max
+            object_distance_min=z_bin_centers.min(),
+            object_distance_max=z_bin_centers.max(),
         )
 
         plt.savefig(
@@ -112,7 +116,7 @@ def add2ax_image(
             intensity_min=intensity_min_2,
             intensity_max=intensity_max_2
         ) 
-        rgb_image = img1 + img2
+        rgb_image = rgb_img1 + rgb_img2
         img = ax.imshow(
             rgb_image, 
             extent=xy_extent, 
