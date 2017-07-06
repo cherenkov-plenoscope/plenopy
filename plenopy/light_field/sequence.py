@@ -10,7 +10,7 @@ def time_slice_with_max_intensity(sequence):
 
 
 def integrate_around_arrival_peak(
-    sequece, 
+    sequence, 
     integration_radius=1
 ):
     '''
@@ -20,16 +20,16 @@ def integrate_around_arrival_peak(
     Parameters
     ----------
 
-    sequece                 Matrix 2D, sequence of e.g. light fields or images, 
+    sequence                Matrix 2D, sequence of e.g. light fields or images, 
                             where the time slices go along axis=0.
 
     integration_radius      Integer, integration radius in units of time slices.
     '''
-    peak_slice = time_slice_with_max_intensity(sequece)
+    peak_slice = time_slice_with_max_intensity(sequence)
     start_slice = np.max([peak_slice - integration_radius, 0])
-    stop_slice = np.min([peak_slice + integration_radius + 1, sequece.shape[0]-1])
+    stop_slice = np.min([peak_slice + integration_radius + 1, sequence.shape[0]-1])
     return {
-        'integral': np.sum(sequece[start_slice:stop_slice, :], axis=0),
+        'integral': np.sum(sequence[start_slice:stop_slice, :], axis=0),
         'peak_slice': peak_slice,
         'start_slice': start_slice,
         'stop_slice': stop_slice,

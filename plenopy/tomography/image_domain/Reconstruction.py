@@ -12,10 +12,11 @@ class Reconstruction(object):
         self.binning = binning
 
         # integrate over time in photon-stream
-        self.lixel_intensities = light_field.sequence.integrate_around_arrival_peak(
+        self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
             sequence=event.light_field.sequence,
             integration_radius=1
-        )['integral']
+        )
+        self.lixel_intensities = self._lfs_integral['integral']
 
         self._focal_length = self.event.light_field.expected_focal_length_of_imaging_system
         
