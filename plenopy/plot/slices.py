@@ -61,7 +61,8 @@ def save_slice_stack(
             ax=ax_object_distance_ruler,
             object_distance=z_bin_centers[z_slice],
             object_distance_min=z_bin_centers.z_min,
-            object_distance_max=z_bin_centers.z_max)
+            object_distance_max=z_bin_centers.z_max
+        )
 
         plt.savefig(
             os.path.join(output_path, image_prefix+str(z_slice).zfill(6)+".jpg"), 
@@ -118,16 +119,13 @@ def matrix_2_rgb_image(
     matrix,
     color_channel=0,
     intensity_min=None, 
-    intensity_max=None):
-
+    intensity_max=None
+):
     if intensity_min is None:
         intensity_min = matrix.min()
-
     if intensity_max is None:
         intensity_max = matrix.max()
-
     image = np.zeros(shape=(matrix.shape[0], matrix.shape[1], 3))
-
     inensity = (matrix - intensity_min)/(intensity_max - intensity_min)
     image[:,:,color_channel] = inensity
     return image
@@ -139,8 +137,8 @@ def save_slice_video(
     intensity_volume, 
     output_path,
     fps=25,
-    intensity_volume_2=None):
-
+    intensity_volume_2=None
+):
     with tempfile.TemporaryDirectory() as work_dir:
         image_prefix = 'slice_'
         save_slice_stack(
@@ -149,7 +147,8 @@ def save_slice_video(
             intensity_volume=intensity_volume,
             output_path=work_dir,
             image_prefix=image_prefix,
-            intensity_volume_2=intensity_volume_2)
+            intensity_volume_2=intensity_volume_2
+        )
         steps=binning.number_z_bins
 
         # duplicate the images and use them again in reverse order
@@ -157,28 +156,33 @@ def save_slice_video(
         for o in range(5):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(0).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(steps):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(5):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         images2video(
             image_path=os.path.join(work_dir, 'video_%06d.jpg'),
             output_path=output_path,
-            frames_per_second=fps)
+            frames_per_second=fps
+        )
