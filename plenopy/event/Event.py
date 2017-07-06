@@ -144,7 +144,7 @@ class Event(object):
         plt.suptitle(self._plot_suptitle())
         pix_img_seq = self.light_field.pixel_sequence()
         pix_int = light_field.sequence.integrate_around_arrival_peak(
-            sequece=pix_img_seq, 
+            sequence=pix_img_seq, 
             integration_radius=1
         )
         pixel_image = Image(
@@ -158,7 +158,7 @@ class Event(object):
         image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
         pax_img_seq = self.light_field.paxel_sequence()
         pax_int = light_field.sequence.integrate_around_arrival_peak(
-            sequece=pax_img_seq, 
+            sequence=pax_img_seq, 
             integration_radius=1
         )
         paxel_image = Image(
