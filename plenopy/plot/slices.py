@@ -10,17 +10,21 @@ from ..tools import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 
 def save_slice_stack(
-    event, 
-    binning, 
-    intensity_volume, 
+    intensity_volume,
+    event_info_repr, 
+    xy_extent,
+    z_bin_centers,
     output_path, 
     image_prefix='slice_',
-    intensity_volume_2=None):
-
+    intensity_volume_2=None,
+    xlabel='x/m',
+    ylabel='y/m',
+):
     fig_size = FigureSize(dpi=200)
     fig = plt.figure(
         figsize=(fig_size.width, fig_size.hight), 
-        dpi=fig_size.dpi)
+        dpi=fig_size.dpi
+    )
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3]) 
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])
@@ -35,143 +39,160 @@ def save_slice_stack(
         intensity_max_2 = None
         intensity_min_2 = None
 
-    for z_slice in range(binning.number_z_bins):
+    for z_slice in range(intensity_volume.shape[2]):
 
-        fig.suptitle(event.simulation_truth.event.short_event_info())
+        fig.suptitle(event_info_repr)
 
-        add2ax_z_slice(
+        ax_histogram.set_xlabel(xlabel)
+        ax_histogram.set_ylabel(ylabel)
+
+        add2ax_image(
             ax=ax_histogram,
-            z_slice=z_slice,
-            binning=binning, 
-            intensity_volume=intensity_volume,
+            xy_extent=xy_extent, 
+            image=intensity_volume[:,:,z_slice],
             intensity_min=intensity_min,
             intensity_max=intensity_max,
-            intensity_volume_2=intensity_volume_2,
+            image_2=intensity_volume_2[:,:,z_slice],
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
-            )
+        )
 
         add2ax_object_distance_ruler(
             ax=ax_object_distance_ruler,
-            object_distance=binning.z_bin_centers[z_slice],
-            object_distance_min=binning.z_min,
-            object_distance_max=binning.z_max)
+            object_distance=z_bin_centers[z_slice],
+            object_distance_min=z_bin_centers.z_min,
+            object_distance_max=z_bin_centers.z_max
+        )
 
         plt.savefig(
-            os.path.join(output_path, image_prefix+str(z_slice).zfill(6)+".jpg"), 
-            dpi=fig_size.dpi)
+            os.path.join(
+                output_path,
+                image_prefix+str(z_slice).zfill(6)+".jpg"
+            ), 
+            dpi=fig_size.dpi
+        )
 
         ax_object_distance_ruler.clear()
         ax_histogram.clear()
     plt.close(fig)
 
 
-def add2ax_z_slice(
-    ax, 
-    z_slice, 
-    binning, 
-    intensity_volume,
+def add2ax_image(
+    ax,
+    image,
     intensity_min=None, 
     intensity_max=None,
-    intensity_volume_2=None,
+    image_2=None,
     intensity_min_2=None, 
-    intensity_max_2=None):
-    
-    xy_lim = binning.xy_bin_centers.max()
-    ax.set_xlabel('x/m')
-    ax.set_ylabel('y/m')
-
-    if intensity_volume_2 is None:
+    intensity_max_2=None,
+    xy_extent=[-500,500,-500,500],
+    cmap='viridis'
+):
+    if image_2 is None:
         img = ax.imshow(
-            intensity_volume[:,:,z_slice], 
-            cmap='viridis', 
-            extent=[-xy_lim, xy_lim, -xy_lim, xy_lim], 
-            interpolation='None')
+            image, 
+            cmap=cmap, 
+            extent=xy_extent, 
+            interpolation='None'
+        )
         img.set_clim(intensity_min, intensity_max)
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
         plt.colorbar(img, cax=cax)
     else:
-        image = matrix_2_rgb_image(
-            intensity_volume[:,:,z_slice], 
+        rgb_img1 = matrix_2_rgb_image(
+            image, 
             color_channel=1,
             intensity_min=intensity_min,
-            intensity_max=intensity_max) + matrix_2_rgb_image(
-            intensity_volume_2[:,:,z_slice], 
+            intensity_max=intensity_max
+        ) 
+        rgb_img2 = matrix_2_rgb_image(
+            image_2, 
             color_channel=0,
             intensity_min=intensity_min_2,
-            intensity_max=intensity_max_2) 
+            intensity_max=intensity_max_2
+        ) 
+        rgb_image = img1 + img2
         img = ax.imshow(
-            image, 
-            extent=[-xy_lim, xy_lim, -xy_lim, xy_lim], 
-            interpolation='None')
+            rgb_image, 
+            extent=xy_extent, 
+            interpolation='None'
+        )
 
 
 def matrix_2_rgb_image(
     matrix,
     color_channel=0,
     intensity_min=None, 
-    intensity_max=None):
-
+    intensity_max=None
+):
     if intensity_min is None:
         intensity_min = matrix.min()
-
     if intensity_max is None:
         intensity_max = matrix.max()
-
     image = np.zeros(shape=(matrix.shape[0], matrix.shape[1], 3))
-
     inensity = (matrix - intensity_min)/(intensity_max - intensity_min)
     image[:,:,color_channel] = inensity
     return image
 
 
 def save_slice_video(
-    event, 
+    event_info_repr,
+    xy_extent,
+    z_bin_centers,
     binning, 
     intensity_volume, 
     output_path,
     fps=25,
-    intensity_volume_2=None):
-
+    intensity_volume_2=None,
+    xlabel='x/m',
+    ylabel='y/m',
+):
     with tempfile.TemporaryDirectory() as work_dir:
-        image_prefix = 'slice_'
         save_slice_stack(
-            event=event,
-            binning=binning,
+            event_info_repr=event_info_repr,
+            xy_extent=xy_extent,
+            z_bin_centers=z_bin_centers,
             intensity_volume=intensity_volume,
             output_path=work_dir,
-            image_prefix=image_prefix,
-            intensity_volume_2=intensity_volume_2)
-        steps=binning.number_z_bins
+            intensity_volume_2=intensity_volume_2,
+            xlabel=xlabel,
+            ylabel=ylabel,
+        )
+        steps=z_bin_centers.shape[0]
 
         # duplicate the images and use them again in reverse order
         i = 0
         for o in range(5):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(0).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(steps):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(5):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
                 os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+            )
             i += 1
 
         images2video(
             image_path=os.path.join(work_dir, 'video_%06d.jpg'),
             output_path=output_path,
-            frames_per_second=fps)
+            frames_per_second=fps
+        )
