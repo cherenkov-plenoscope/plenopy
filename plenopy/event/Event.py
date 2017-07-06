@@ -142,29 +142,33 @@ class Event(object):
         """
         fig, axs = plt.subplots(2, 2)
         plt.suptitle(self._plot_suptitle())
-
         pix_img_seq = self.light_field.pixel_sequence()
-        t_m = sequence.time_slice_with_max_intensity(pix_img_seq)
-        ts = np.max([t_m-1, 0])
-        te = np.min([t_m+1, pix_img_seq.shape[0]-1])
+        pix_int = light_field.sequence.integrate_around_arrival_peak(
+            sequece=pix_img_seq, 
+            integration_radius=1
+        )
         pixel_image = Image(
-            pix_img_seq[ts:te].sum(axis=0),
+            pix_int['integral'],
             self.light_field.pixel_pos_cx,
-            self.light_field.pixel_pos_cy)
-
-        axs[0][0].set_title('directional image at time slice '+str(t_m))
+            self.light_field.pixel_pos_cy
+        )
+        axs[0][0].set_title(
+            'directional image at time slice '+str(pix_int['peak_slice'])
+        )
         image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
-
         pax_img_seq = self.light_field.paxel_sequence()
-        t_m = sequence.time_slice_with_max_intensity(pax_img_seq)
-        ts = np.max([t_m-1, 0])
-        te = np.min([t_m+1, pax_img_seq.shape[0]-1])
+        pax_int = light_field.sequence.integrate_around_arrival_peak(
+            sequece=pax_img_seq, 
+            integration_radius=1
+        )
         paxel_image = Image(
-            pax_img_seq[ts:te].sum(axis=0),
+            pax_int['integral'],
             self.light_field.paxel_pos_x,
-            self.light_field.paxel_pos_y)
-
-        axs[0][1].set_title('principal aperture plane')
+            self.light_field.paxel_pos_y
+        )
+        axs[0][1].set_title(
+            'principal aperture at time slice '+str(pax_int['peak_slice'])
+        )
         image.plot.add_paxel_image_to_ax(paxel_image, axs[0][1])
         light_field.plot.add2ax_hist_arrival_time(self.light_field, axs[1][0])
         light_field.plot.add2ax_hist_intensity(self.light_field, axs[1][1])
