@@ -16,6 +16,7 @@ import numpy as np
 from scipy.sparse import coo_matrix
 from .filtered_back_projection import max_intensity_vs_z
 from .filtered_back_projection import histogram
+from ..plot import xyzI
 
 import os
 from joblib import Memory
@@ -61,6 +62,24 @@ class NarrowAngleTomography(object):
 
         self.psf = self.psf[self.psf_mask]
         self.rec_I_vol = np.zeros(self.psf.shape[0], dtype=np.float32)
+
+
+    def reconstructed_flat_volume_intesities(self):
+        volI = np.zeros(self.psf_mask.shape[0], dtype=np.float32)
+        volI[self.psf_mask] = self.rec_I_vol
+        return volI
+
+
+    def reconstructed_volume_intesities(self):
+        flat_volI = self.reconstructed_flat_volume_intesities()
+        vol_I = flat_volume_intensity_3d_reshape(flat_volI, self.binning)
+        return vol_I
+
+
+    def reconstructed_xyzI(self):
+        volI = self.reconstructed_volume_intesities()
+        return xyzI.hist3D_to_xyzI(volI, binning=self.binning)
+
 
     def one_more_iteration(self):
 
