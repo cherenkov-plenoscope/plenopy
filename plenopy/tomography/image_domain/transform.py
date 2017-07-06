@@ -1,5 +1,13 @@
 import numpy as np
 
+def object_distance_2_image_distance(object_distance, focal_length):
+    # 1/f = 1/g + 1/b
+    return 1.0/(1.0/focal_length - 1.0/object_distance)
+
+def image_distance_2_object_distance(image_distance, focal_length):
+    # 1/f = 1/g + 1/b
+    return 1.0/(1.0/focal_length - 1.0/image_distance)
+
 
 def cxcyb2xyz(cx,cy,image_distance, focal_length):
     # 1/focal_length = 1/object_distance + 1/image_distance

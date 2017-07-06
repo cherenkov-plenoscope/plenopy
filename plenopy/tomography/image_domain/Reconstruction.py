@@ -3,13 +3,28 @@ from ... import light_field
 from ...image import ImageRays
 from .. import ray_and_voxel
 import matplotlib.pyplot as plt
+from .DepthOfFieldBinning import DepthOfFieldBinning
 
 
 class Reconstruction(object):
 
-    def __init__(self, event, binning):
+    def __init__(self, event, dof_binning=None):
+        if dof_binning == None:
+            focal_length = event.light_field.expected_focal_length_of_imaging_system
+            self.binning = DepthOfFieldBinning(
+                cx_min=1.1*event.light_field.cx_mean.min(),
+                cx_max=1.1*event.light_field.cx_mean.max(),
+                cx_num=32,
+                cy_min=1.1*event.light_field.cy_mean.min(),
+                cy_max=1.1*event.light_field.cy_mean.max(),
+                cy_num=32,
+                obj_min=focal_length*3.0,
+                obj_max=focal_length*300.0,
+                obj_num=32,
+                focal_length=focal_length,
+            )
+
         self.event = event
-        self.binning = binning
 
         # integrate over time in photon-stream
         self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
