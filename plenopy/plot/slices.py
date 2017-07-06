@@ -10,21 +10,21 @@ from ..tools import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 
 def save_slice_stack(
+    intensity_volume,
     event_info_repr, 
     xy_extent,
     z_bin_centers,
-    intensity_volume, 
     output_path, 
     image_prefix='slice_',
     intensity_volume_2=None,
     xlabel='x/m',
     ylabel='y/m',
 ):
-
     fig_size = FigureSize(dpi=200)
     fig = plt.figure(
         figsize=(fig_size.width, fig_size.hight), 
-        dpi=fig_size.dpi)
+        dpi=fig_size.dpi
+    )
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3]) 
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])
@@ -65,8 +65,12 @@ def save_slice_stack(
         )
 
         plt.savefig(
-            os.path.join(output_path, image_prefix+str(z_slice).zfill(6)+".jpg"), 
-            dpi=fig_size.dpi)
+            os.path.join(
+                output_path,
+                image_prefix+str(z_slice).zfill(6)+".jpg"
+            ), 
+            dpi=fig_size.dpi
+        )
 
         ax_object_distance_ruler.clear()
         ax_histogram.clear()
