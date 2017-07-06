@@ -4,7 +4,8 @@ from ...image import ImageRays
 from .. import ray_and_voxel
 import matplotlib.pyplot as plt
 from .DepthOfFieldBinning import DepthOfFieldBinning
-
+from .transform import object_distance_2_image_distance as g2b
+from .transform import image_distance_2_object_distance as b2g
 
 class Reconstruction(object):
 
@@ -14,13 +15,8 @@ class Reconstruction(object):
             self.binning = DepthOfFieldBinning(
                 cx_min=1.1*event.light_field.cx_mean.min(),
                 cx_max=1.1*event.light_field.cx_mean.max(),
-                cx_num=32,
                 cy_min=1.1*event.light_field.cy_mean.min(),
                 cy_max=1.1*event.light_field.cy_mean.max(),
-                cy_num=32,
-                obj_min=focal_length*3.0,
-                obj_max=focal_length*300.0,
-                obj_num=32,
                 focal_length=focal_length,
             )
 
@@ -33,45 +29,21 @@ class Reconstruction(object):
         )
         self.lixel_intensities = self._lfs_integral['integral']
 
-        self._focal_length = self.event.light_field.expected_focal_length_of_imaging_system
-        
-        self.img_x_bin_edges = self._focal_length*np.tan(self.binning.cx_bin_edges)
-        self.img_y_bin_edges = self._focal_length*np.tan(self.binning.cy_bin_edges)
-        # 1/f = 1/g + 1/b
-        self.img_b_bin_edges = 1.0/(
-            1.0/self._focal_length + 
-            1.0/self.binning.obj_bin_edges
-        )
-
         self.image_rays = ImageRays(event.light_field)
 
         self.psf = ray_and_voxel.point_spread_function(
             supports=self.image_rays.support, 
             directions=self.image_rays.direction, 
-            x_bin_edges=self.img_x_bin_edges, 
-            y_bin_edges=self.img_y_bin_edges,
-            z_bin_edges=self.img_b_bin_edges,
+            x_bin_edges=self.binning.x_img_bin_edges, 
+            y_bin_edges=self.binning.y_img_bin_edges,
+            z_bin_edges=self.binning.b_img_bin_edges,
         )
 
-        self.vol_I = np.zeros(self.binning.bins_num, dtype=np.float32)
+        self.vol_I = np.zeros(self.binning.bin_num, dtype=np.float32)
 
 
     def save_vol_I_plot(self, path='.'):
-
-        image_stack = self.vol_I.reshape(
-            shape=(
-                self.binning.cx_num,
-                self.binning.cy_num,
-                self.binning.obj_num
-            )
-        )
-
-        for obj_idx, obj_dist in enumerate(self.binning.obj_bin_centers):
-            img = image_stack[:,:,obj_idx]
-
-            ax.set_xlabel('x/m')
-            ax.set_ylabel('y/m')
-
+        pass
 
 
 def update(vol_I, psf, measured_I):

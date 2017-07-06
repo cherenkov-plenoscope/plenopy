@@ -21,87 +21,74 @@ class DepthOfFieldBinning(object):
     ):
         self.focal_length = focal_length
 
-        self.cx_min = cx_min
-        self.cx_max = cx_max
-        self.cx_num = cx_num
+        self._cx_min = cx_min
+        self._cx_max = cx_max
+        self._cx_num = cx_num
 
-        self.cy_min = cy_min
-        self.cy_max = cy_max
-        self.cy_num = cy_num
+        self._cy_min = cy_min
+        self._cy_max = cy_max
+        self._cy_num = cy_num
 
-        self.obj_min = obj_min
-        self.obj_max = obj_max
-        self.obj_num = obj_num
+        self.x_img_min = self.focal_length*np.tan(self._cx_min)
+        self.x_img_max = self.focal_length*np.tan(self._cx_max)
+        self.x_img_num = self._cx_num
+        self.x_img_width = self.x_img_max - self.x_img_min
+        self.x_img_bin_radius = 0.5*self.x_img_width/self.x_img_num
+        self.x_img_bin_edges = np.linspace(
+            self.x_img_min, self.x_img_max, self.x_img_num+1
+        )
+        self.x_img_bin_centers = (
+            self.x_img_bin_edges[: -1] + self.x_img_bin_radius
+        )
 
-        self.b_min = g2b(self.obj_min , self.focal_length)
-        self.b_max = g2b(self.obj_max , self.focal_length)
-        self.b_num = self.obj_num
+        self.y_img_min = self.focal_length*np.tan(self._cy_min)
+        self.y_img_max = self.focal_length*np.tan(self._cy_max)
+        self.y_img_num = self._cy_num
+        self.y_img_width = self.y_img_max - self.y_img_min
+        self.y_img_bin_radius = 0.5*self.y_img_width/self.y_img_num
+        self.y_img_bin_edges = np.linspace(
+            self.y_img_min, self.y_img_max, self.y_img_num+1
+        )
+        self.y_img_bin_centers = (
+            self.y_img_bin_edges[: -1] + self.y_img_bin_radius
+        )
+
+        self._obj_min = obj_min
+        self._obj_max = obj_max
+        self._obj_num = obj_num
+
+        self.b_img_min = g2b(self._obj_max , self.focal_length) # obj MAX is b img MIN
+        self.b_img_max = g2b(self._obj_min , self.focal_length)
+        self.b_img_num = self._obj_num
+        self.b_img_width = self.b_img_max - self.b_img_min
+        self.b_img_bin_radius = 0.5*self.b_img_width/self.b_img_num
+        self.b_img_bin_edges = np.linspace(
+            start=self.b_img_min, 
+            stop=self.b_img_max, 
+            num=self.b_img_num+1
+        )
+        self.b_img_bin_centers = (
+            self.b_img_bin_edges[: -1] + self.b_img_bin_radius
+        )
+
+        self.bin_num = self.x_img_num*self.y_img_num*self.b_img_num
 
         self._assert_valid()
-        self._add_bin_edges()
-        self._add_widths()
-        self._add_depth_of_field_cell_radii()
-        self._add_bin_centers()
 
     def _assert_valid(self):
         assert self.focal_length > 0.0
-        assert self.cx_max > self.cx_min
-        assert self.cy_max > self.cy_min
-        assert self.obj_max > self.obj_min
+        assert self._cx_max > self._cx_min
+        assert self._cy_max > self._cx_min
+        assert self._obj_max > self._obj_min
 
-        assert self.cx_num > 0
-        assert self.cy_num > 0
-        assert self.obj_num > 0        
-
-    def _add_bin_edges(self):
-        self.cx_bin_edges = np.linspace(
-            start=self.cx_min, 
-            stop=self.cx_max, 
-            num=self.cx_num+1
-        )
-        self.cy_bin_edges = np.linspace(
-            start=self.cy_min, 
-            stop=self.cy_max, 
-            num=self.cy_num+1
-        )
-        self.b_bin_edges = np.linspace(
-            start=self.b_min, 
-            stop=self.b_max, 
-            num=self.b_num+1
-        )
-        self.obj_bin_edges = b2g(self.b_bin_edges, self.focal_length)
-
-    def _add_widths(self):
-        self.cx_width = self.cx_max - self.cx_min
-        self.cy_width = self.cy_max - self.cy_min
-        self.obj_width = self.obj_max - self.obj_min
-        self.b_width = self.b_max - self.b_min
-
-    def _add_depth_of_field_cell_radii(self):
-        # Depth of Field (DoF)
-        self.cx_bin_radius = 0.5*self.cx_width/self.cx_num
-        self.cy_bin_radius = 0.5*self.cy_width/self.cy_num
-        self.b_bin_radius = 0.5*self.b_width/self.b_num        
-
-    def _add_bin_centers(self):
-        self.cx_bin_centers = (
-            self.cy_bin_edges[: -1] + self.cx_bin_radius
-        )
-        self.cy_bin_centers = (
-            self.cy_bin_edges[: -1] + self.cy_bin_radius
-        )
-        self.b_bin_centers = (
-            self.b_bin_edges[: -1] + self.b_bin_radius
-        )
-        self.obj_bin_centers = b2g(self.b_bin_centers, self.focal_length)
+        assert self._cx_num > 0
+        assert self._cy_num > 0
+        assert self._obj_num > 0        
 
     def __repr__(self):
-        r2d = np.rad2deg
-        fov_solid_angle_sqdeg = r2d(self.cx_width)*r2d(self.cy_width)
-
         out = 'DepthOfFieldBinning('
-        out += str(self.bins_num)+'bins, '
-        out += str(fov_solid_angle_sqdeg)+'deg^2 x '
-        out += str(self.b_width)+'m)'
+        out += str(self.x_img_num*self.y_img_num*self.b_img_num)+'bins, '
+        out += str(self.x_img_width*self.y_img_width)+'m^2 x '
+        out += str(self.b_img_width)+'m)'
         return out
      
