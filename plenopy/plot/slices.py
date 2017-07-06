@@ -16,7 +16,7 @@ def save_slice_stack(
     intensity_volume, 
     output_path, 
     image_prefix='slice_',
-    intensity_volume_2=None
+    intensity_volume_2=None,
     xlabel='x/m',
     ylabel='y/m',
 ):
@@ -73,15 +73,15 @@ def save_slice_stack(
 
 
 def add2ax_z_slice(
-    ax, 
-    z_slice, 
-    xy_extent=[-500,500,-500,500], 
+    ax,
     intensity_volume,
+    z_slice, 
+    xy_extent=[-500,500,-500,500],
     intensity_min=None, 
     intensity_max=None,
     intensity_volume_2=None,
     intensity_min_2=None, 
-    intensity_max_2=None
+    intensity_max_2=None,
     xlabel='x/m',
     ylabel='y/m',
 ):
