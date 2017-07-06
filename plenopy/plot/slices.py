@@ -46,14 +46,13 @@ def save_slice_stack(
         ax_histogram.set_xlabel(xlabel)
         ax_histogram.set_ylabel(ylabel)
 
-        add2ax_z_slice(
+        add2ax_image(
             ax=ax_histogram,
-            z_slice=z_slice,
             xy_extent=xy_extent, 
-            intensity_volume=intensity_volume,
+            image=intensity_volume[:,:,z_slice],
             intensity_min=intensity_min,
             intensity_max=intensity_max,
-            intensity_volume_2=intensity_volume_2,
+            image=intensity_volume_2[:,:,z_slice],
             intensity_min_2=intensity_min_2,
             intensity_max_2=intensity_max_2,
         )
@@ -74,41 +73,47 @@ def save_slice_stack(
     plt.close(fig)
 
 
-def add2ax_z_slice(
+def add2ax_image(
     ax,
-    intensity_volume,
-    z_slice, 
-    xy_extent=[-500,500,-500,500],
+    image,
     intensity_min=None, 
     intensity_max=None,
-    intensity_volume_2=None,
+    image_2=None,
     intensity_min_2=None, 
     intensity_max_2=None,
+    xy_extent=[-500,500,-500,500],
+    cmap='viridis'
 ):
-    if intensity_volume_2 is None:
+    if image_2 is None:
         img = ax.imshow(
-            intensity_volume[:,:,z_slice], 
-            cmap='viridis', 
+            image, 
+            cmap=cmap, 
             extent=xy_extent, 
-            interpolation='None')
+            interpolation='None'
+        )
         img.set_clim(intensity_min, intensity_max)
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
         plt.colorbar(img, cax=cax)
     else:
-        image = matrix_2_rgb_image(
-            intensity_volume[:,:,z_slice], 
+        rgb_img1 = matrix_2_rgb_image(
+            image, 
             color_channel=1,
             intensity_min=intensity_min,
-            intensity_max=intensity_max) + matrix_2_rgb_image(
-            intensity_volume_2[:,:,z_slice], 
+            intensity_max=intensity_max
+        ) 
+        rgb_img2 = matrix_2_rgb_image(
+            image_2, 
             color_channel=0,
             intensity_min=intensity_min_2,
-            intensity_max=intensity_max_2) 
+            intensity_max=intensity_max_2
+        ) 
+        rgb_image = img1 + img2
         img = ax.imshow(
-            image, 
+            rgb_image, 
             extent=xy_extent, 
-            interpolation='None')
+            interpolation='None'
+        )
 
 
 def matrix_2_rgb_image(
