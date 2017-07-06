@@ -65,7 +65,8 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
 
     (starts, ends) = _start_and_end_slices_for_1D_array_chunking(
         number_of_chunks=steps, 
-        array_length=length)
+        array_length=length
+    )
     
     mean_chunk_intensities = []
     for i in range(steps):
@@ -100,23 +101,14 @@ def _start_and_end_slices_for_1D_array_chunking(
     array_length
 ):
     assert array_length >= number_of_chunks
-    assert array_length >= 0
-    assert number_of_chunks >= 0
+    assert array_length > 0
+    assert number_of_chunks >= 1
 
-    step_length = int(np.ceil(array_length/number_of_chunks))
-    if step_length < 1:
-        step_length = 1
-
-    starts = []
-    ends = []
-    for step in range(number_of_chunks):
-        start = step*step_length
-        end = start+step_length+1
-        if end > array_length+1:
-            end = array_length+1
-        if start > array_length:
-            break
-        starts.append(start)
-        ends.append(end)
+    chunk_edges = np.array(
+        np.floor(
+            np.linspace(0.0, array_length-1, number_of_chunks+1)
+        ),
+        dtype=np.int64
+    )
     
-    return (np.array(starts), np.array(ends))
+    return (chunk_edges[0:-1], chunk_edges[1:])

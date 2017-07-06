@@ -9,10 +9,14 @@ def test_array_chnunking():
     assert len(s) == 10
     assert len(e) == 10
     for i in range(len(s)):
-        assert s[i] < e[i]
+        assert s[i] <= e[i]
+    assert s[0] == 0
+    assert e[-1] == 9
 
     (s,e) = chunking(number_of_chunks=10, array_length=100)
     assert len(s) == 10
     assert len(e) == 10
     for i in range(len(s)):
-        assert s[i] < e[i]
+        assert s[i] <= e[i]
+    assert s[0] == 0
+    assert e[-1] == 99
