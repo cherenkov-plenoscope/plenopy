@@ -6,6 +6,15 @@ import matplotlib.pyplot as plt
 from .DepthOfFieldBinning import DepthOfFieldBinning
 from .transform import object_distance_2_image_distance as g2b
 from .transform import image_distance_2_object_distance as b2g
+from joblib import Memory
+import os
+from ..simulation_truth import emission_positions_of_photon_bunches
+from . import transform
+
+cachedir = '/tmp/plenopy'
+os.makedirs(cachedir, exist_ok=True)
+memory = Memory(cachedir=cachedir, verbose=0)
+
 
 class Reconstruction(object):
 
@@ -31,7 +40,7 @@ class Reconstruction(object):
 
         self.image_rays = ImageRays(event.light_field)
 
-        self.psf = ray_and_voxel.point_spread_function(
+        self.psf = make_tomographic_point_spread_function(
             supports=self.image_rays.support, 
             directions=self.image_rays.direction, 
             x_bin_edges=self.binning.x_img_bin_edges, 
@@ -39,21 +48,114 @@ class Reconstruction(object):
             z_bin_edges=self.binning.b_img_bin_edges,
         )
 
-        self.vol_I = np.zeros(self.binning.bin_num, dtype=np.float32)
+        self.rec_vol_I = np.zeros(self.binning.bin_num, dtype=np.float32)
+        self.iteration = 0
 
 
-    def save_vol_I_plot(self, path='.'):
-        pass
+        self.lixel_integral = self.psf.sum(axis=0).T # Total length of ray
+        self.voxel_integral = self.psf.sum(axis=1) # Total distance of all rays in this voxel
+        self.voxel_cross_psf = self.psf.dot(self.lixel_integral) # The sum of the length of all rays hiting this voxel weighted with the overlap of the ray and this voxel
+        self.voxel_cross_psf = np.array(self.voxel_cross_psf).reshape((self.voxel_cross_psf.shape[0],))
+        self.lixel_cross_psf = self.psf.T.dot(self.voxel_integral)
+        self.lixel_cross_psf = np.array(self.lixel_cross_psf).reshape((self.lixel_cross_psf.shape[0],))
+
+        self.voxel_within_field_of_view_mask = self.binning.voxels_within_field_of_view(
+            radius=0.85
+        )
 
 
-def update(vol_I, psf, measured_I):
-    measured_I_of_voxel = psf.dot(measured_I)
-    proj_I_of_voxel = psf.dot(psf.T.dot(vol_I))
 
-    voxel_diffs = measured_I_of_voxel - proj_I_of_voxel
-    voxel_diffs /= number_of_voxels_in_psf_per_voxel
+    def reconstructed_depth_of_field_intesities(self):
+        return self.rec_vol_I.reshape(
+            (
+                self.binning.x_img_num, 
+                self.binning.y_img_num, 
+                self.binning.b_img_num
+            ),
+            order='C'
+        )
 
-    vol_I += voxel_diffs
+
+    def one_more_iteration(self):
+        rec_vol_I_n = update(
+            vol_I=self.rec_vol_I.copy(),
+            psf=self.psf,
+            measured_lixel_I=self.lixel_intensities,
+            voxel_cross_psf=self.voxel_cross_psf,
+            lixel_cross_psf=self.lixel_cross_psf,
+            in_fov=self.voxel_within_field_of_view_mask,
+        )
+
+        diff = np.abs(rec_vol_I_n - self.rec_vol_I).sum()
+
+        print('Intensity difference to previous iteration '+str(diff))
+
+        self.rec_vol_I = rec_vol_I_n.copy()
+        self.iteration += 1
+
+
+    def simulation_truth_depth_of_field_intesities(self):
+        photon_bunches = self.event.simulation_truth.air_shower_photon_bunches
+        true_emission_positions = emission_positions_of_photon_bunches(
+            photon_bunches
+        )
+
+        true_emission_positions_image_domain = transform.xyz2cxcyb(
+            true_emission_positions[:,0],
+            true_emission_positions[:,1], 
+            true_emission_positions[:,2],  
+            self.binning.focal_length
+        ).T
+        tepid = true_emission_positions_image_domain
+
+        # directions to positions on image screen
+        tepid[:,0] = -self.binning.focal_length*np.tan(tepid[:,0])
+        tepid[:,1] = -self.binning.focal_length*np.tan(tepid[:,1])
+
+        hist = np.histogramdd(
+            tepid, 
+            bins=(
+                self.binning.x_img_bin_edges,
+                self.binning.y_img_bin_edges, 
+                self.binning.b_img_bin_edges
+            ),
+            weights=photon_bunches.probability_to_reach_observation_level
+        )
+
+        return hist[0]
+
+
+def update(vol_I, psf, measured_lixel_I,  voxel_cross_psf, lixel_cross_psf, in_fov):
+    measured_I_voxel = psf.dot(measured_lixel_I)
+    vox_non_zero = voxel_cross_psf > 0.0
+    measured_I_voxel[vox_non_zero] /= voxel_cross_psf[vox_non_zero]
+
+    proj_I_lixel = psf.T.dot(vol_I)
+    lix_non_zero = lixel_cross_psf > 0.0
+    proj_I_lixel[lix_non_zero] /= lixel_cross_psf[lix_non_zero]
+    
+    proj_I_voxel = psf.dot(proj_I_lixel)
+
+    voxel_diffs = measured_I_voxel - proj_I_voxel
+
+    vol_I[in_fov] += voxel_diffs[in_fov]
+
     vol_I[vol_I < 0.0] = 0.0
-
     return vol_I
+
+
+@memory.cache
+def make_tomographic_point_spread_function(
+    supports, 
+    directions, 
+    x_bin_edges, 
+    y_bin_edges,
+    z_bin_edges
+):
+    return ray_and_voxel.point_spread_function(
+        supports=supports,
+        directions=directions, 
+        x_bin_edges=x_bin_edges, 
+        y_bin_edges=y_bin_edges,
+        z_bin_edges=z_bin_edges,
+    )

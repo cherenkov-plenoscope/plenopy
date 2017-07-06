@@ -16,7 +16,7 @@ class DepthOfFieldBinning(object):
         obj_max=25e3,
         obj_num=64,
         focal_length=106.05,
-        min_obj_focal_length_scale=3.0,
+        min_obj_focal_length_scale=10.0,
         max_obj_focal_length_scale=300.0,
     ):
         self.focal_length = focal_length
@@ -92,3 +92,39 @@ class DepthOfFieldBinning(object):
         out += str(self.b_img_width)+'m)'
         return out
      
+    def xyb_voxel_positions(self):
+        """
+        Returns a flat array of the voxel's center positions.
+        """
+        x_flat = self.x_img_bin_centers.repeat(
+            self.b_img_num*self.y_img_num
+        )
+        y_flat = np.repeat(
+            np.tile(
+                self.y_img_bin_centers, self.x_img_num
+            ),
+            self.b_img_num
+        )
+        b_flat = np.tile(
+            self.b_img_bin_centers,
+            self.x_img_num*self.y_img_num
+        )
+        return np.array([x_flat, y_flat, b_flat]).T
+
+
+    def voxels_within_field_of_view(self, radius=1.0):
+        voxel_centers = self.xyb_voxel_positions()
+        voxel_dists_to_optical_axis = np.sqrt(
+            voxel_centers[:,0]**2 + voxel_centers[:,1]**2
+        )
+
+        max_img_offset_xy = np.array([
+            self.x_img_min,
+            self.x_img_max,
+            self.y_img_min,
+            self.y_img_max,
+        ])
+        max_img_offset_xy = np.abs(max_img_offset_xy)
+        max_img_offset_xy = max_img_offset_xy.mean()
+
+        return voxel_dists_to_optical_axis < radius*max_img_offset_xy
