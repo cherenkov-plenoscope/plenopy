@@ -137,24 +137,29 @@ def matrix_2_rgb_image(
 
 
 def save_slice_video(
-    event, 
+    event_info_repr,
+    xy_extent,
+    z_bin_centers,
     binning, 
     intensity_volume, 
     output_path,
     fps=25,
     intensity_volume_2=None
+    xlabel='x/m',
+    ylabel='y/m',
 ):
     with tempfile.TemporaryDirectory() as work_dir:
-        image_prefix = 'slice_'
         save_slice_stack(
-            event=event,
-            binning=binning,
+            event_info_repr=event_info_repr,
+            xy_extent=xy_extent,
+            z_bin_centers=z_bin_centers,
             intensity_volume=intensity_volume,
             output_path=work_dir,
-            image_prefix=image_prefix,
-            intensity_volume_2=intensity_volume_2
+            intensity_volume_2=intensity_volume_2,
+            xlabel=xlabel,
+            ylabel=ylabel,
         )
-        steps=binning.number_z_bins
+        steps=z_bin_centers.shape[0]
 
         # duplicate the images and use them again in reverse order
         i = 0
