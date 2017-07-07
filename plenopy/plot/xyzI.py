@@ -56,6 +56,9 @@ def hist3D_to_xyzI(hist, binning, threshold=0):
 
 
 def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
+    if xyzIs.shape[0] == 0:
+        return
+
     intensities = xyzIs[:,3]
     xyzIs_sorted = xyzIs[np.argsort(intensities)]
     length = xyzIs_sorted.shape[0]
