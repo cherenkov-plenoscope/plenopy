@@ -19,6 +19,7 @@ def save_slice_stack(
     intensity_volume_2=None,
     xlabel='x/m',
     ylabel='y/m',
+    sqrt_intensity=False,
 ):
     fig_size = FigureSize(dpi=200)
     fig = plt.figure(
@@ -29,17 +30,26 @@ def save_slice_stack(
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])
 
-    intensity_max = intensity_volume.max()
-    intensity_min = intensity_volume.min()
+
+    vol_I_1 = intensity_volume.copy()
+    if sqrt_intensity:
+        vol_I_1 = np.sqrt(vol_I_1)
+
+    I_vol_max1 = vol_I_1.max()
+    I_vol_min1 = vol_I_1.min()
 
     if intensity_volume_2 is not None:
-        intensity_max_2 = intensity_volume_2.max()
-        intensity_min_2 = intensity_volume_2.min()
-    else:
-        intensity_max_2 = None
-        intensity_min_2 = None
+        vol_I_2 = intensity_volume_2.copy()
+        if sqrt_intensity:
+            vol_I_2 = np.sqrt(vol_I_2)
 
-    for z_slice in range(intensity_volume.shape[2]):
+        I_vol_max2 = vol_I_2.max()
+        I_vol_min2 = vol_I_2.min()
+    else:
+        I_vol_max2 = None
+        I_vol_min2 = None
+
+    for z_slice in range(vol_I_1.shape[2]):
 
         fig.suptitle(event_info_repr)
 
@@ -48,17 +58,17 @@ def save_slice_stack(
 
         image_2 = None
         if intensity_volume_2 is not None:
-            image_2 = intensity_volume_2[:,:,z_slice]
+            image_2 = vol_I_2[:,:,z_slice]
 
         add2ax_image(
             ax=ax_histogram,
             xy_extent=xy_extent, 
-            image=intensity_volume[:,:,z_slice],
-            intensity_min=intensity_min,
-            intensity_max=intensity_max,
+            image=vol_I_1[:,:,z_slice],
+            I_vol_min1=I_vol_min1,
+            I_vol_max1=I_vol_max1,
             image_2=image_2,
-            intensity_min_2=intensity_min_2,
-            intensity_max_2=intensity_max_2,
+            I_vol_min2=I_vol_min2,
+            I_vol_max2=I_vol_max2,
         )
 
         add2ax_object_distance_ruler(
@@ -84,11 +94,11 @@ def save_slice_stack(
 def add2ax_image(
     ax,
     image,
-    intensity_min=None, 
-    intensity_max=None,
+    I_vol_min1=None, 
+    I_vol_max1=None,
     image_2=None,
-    intensity_min_2=None, 
-    intensity_max_2=None,
+    I_vol_min2=None, 
+    I_vol_max2=None,
     xy_extent=[-500,500,-500,500],
     cmap='viridis'
 ):
@@ -99,7 +109,7 @@ def add2ax_image(
             extent=xy_extent, 
             interpolation='None'
         )
-        img.set_clim(intensity_min, intensity_max)
+        img.set_clim(I_vol_min1, I_vol_max1)
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
         plt.colorbar(img, cax=cax)
@@ -107,14 +117,14 @@ def add2ax_image(
         rgb_img1 = matrix_2_rgb_image(
             image, 
             color_channel=1,
-            intensity_min=intensity_min,
-            intensity_max=intensity_max
+            I_vol_min1=I_vol_min1,
+            I_vol_max1=I_vol_max1
         ) 
         rgb_img2 = matrix_2_rgb_image(
             image_2, 
             color_channel=0,
-            intensity_min=intensity_min_2,
-            intensity_max=intensity_max_2
+            I_vol_min1=I_vol_min2,
+            I_vol_max1=I_vol_max2
         ) 
         rgb_image = rgb_img1 + rgb_img2
         img = ax.imshow(
@@ -127,15 +137,15 @@ def add2ax_image(
 def matrix_2_rgb_image(
     matrix,
     color_channel=0,
-    intensity_min=None, 
-    intensity_max=None
+    I_vol_min1=None, 
+    I_vol_max1=None
 ):
-    if intensity_min is None:
-        intensity_min = matrix.min()
-    if intensity_max is None:
-        intensity_max = matrix.max()
+    if I_vol_min1 is None:
+        I_vol_min1 = matrix.min()
+    if I_vol_max1 is None:
+        I_vol_max1 = matrix.max()
     image = np.zeros(shape=(matrix.shape[0], matrix.shape[1], 3))
-    inensity = (matrix - intensity_min)/(intensity_max - intensity_min)
+    inensity = (matrix - I_vol_min1)/(I_vol_max1 - I_vol_min1)
     image[:,:,color_channel] = inensity
     return image
 
