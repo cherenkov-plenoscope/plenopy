@@ -18,6 +18,10 @@ import os
 import pickle
 from .filtered_back_projection import max_intensity_vs_z
 from .filtered_back_projection import histogram
+from .simulation_truth import histogram_photon_bunches
+from ..plot import slices
+from ..plot import xyzI
+import matplotlib.pyplot as plt
 
 
 class NarrowAngleTomography(object):
@@ -98,6 +102,64 @@ class NarrowAngleTomography(object):
         self.intensity_volume = flat_volume_intensity_3d_reshape(
             vol_I=self.rec_I_vol,
             binning=self.binning)
+
+
+    def save_imgae_slice_stack(self, event, out_dir='./tomography'):
+        os.makedirs(out_dir, exist_ok=True)
+
+        intensity_volume_2 = None
+        if hasattr(event, 'simulation_truth'):
+            if hasattr(event.simulation_truth, 'air_shower_photon_bunches'):
+                intensity_volume_2 = histogram_photon_bunches(
+                    photon_bunches=event.simulation_truth.air_shower_photon_bunches, 
+                    binning=self.binning, 
+                    observation_level=5e3
+                )
+
+        slices.save_slice_stack(
+            intensity_volume=self.intensity_volume,
+            event_info_repr=event.__repr__(), 
+            xy_extent=[
+                self.binning.xy_bin_edges.min(),
+                self.binning.xy_bin_edges.max(),
+                self.binning.xy_bin_edges.min(),
+                self.binning.xy_bin_edges.max(),
+            ],
+            z_bin_centers=self.binning.z_bin_centers,
+            output_path=out_dir, 
+            image_prefix='slice_',
+            intensity_volume_2=intensity_volume_2,
+            xlabel='x/m',
+            ylabel='y/m',
+        )
+
+
+    def show_xyzI(self, event, rec_threshold=0.0, sim_threshold=0.0, alpha_max=0.2, color_steps=32, ball_size=100.0):
+        rec_xyzIs = xyzI.hist3D_to_xyzI(
+            hist=self.intensity_volume, 
+            binning=self.binning, 
+            threshold=rec_threshold
+        )
+
+        sim_xyzIs = xyzI.hist3D_to_xyzI(
+            hist=histogram_photon_bunches(
+                photon_bunches=event.simulation_truth.air_shower_photon_bunches, 
+                binning=self.binning, 
+                observation_level=5e3,
+            ),
+            binning=self.binning, 
+            threshold=sim_threshold,
+        )
+
+        xyzI.plot_xyzI(
+            xyzIs=rec_xyzIs, 
+            xyzIs2=sim_xyzIs, 
+            alpha_max=alpha_max, 
+            steps=color_steps,
+            ball_size=ball_size,
+         )
+        plt.show()
+
 
 def tomographic_point_spread_function(rays, binning, show_progress=False):
     """
