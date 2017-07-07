@@ -4,5 +4,6 @@ from .AirShowerReconstruction import AirShowerReconstruction
 from . import simulation_truth
 from . import narrow_angle
 from . import narrow_angle_sparse
+from . import narrow_angle_sparse_overlap
 from . import ray_and_voxel
 from . import image_domain
