@@ -472,3 +472,47 @@ def test_non_linear_voxel_space():
             y_bin_edges=np.logspace(0.,1.,10), 
             z_bin_edges=np.logspace(0.,1.,10)
         )
+
+
+def test_tomographic_PSF():
+
+    np.random.seed(0)
+
+    N_RAYS = 100
+    supports = np.array([
+        np.random.uniform(-2.5, 2.5, N_RAYS),
+        np.random.uniform(-2.5, 2.5, N_RAYS),
+        np.zeros(100)
+    ]).T
+
+    directions = np.array([
+        np.random.uniform(-0.3, 0.3, N_RAYS),
+        np.random.uniform(-0.3, 0.3, N_RAYS),
+        np.ones(100)
+    ]).T
+
+    N_X_BINS = 8
+    N_Y_BINS = 8
+    N_Z_BINS = 8
+    psf = pl.tomography.ray_and_voxel.point_spread_function(
+        supports=supports, 
+        directions=directions, 
+        x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
+        y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
+        z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
+    )
+
+    # crazy prime number binning
+    """
+    N_X_BINS = 47
+    N_Y_BINS = 59
+    N_Z_BINS = 67
+    psf = pl.tomography.ray_and_voxel.point_spread_function(
+        supports=supports, 
+        directions=directions, 
+        x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
+        y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
+        z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
+    )
+    """
+    # SEG FAULT DEATH TRAP
