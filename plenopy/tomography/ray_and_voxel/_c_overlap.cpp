@@ -154,7 +154,7 @@ extern "C"{
         unsigned int dim_partitions[2][2],
         unsigned int *n
     ) {
-        if(dim_range[1] - dim_range[0] <= 1) {
+        if(dim_range[1] - dim_range[0] < 1) {
             *n = *n+1;
             dim_partitions[*n-1][0] = dim_range[0];
             dim_partitions[*n-1][1] = dim_range[1];
