@@ -502,17 +502,20 @@ def test_tomographic_PSF():
         z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
     )
 
-    # crazy prime number binning
-    """
-    N_X_BINS = 47
-    N_Y_BINS = 59
-    N_Z_BINS = 67
-    psf = pl.tomography.ray_and_voxel.point_spread_function(
-        supports=supports, 
-        directions=directions, 
-        x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
-        y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
-        z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
-    )
-    """
-    # SEG FAULT DEATH TRAP
+    # crazy binning combinations
+    number_bins = np.arange(1,14)
+
+    for N_X_BINS in number_bins:
+        for N_Y_BINS in number_bins:
+            for N_Z_BINS in number_bins:
+
+                psf = pl.tomography.ray_and_voxel.point_spread_function(
+                    supports=supports, 
+                    directions=directions, 
+                    x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
+                    y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
+                    z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
+                )
+
+                assert psf.shape[0] == N_X_BINS*N_Y_BINS*N_Z_BINS
+                assert psf.shape[1] == N_RAYS
