@@ -83,36 +83,48 @@ def overlap_of_ray_with_voxels(
     z_range         lower and upper bin indices to truncate voxels in z 
                     (optional)
     '''
-    assert support is not None
-    assert len(support) == 3
+    assert support is not None,
+    assert len(support) == 3, 'support must have 3 dimension'
     cdef np.ndarray[double ,mode="c"] _support = np.ascontiguousarray(
         support, 
         dtype=np.float64
     ) 
 
     assert direction is not None
-    assert len(direction) == 3
+    assert len(direction) == 3, 'direction must have 3 dimension'
     cdef np.ndarray[double ,mode="c"] _direction = np.ascontiguousarray(
         direction, 
         dtype=np.float64
     )
 
     assert x_bin_edges is not None
-    assert len(x_bin_edges) >= 2
+    assert len(x_bin_edges) >= 2, (
+        'Expected len(x_bin_edges) >= 2, ' + 
+        'but actually len(x_bin_edges) = {0:d}.'.format(len(x_bin_edges)) +
+        'Need at least 2 edges to define a bin.'
+    )
     cdef np.ndarray[double ,mode="c"] _x_bin_edges = np.ascontiguousarray(
         x_bin_edges, 
         dtype=np.float64
     )
 
     assert y_bin_edges is not None
-    assert len(y_bin_edges) >= 2
+    assert len(y_bin_edges) >= 2, (
+        'Expected len(y_bin_edges) >= 2, ' + 
+        'but actually len(y_bin_edges) = {0:d}.'.format(len(y_bin_edges)) +
+        'Need at least 2 edges to define a bin.'
+    )
     cdef np.ndarray[double ,mode="c"] _y_bin_edges = np.ascontiguousarray(
         y_bin_edges, 
         dtype=np.float64
     ) 
 
     assert z_bin_edges is not None
-    assert len(z_bin_edges) >= 2
+    assert len(z_bin_edges) >= 2, (
+        'Expected len(z_bin_edges) >= 2, ' + 
+        'but actually len(z_bin_edges) = {0:d}.'.format(len(z_bin_edges)) +
+        'Need at least 2 edges to define a bin.'
+    )
     cdef np.ndarray[double ,mode="c"] _z_bin_edges = np.ascontiguousarray(
         z_bin_edges, 
         dtype=np.float64

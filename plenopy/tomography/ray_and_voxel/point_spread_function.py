@@ -32,7 +32,12 @@ def point_spread_function(
 
     z_bin_edges     1D array of bin edge positions along z axis.
     '''
-    assert supports.shape[0] == directions.shape[0]
+    assert supports.shape[0] == directions.shape[0], (
+        'number of support vectors ({0:d}) must match ' + 
+        'the number of direction vectors ({1:d})'.format(
+            supports.shape[0], directions.shape[0]
+        )
+    )
     x_num = x_bin_edges.shape[0] - 1
     y_num = y_bin_edges.shape[0] - 1
     z_num = z_bin_edges.shape[0] - 1
