@@ -96,7 +96,6 @@ def emission_positions_of_photon_bunches(
         valid_fov = R_fov <= limited_fov_radius
 
     valid_acceptence = valid_aperture*valid_fov
-    print('survived', valid_acceptence.sum()/valid_acceptence.shape[0])
 
     return {
         'emission_positions': emission_positions,
