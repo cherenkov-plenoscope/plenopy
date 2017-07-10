@@ -23,7 +23,7 @@ class Image:
 
     def plot(self):
         fig, ax = plt.subplots()
-        add_pixel_image_to_ax(self)
+        add_pixel_image_to_ax(self, ax)
         plt.show()
 
     def __repr__(self):
