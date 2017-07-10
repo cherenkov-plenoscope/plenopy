@@ -11,7 +11,7 @@ def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=No
         vmin = I.min()
     if vmax is None:
         vmax = I.max()
-    fov = np.abs(px).max() * 1.05
+    fov = np.abs(px).max() * 1.01
     Area = fov * fov
     bin_radius = 1.15 * np.sqrt((Area / I.shape[0]))
 
