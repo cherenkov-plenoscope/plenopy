@@ -9,16 +9,19 @@ def classic_view(
     output_path='.',
     time_slice_integration_radius=3,
     dpi=400,
-    scale=5.0,
+    iact_image_diagonal=5.0,
     l_margin=0.05,
     r_margin=0.05,
     t_margin=0.05,
     b_margin=0.05,
     colormap='viridis',
     add_fov_circles=False,
-    fov_circles_line_width=1.0
+    fov_circles_line_width=1.0,
+    s=1.0
 ):
-    fov_radius = 0.5*event.light_field.sensor_plane2imaging_system.max_FoV_diameter
+    iact_image_fov_radius = (
+        0.5*event.light_field.sensor_plane2imaging_system.max_FoV_diameter
+    )
 
     light_field = sequence.integrate_around_arrival_peak(
         event.light_field.sequence, 
@@ -31,8 +34,8 @@ def classic_view(
     max_intensity = array_images.max()
     min_intensity = array_images.min()
 
-    iact_img_h = 1.0*scale
-    iact_img_w = 1.0*scale
+    iact_img_h = 1.0*iact_image_diagonal
+    iact_img_w = 1.0*iact_image_diagonal
 
     paxels_on_diagonal = event.light_field.sensor_plane2imaging_system.number_of_paxel_on_pixel_diagonal
 
@@ -59,17 +62,17 @@ def classic_view(
     fig_h = t_margin + ap_y_width + iact_img_h + b_margin
     fig = plt.figure(figsize=(fig_w, fig_h), dpi=dpi)
 
-    for i in range(number_paxel):
+    for i in range(event.light_field.number_paxel):
 
-        l_anchor = l_margin + ap_x_pos[i] - iact_img_w/2
-        b_anchor = b_margin + ap_y_pos[i] - iact_img_h/2
+        l_anchor = l_margin + ap_x_pos[i] - (s*iact_img_w)/2
+        b_anchor = b_margin + ap_y_pos[i] - (s*iact_img_h)/2
 
         ax_image = fig.add_axes(
             (
                 l_anchor/fig_w, 
                 b_anchor/fig_h, 
-                iact_img_w/fig_w, 
-                iact_img_h/fig_h
+                (s*iact_img_w)/fig_w, 
+                (s*iact_img_h)/fig_h
             )
         )
 
@@ -92,7 +95,7 @@ def classic_view(
             fov_d = event.light_field.sensor_plane2imaging_system.max_FoV_diameter
             fov_limit = plt.Circle(
                 (0, 0), 
-                np.rad2deg(fov_radius), 
+                np.rad2deg(iact_image_fov_radius), 
                 edgecolor='k', 
                 lw=fov_circles_line_width, 
                 facecolor='none',
