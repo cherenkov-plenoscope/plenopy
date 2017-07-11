@@ -83,7 +83,7 @@ def overlap_of_ray_with_voxels(
     z_range         lower and upper bin indices to truncate voxels in z 
                     (optional)
     '''
-    assert support is not None,
+    assert support is not None
     assert len(support) == 3, 'support must have 3 dimension'
     cdef np.ndarray[double ,mode="c"] _support = np.ascontiguousarray(
         support, 
