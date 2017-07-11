@@ -5,7 +5,17 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
-def add2ax(ax, I, px, py, colormap='viridis', hexrotation=30, vmin=None, vmax=None, colorbar=True):
+def add2ax(
+    ax, 
+    I, 
+    px, 
+    py, 
+    colormap='viridis', 
+    hexrotation=30, 
+    vmin=None, 
+    vmax=None, 
+    colorbar=True
+):
 
     if vmin is None:
         vmin = I.min()
@@ -53,7 +63,8 @@ def add_pixel_image_to_ax(
     colormap="viridis", 
     vmin=None, 
     vmax=None, 
-    colorbar=True):
+    colorbar=True
+):
     ax.set_xlabel('cx/deg')
     ax.set_ylabel('cy/deg')
     ax.spines['right'].set_visible(False)
@@ -78,7 +89,8 @@ def add_paxel_image_to_ax(
     colormap="viridis", 
     vmin=None, 
     vmax=None, 
-    colorbar=True):
+    colorbar=True
+):
     ax.set_xlabel('x/m')
     ax.set_ylabel('y/m')
     ax.spines['right'].set_visible(False)
