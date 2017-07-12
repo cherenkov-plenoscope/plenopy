@@ -23,7 +23,7 @@ setup(
     url='',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
     author_email='sebmuell@phys.ethz.ch',
-    license='MIT',
+    license='GPL v3',
     packages=[
         'plenopy',
         'plenopy.corsika',
