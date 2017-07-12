@@ -1,26 +1,39 @@
+"""
+This 'narrow angle tomography' or '3D deconvolution' is inspired by:
+@article{levoy2006light,
+    title={Light field microscopy},
+    author={Levoy, Marc and Ng, Ren and Adams, Andrew and Footer, Matthew and Horowitz, Mark},
+    journal={ACM Transactions on Graphics (TOG)},
+    volume={25},
+    number={3},
+    pages={924--934},
+    year={2006},
+    publisher={ACM}
+}
+"""
 import numpy as np
-from joblib import Memory
 import os
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
-
-from .. import light_field
-from .Rays import Rays
-from . import ray_and_voxel
-from .simulation_truth import histogram_photon_bunches
-from . import filtered_back_projection as fbp
-from .Binning import Binning
-from ..plot import slices
-from ..plot import xyzI
-
-cachedir = '/tmp/plenopy'
-os.makedirs(cachedir, exist_ok=True)
-memory = Memory(cachedir=cachedir, verbose=0)
+from ... import light_field
+from ..Rays import Rays
+from ..simulation_truth import histogram_photon_bunches
+from ..Binning import Binning
+from ...plot import slices
+from ...plot import xyzI
+from .deconvolution import update
+from .deconvolution import make_tomographic_system_matrix
 
 
 class Reconstruction(object):
 
-    def __init__(self, event, binning=None, use_low_pass_filter=False, rays_in_voxel_threshold=10.0):
+    def __init__(
+        self, 
+        event, 
+        binning=None, 
+        use_low_pass_filter=False, 
+        rays_in_voxel_threshold=10.0
+    ):
         self.event = event
 
         if binning == None:
@@ -72,18 +85,6 @@ class Reconstruction(object):
         self.valid_voxel = self.voxel_integral > self.rays_in_voxel_threshold*self.expected_ray_voxel_overlap
         self.valid_voxel = np.array(self.valid_voxel).reshape((self.valid_voxel.shape[0],))
 
-        """
-        vox_integral_3D = self.voxel_integral.reshape(               
-            (
-                self.binning.number_xy_bins, 
-                self.binning.number_xy_bins, 
-                self.binning.number_z_bins
-            ),
-            order='C'
-        )
-        self.max_ray_overlap = vox_integral_3D.mean(axis=0).mean(axis=0)
-        self.max_ray_overlap /= self.max_ray_overlap.mean()
-        """
         self.inverse_square_law = (self.binning.z_bin_centers)**(1/3)
         self.inverse_square_law /= self.inverse_square_law.mean()
 
@@ -221,48 +222,3 @@ class Reconstruction(object):
             ball_size=ball_size,
          )
         plt.show()
-
-
-def update(
-    vol_I, 
-    psf, 
-    measured_lixel_I,  
-    voxel_cross_psf, 
-    lixel_cross_psf, 
-    obj_dist_regularization, 
-    valid_voxel,
-    ray_length
-):  
-    measured_photon_density_along_rays = measured_lixel_I/ray_length
-    measured_ph_I_voxel = (psf.dot(measured_photon_density_along_rays))
-    measured_ph_I_voxel /= obj_dist_regularization
-
-    proj_ph_dist_int_lixel = psf.T.dot(vol_I)
-    proj_ph_lixel = proj_ph_dist_int_lixel/ray_length
-    proj_ph_dst_lixel = proj_ph_lixel/ray_length
-    
-    proj_ph_I_voxel = psf.dot(proj_ph_dst_lixel)
-
-    voxel_diffs = measured_ph_I_voxel - proj_ph_I_voxel
-
-    vol_I[valid_voxel] += voxel_diffs[valid_voxel]
-
-    vol_I[vol_I < 0.0] = 0.0
-    return vol_I
-
-
-@memory.cache
-def make_tomographic_system_matrix(
-    supports, 
-    directions, 
-    x_bin_edges, 
-    y_bin_edges,
-    z_bin_edges
-):
-    return ray_and_voxel.system_matrix(
-        supports=supports,
-        directions=directions, 
-        x_bin_edges=x_bin_edges, 
-        y_bin_edges=y_bin_edges,
-        z_bin_edges=z_bin_edges,
-    )
