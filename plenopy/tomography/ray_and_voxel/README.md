@@ -27,9 +27,9 @@ directions = np.array([
 ]).T
 
 N_X_BINS = 8
-N_Y_BINS = 8
-N_Z_BINS = 8
-psf = pl.tomography.ray_and_voxel.point_spread_function(
+N_Y_BINS = 13
+N_Z_BINS = 7
+sys_mat = pl.tomography.ray_and_voxel.system_matrix(
     supports=supports, 
     directions=directions, 
     x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 

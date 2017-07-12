@@ -474,7 +474,7 @@ def test_non_linear_voxel_space():
         )
 
 
-def test_tomographic_PSF():
+def test_tomographic_system_matrix():
 
     np.random.seed(0)
 
@@ -494,7 +494,7 @@ def test_tomographic_PSF():
     N_X_BINS = 8
     N_Y_BINS = 8
     N_Z_BINS = 8
-    psf = pl.tomography.ray_and_voxel.point_spread_function(
+    psf = pl.tomography.ray_and_voxel.system_matrix(
         supports=supports, 
         directions=directions, 
         x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
@@ -509,7 +509,7 @@ def test_tomographic_PSF():
         for N_Y_BINS in number_bins:
             for N_Z_BINS in number_bins:
 
-                psf = pl.tomography.ray_and_voxel.point_spread_function(
+                psf = pl.tomography.ray_and_voxel.system_matrix(
                     supports=supports, 
                     directions=directions, 
                     x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 

@@ -42,7 +42,7 @@ class Reconstruction(object):
 
         self.rays = Rays.from_light_field_geometry(event.light_field)
 
-        self.psf = make_tomographic_point_spread_function(
+        self.psf = make_tomographic_system_matrix(
             supports=-self.rays.support, 
             directions=self.rays.direction, 
             x_bin_edges=self.binning.xy_bin_edges, 
@@ -252,14 +252,14 @@ def update(
 
 
 @memory.cache
-def make_tomographic_point_spread_function(
+def make_tomographic_system_matrix(
     supports, 
     directions, 
     x_bin_edges, 
     y_bin_edges,
     z_bin_edges
 ):
-    return ray_and_voxel.point_spread_function(
+    return ray_and_voxel.system_matrix(
         supports=supports,
         directions=directions, 
         x_bin_edges=x_bin_edges, 

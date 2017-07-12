@@ -4,7 +4,7 @@ import numpy as np
 import array
 
 
-def point_spread_function(
+def system_matrix(
     supports, 
     directions, 
     x_bin_edges, 
@@ -12,12 +12,12 @@ def point_spread_function(
     z_bin_edges,
 ):
     '''
-    Returns a tomographic Point Spread Function (PSF) matrix. 
+    Returns a tomographic System Matrix. 
     Along the rows are the rays and along the columns are the voxels.
-    Each element represents the overlap in euclidean distance of the ray 
-    with the voxel.
+    Each matrix element represents the overlap in euclidean distance of the 
+    corresponding ray with the voxel.
 
-    As the tomographic-PSF is very sparse, we construct and return a 
+    As the system matrix is very sparse, we construct and return a 
     scipy.sparse matrix.
 
     Parameters
@@ -71,10 +71,10 @@ def point_spread_function(
         ray_indicies.extend(ray_idxs)
         voxel_indicies.extend(voxel_idxs)
 
-    psf = coo_matrix(
+    sys_matrix = coo_matrix(
         (ray_voxel_overlap, (voxel_indicies, ray_indicies)),
         shape=(x_num*y_num*z_num, rays_num),
         dtype=np.float32
     )
 
-    return psf.tocsr()
+    return sys_matrix.tocsr()
