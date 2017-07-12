@@ -3,9 +3,9 @@ from .filtered_back_projection import histogram
 from .filtered_back_projection import normalize_ray_histograms 
 from .filtered_back_projection import ramp_kernel_in_frequency_space 
 from .filtered_back_projection import frequency_filter 
-from .Rays import Rays 
+from ..Rays import Rays 
 
-class AirShowerReconstruction(object):
+class Reconstruction(object):
     """
     Tomographic Air Shower Reconstruction
     using filtered back projection
