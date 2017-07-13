@@ -93,8 +93,18 @@ class Reconstruction(object):
             (self.valid_voxel.shape[0],)
         )
 
-        self.inverse_square_law = (self.binning.z_bin_centers)**(1/3)
-        self.inverse_square_law /= self.inverse_square_law.mean()
+        self.max_ray_integrals_vs_z = self.voxel_integral.reshape(
+            (
+                self.binning.number_xy_bins, 
+                self.binning.number_xy_bins, 
+                self.binning.number_z_bins
+            ),
+            order='C'
+        ).max(axis=0).max(axis=0)
+
+
+        self.obj_dist_regularization_vs_z = (self.max_ray_integrals_vs_z)**(1/3)
+        self.obj_dist_regularization_vs_z /= self.obj_dist_regularization_vs_z.mean()
 
         voxel_ids = np.arange(self.system_matrix.shape[0])
         voxel_idxs_z = np.unravel_index(
@@ -102,7 +112,7 @@ class Reconstruction(object):
             dims=self.binning.dims, 
             order='C'
         )[2]
-        self.obj_dist_regularization = self.inverse_square_law[voxel_idxs_z]
+        self.obj_dist_regularization = self.obj_dist_regularization_vs_z[voxel_idxs_z]
 
 
     def reconstructed_volume_intesities(self, filter_sigma=1.0):
@@ -124,6 +134,23 @@ class Reconstruction(object):
             filter_sigma=filter_sigma
         )
 
+    def _reconstructed_intesity_vs_obj_dist(self):
+        rec_vol_I = self.reconstructed_volume_intesities()
+        return rec_vol_I.sum(axis=0).sum(axis=0)
+
+    def _simulated_intesity_vs_obj_dist(self):
+        sim_vol_I = self.simulation_truth_volume_intesities()
+        return sim_vol_I.sum(axis=0).sum(axis=0)
+
+    def _show_rec_vs_sim_intesity_vs_obj_dist(self):
+        rec_vol_I = self._reconstructed_intesity_vs_obj_dist()
+        rec_vol_I /= rec_vol_I.mean()
+        sim_vol_I = self._simulated_intesity_vs_obj_dist()
+        sim_vol_I /= sim_vol_I.mean()
+        obj_dist = self.binning.z_bin_centers
+        plt.plot(obj_dist, sim_vol_I, 'r')
+        plt.plot(obj_dist, rec_vol_I, 'b')
+        plt.show()
 
     def one_more_iteration(self):
         rec_vol_I_n = update(

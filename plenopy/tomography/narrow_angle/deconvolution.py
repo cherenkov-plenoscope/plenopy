@@ -19,13 +19,14 @@ def update(
 ):  
     measured_photon_density_along_rays = measured_lixel_I/ray_length
     measured_ph_I_voxel = (system_matrix.dot(measured_photon_density_along_rays))
-    measured_ph_I_voxel /= obj_dist_regularization
+    measured_ph_I_voxel *= obj_dist_regularization
 
     proj_ph_dist_int_lixel = system_matrix.T.dot(vol_I)
     proj_ph_lixel = proj_ph_dist_int_lixel/ray_length
     proj_ph_dst_lixel = proj_ph_lixel/ray_length
     
     proj_ph_I_voxel = system_matrix.dot(proj_ph_dst_lixel)
+    proj_ph_I_voxel *= obj_dist_regularization
 
     voxel_diffs = measured_ph_I_voxel - proj_ph_I_voxel
 
