@@ -85,14 +85,23 @@ class Reconstruction(object):
 
         self.rays_in_voxel_threshold = rays_in_voxel_threshold
         self.expected_ray_voxel_overlap = 2.0*self.binning.voxel_z_radius
-        self.valid_voxel = self.voxel_integral > self.rays_in_voxel_threshold*self.expected_ray_voxel_overlap
-        self.valid_voxel = np.array(self.valid_voxel).reshape((self.valid_voxel.shape[0],))
+        self.valid_voxel = (
+            self.voxel_integral > 
+            self.rays_in_voxel_threshold*self.expected_ray_voxel_overlap
+        )
+        self.valid_voxel = np.array(self.valid_voxel).reshape(
+            (self.valid_voxel.shape[0],)
+        )
 
         self.inverse_square_law = (self.binning.z_bin_centers)**(1/3)
         self.inverse_square_law /= self.inverse_square_law.mean()
 
         voxel_ids = np.arange(self.system_matrix.shape[0])
-        voxel_idxs_z = np.unravel_index(voxel_ids, dims=self.binning.dims, order='C')[2]
+        voxel_idxs_z = np.unravel_index(
+            voxel_ids, 
+            dims=self.binning.dims, 
+            order='C'
+        )[2]
         self.obj_dist_regularization = self.inverse_square_law[voxel_idxs_z]
 
 
