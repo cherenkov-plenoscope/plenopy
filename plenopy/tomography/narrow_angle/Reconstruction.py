@@ -32,7 +32,7 @@ class Reconstruction(object):
         event, 
         binning=None, 
         use_low_pass_filter=False, 
-        rays_in_voxel_threshold=10.0
+        rays_in_voxel_threshold=3.0
     ):
         self.event = event
         f = event.light_field.expected_focal_length_of_imaging_system
