@@ -78,13 +78,6 @@ class Reconstruction(object):
         self.voxel_integral = self.psf.sum(axis=1) # Total distance of all rays in this voxel
         self.voxel_integral = np.array(self.voxel_integral).reshape((self.voxel_integral.shape[0],))
 
-        self.voxel_cross_psf = self.psf.dot(self.lixel_integral) # The sum of the length of all rays hiting this voxel weighted with the overlap of the ray and this voxel
-        self.voxel_cross_psf = np.array(self.voxel_cross_psf).reshape((self.voxel_cross_psf.shape[0],))
-        
-        self.lixel_cross_psf = self.psf.T.dot(self.voxel_integral)
-        self.lixel_cross_psf = np.array(self.lixel_cross_psf).reshape((self.lixel_cross_psf.shape[0],))
-
-
         self.rays_in_voxel_threshold = rays_in_voxel_threshold
         self.expected_ray_voxel_overlap = 2.0*self.binning.voxel_z_radius
         self.valid_voxel = self.voxel_integral > self.rays_in_voxel_threshold*self.expected_ray_voxel_overlap
