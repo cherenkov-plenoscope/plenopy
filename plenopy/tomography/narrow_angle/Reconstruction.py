@@ -241,6 +241,15 @@ class Reconstruction(object):
         sim_vol_I = self._simulated_intesity_vs_obj_dist()
         sim_vol_I /= sim_vol_I.mean()
         obj_dist = self.binning.z_bin_centers
-        plt.plot(obj_dist, sim_vol_I, 'r')
-        plt.plot(obj_dist, rec_vol_I, 'b')
+        plt.plot(obj_dist, sim_vol_I, 'r', label='simulation truth')
+        plt.plot(obj_dist, rec_vol_I, 'b', label='reconstruction')
+        plt.xlabel('object distance/m')
+        plt.ylabel('photon intensity normalized area under curve/1')
+        plt.legend(
+            bbox_to_anchor=(0., 1.02, 1., .102), 
+            loc=3,
+            ncol=2, 
+            mode="expand", 
+            borderaxespad=0.
+        )
         plt.show()
