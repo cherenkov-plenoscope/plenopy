@@ -158,7 +158,11 @@ class Reconstruction(object):
         )        
 
 
-    def save_imgae_slice_stack(self, out_dir='./tomography', sqrt_intensity=False):
+    def save_imgae_slice_stack(
+        self, 
+        out_dir='./tomography', 
+        sqrt_intensity=False
+    ):
         os.makedirs(out_dir, exist_ok=True)
 
         intensity_volume_2 = None
