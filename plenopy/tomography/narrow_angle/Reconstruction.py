@@ -22,7 +22,7 @@ from ..Binning import Binning
 from ...plot import slices
 from ...plot import xyzI
 from .deconvolution import update
-from .deconvolution import make_tomographic_system_matrix
+from .deconvolution import make_cached_tomographic_system_matrix
 
 
 class Reconstruction(object):
@@ -60,7 +60,7 @@ class Reconstruction(object):
 
         self.rays = Rays.from_light_field_geometry(event.light_field)
 
-        self.system_matrix = make_tomographic_system_matrix(
+        self.system_matrix = make_cached_tomographic_system_matrix(
             supports=-self.rays.support, 
             directions=self.rays.direction, 
             x_bin_edges=self.binning.xy_bin_edges, 

@@ -36,7 +36,7 @@ def update(
 
 
 @memory.cache
-def make_tomographic_system_matrix(
+def make_cached_tomographic_system_matrix(
     supports, 
     directions, 
     x_bin_edges, 
