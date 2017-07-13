@@ -93,27 +93,6 @@ class Reconstruction(object):
             (self.valid_voxel.shape[0],)
         )
 
-        self.max_ray_integrals_vs_z = self.voxel_integral.reshape(
-            (
-                self.binning.number_xy_bins, 
-                self.binning.number_xy_bins, 
-                self.binning.number_z_bins
-            ),
-            order='C'
-        ).max(axis=0).max(axis=0)
-
-
-        self.obj_dist_regularization_vs_z = (self.max_ray_integrals_vs_z)**(1/3)
-        self.obj_dist_regularization_vs_z /= self.obj_dist_regularization_vs_z.mean()
-
-        voxel_ids = np.arange(self.system_matrix.shape[0])
-        voxel_idxs_z = np.unravel_index(
-            voxel_ids, 
-            dims=self.binning.dims, 
-            order='C'
-        )[2]
-        self.obj_dist_regularization = self.obj_dist_regularization_vs_z[voxel_idxs_z]
-
 
     def reconstructed_volume_intesities(self, filter_sigma=1.0):
         
@@ -157,7 +136,6 @@ class Reconstruction(object):
             vol_I=self.rec_vol_I.copy(),
             system_matrix=self.system_matrix,
             measured_lixel_I=self.lixel_intensities,
-            obj_dist_regularization=self.obj_dist_regularization,
             valid_voxel=self.valid_voxel,
             ray_length=self.lixel_integral,
         )
