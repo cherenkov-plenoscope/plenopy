@@ -46,7 +46,7 @@ class Binning(object):
         z_min=1e3, 
         z_max=15e3, 
         number_z_bins=32,
-        xy_diameter=2.5e3, 
+        xy_diameter=0.3e3, 
         number_xy_bins=32,
     ):
         """

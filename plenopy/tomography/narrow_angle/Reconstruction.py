@@ -35,11 +35,16 @@ class Reconstruction(object):
         rays_in_voxel_threshold=10.0
     ):
         self.event = event
+        f = event.light_field.expected_focal_length_of_imaging_system
+        D = 2.0*event.light_field.expected_aperture_radius_of_imaging_system
 
         if binning == None:
             self.binning = Binning(
-                number_z_bins=64,
-                number_xy_bins=64,
+                number_z_bins=96,
+                number_xy_bins=96,
+                z_min=15.0*f,
+                z_max=165.0*f,
+                xy_diameter= 4.5*D,
             )
         else:
            self.binning = binning
