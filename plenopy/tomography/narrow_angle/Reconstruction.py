@@ -60,7 +60,7 @@ class Reconstruction(object):
 
         self.rays = Rays.from_light_field_geometry(event.light_field)
 
-        self.psf = make_tomographic_system_matrix(
+        self.system_matrix = make_tomographic_system_matrix(
             supports=-self.rays.support, 
             directions=self.rays.direction, 
             x_bin_edges=self.binning.xy_bin_edges, 
@@ -72,10 +72,10 @@ class Reconstruction(object):
         self.iteration = 0
 
 
-        self.lixel_integral = self.psf.sum(axis=0).T # Total length of ray
+        self.lixel_integral = self.system_matrix.sum(axis=0).T # Total length of ray
         self.lixel_integral = np.array(self.lixel_integral).reshape((self.lixel_integral.shape[0],))
 
-        self.voxel_integral = self.psf.sum(axis=1) # Total distance of all rays in this voxel
+        self.voxel_integral = self.system_matrix.sum(axis=1) # Total distance of all rays in this voxel
         self.voxel_integral = np.array(self.voxel_integral).reshape((self.voxel_integral.shape[0],))
 
         self.rays_in_voxel_threshold = rays_in_voxel_threshold
@@ -86,7 +86,7 @@ class Reconstruction(object):
         self.inverse_square_law = (self.binning.z_bin_centers)**(1/3)
         self.inverse_square_law /= self.inverse_square_law.mean()
 
-        voxel_ids = np.arange(self.psf.shape[0])
+        voxel_ids = np.arange(self.system_matrix.shape[0])
         voxel_idxs_z = np.unravel_index(voxel_ids, dims=self.binning.dims, order='C')[2]
         self.obj_dist_regularization = self.inverse_square_law[voxel_idxs_z]
 
@@ -114,7 +114,7 @@ class Reconstruction(object):
     def one_more_iteration(self):
         rec_vol_I_n = update(
             vol_I=self.rec_vol_I.copy(),
-            psf=self.psf,
+            system_matrix=self.system_matrix,
             measured_lixel_I=self.lixel_intensities,
             obj_dist_regularization=self.obj_dist_regularization,
             valid_voxel=self.valid_voxel,
