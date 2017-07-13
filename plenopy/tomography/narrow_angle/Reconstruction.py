@@ -94,26 +94,6 @@ class Reconstruction(object):
         )
 
 
-    def reconstructed_volume_intesities(self, filter_sigma=1.0):
-        
-        rec_vol_3D = self.rec_vol_I.reshape(
-            (
-                self.binning.number_xy_bins, 
-                self.binning.number_xy_bins, 
-                self.binning.number_z_bins
-            ),
-            order='C'
-        )
-
-        rec_vol_3D = np.fliplr(rec_vol_3D)
-        rec_vol_3D = np.flipud(rec_vol_3D)
-
-        return self.low_pass_filter(
-            vol_I=rec_vol_3D,
-            filter_sigma=filter_sigma
-        )
-
-
     def one_more_iteration(self):
         rec_vol_I_n = update(
             vol_I=self.rec_vol_I.copy(),
@@ -134,6 +114,44 @@ class Reconstruction(object):
 
         self.iteration += 1
 
+
+    def reconstructed_volume_intesities(self, filter_sigma=1.0):
+        
+        rec_vol_3D = self.rec_vol_I.reshape(
+            (
+                self.binning.number_xy_bins, 
+                self.binning.number_xy_bins, 
+                self.binning.number_z_bins
+            ),
+            order='C'
+        )
+
+        rec_vol_3D = np.fliplr(rec_vol_3D)
+        rec_vol_3D = np.flipud(rec_vol_3D)
+
+        return self.low_pass_filter(
+            vol_I=rec_vol_3D,
+            filter_sigma=filter_sigma
+        )
+
+
+    def simulation_truth_volume_intesities(
+        self, 
+        restrict_to_instrument_acceptance=True
+    ):  
+        limited_aperture_radius = None
+        limited_fov_radius = None
+        if restrict_to_instrument_acceptance:
+            limited_aperture_radius = 1.05*self.event.light_field.expected_aperture_radius_of_imaging_system
+            limited_fov_radius = 1.05*self.event.light_field.cx_mean.max()
+
+        return histogram_photon_bunches(
+            photon_bunches=self.event.simulation_truth.air_shower_photon_bunches, 
+            binning=self.binning, 
+            observation_level=5e3,
+            limited_aperture_radius=limited_aperture_radius,
+            limited_fov_radius=limited_fov_radius,
+        )
 
     def low_pass_filter(self, vol_I, filter_sigma=0.5):
         return gaussian_filter(
@@ -174,25 +192,6 @@ class Reconstruction(object):
             xlabel='x/m',
             ylabel='y/m',
             sqrt_intensity=sqrt_intensity,
-        )
-
-
-    def simulation_truth_volume_intesities(
-        self, 
-        restrict_to_instrument_acceptance=True
-    ):  
-        limited_aperture_radius = None
-        limited_fov_radius = None
-        if restrict_to_instrument_acceptance:
-            limited_aperture_radius = 1.05*self.event.light_field.expected_aperture_radius_of_imaging_system
-            limited_fov_radius = 1.05*self.event.light_field.cx_mean.max()
-
-        return histogram_photon_bunches(
-            photon_bunches=self.event.simulation_truth.air_shower_photon_bunches, 
-            binning=self.binning, 
-            observation_level=5e3,
-            limited_aperture_radius=limited_aperture_radius,
-            limited_fov_radius=limited_fov_radius,
         )
 
 
