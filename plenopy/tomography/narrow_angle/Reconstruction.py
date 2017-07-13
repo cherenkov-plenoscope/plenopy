@@ -102,11 +102,8 @@ class Reconstruction(object):
             valid_voxel=self.valid_voxel,
             ray_length=self.lixel_integral,
         )
-
         diff = np.abs(rec_vol_I_n - self.rec_vol_I).sum()
-
         print('Intensity difference to previous iteration '+str(diff))
-
         self.rec_vol_I = rec_vol_I_n.copy()
 
         if self.use_low_pass_filter:
@@ -116,7 +113,6 @@ class Reconstruction(object):
 
 
     def reconstructed_volume_intesities(self, filter_sigma=1.0):
-        
         rec_vol_3D = self.rec_vol_I.reshape(
             (
                 self.binning.number_xy_bins, 
@@ -125,10 +121,8 @@ class Reconstruction(object):
             ),
             order='C'
         )
-
         rec_vol_3D = np.fliplr(rec_vol_3D)
         rec_vol_3D = np.flipud(rec_vol_3D)
-
         return self.low_pass_filter(
             vol_I=rec_vol_3D,
             filter_sigma=filter_sigma
@@ -153,6 +147,7 @@ class Reconstruction(object):
             limited_fov_radius=limited_fov_radius,
         )
 
+
     def low_pass_filter(self, vol_I, filter_sigma=0.5):
         return gaussian_filter(
             input=vol_I, 
@@ -170,12 +165,11 @@ class Reconstruction(object):
         sqrt_intensity=False
     ):
         os.makedirs(out_dir, exist_ok=True)
-
         intensity_volume_2 = None
         if hasattr(self.event, 'simulation_truth'):
             if hasattr(self.event.simulation_truth, 'air_shower_photon_bunches'):
                 intensity_volume_2 = self.simulation_truth_volume_intesities()
-
+        
         slices.save_slice_stack(
             intensity_volume=self.reconstructed_volume_intesities(),
             event_info_repr=self.event.__repr__(), 
@@ -208,20 +202,18 @@ class Reconstruction(object):
             binning=self.binning, 
             threshold=rec_threshold
         )
-
         sim_xyzIs = xyzI.hist3D_to_xyzI(
             hist=self.simulation_truth_volume_intesities(),
             binning=self.binning, 
             threshold=sim_threshold,
         )
-
         xyzI.plot_xyzI(
             xyzIs=rec_xyzIs, 
             xyzIs2=sim_xyzIs, 
             alpha_max=alpha_max, 
             steps=color_steps,
             ball_size=ball_size,
-         )
+        )
         plt.show()
 
 
