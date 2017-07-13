@@ -71,12 +71,17 @@ class Reconstruction(object):
         self.rec_vol_I = np.zeros(self.binning.number_bins, dtype=np.float32)
         self.iteration = 0
 
+        # Total length of ray
+        self.lixel_integral = self.system_matrix.sum(axis=0).T 
+        self.lixel_integral = np.array(self.lixel_integral).reshape(
+            (self.lixel_integral.shape[0],)
+        )
 
-        self.lixel_integral = self.system_matrix.sum(axis=0).T # Total length of ray
-        self.lixel_integral = np.array(self.lixel_integral).reshape((self.lixel_integral.shape[0],))
-
-        self.voxel_integral = self.system_matrix.sum(axis=1) # Total distance of all rays in this voxel
-        self.voxel_integral = np.array(self.voxel_integral).reshape((self.voxel_integral.shape[0],))
+        # Total distance of all rays in this voxel
+        self.voxel_integral = self.system_matrix.sum(axis=1) 
+        self.voxel_integral = np.array(self.voxel_integral).reshape(
+            (self.voxel_integral.shape[0],)
+        )
 
         self.rays_in_voxel_threshold = rays_in_voxel_threshold
         self.expected_ray_voxel_overlap = 2.0*self.binning.voxel_z_radius
