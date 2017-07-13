@@ -123,8 +123,6 @@ class Reconstruction(object):
             vol_I=self.rec_vol_I.copy(),
             psf=self.psf,
             measured_lixel_I=self.lixel_intensities,
-            voxel_cross_psf=self.voxel_cross_psf,
-            lixel_cross_psf=self.lixel_cross_psf,
             obj_dist_regularization=self.obj_dist_regularization,
             valid_voxel=self.valid_voxel,
             ray_length=self.lixel_integral,

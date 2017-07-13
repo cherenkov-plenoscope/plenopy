@@ -13,8 +13,6 @@ def update(
     vol_I, 
     psf, 
     measured_lixel_I,  
-    voxel_cross_psf, 
-    lixel_cross_psf, 
     obj_dist_regularization, 
     valid_voxel,
     ray_length
