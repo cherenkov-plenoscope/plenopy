@@ -1,5 +1,4 @@
 #include <math.h>
-//#include <stdio.h>
 
 extern "C"{
 
@@ -191,23 +190,19 @@ extern "C"{
         unsigned int x_partitions[2][2];
         unsigned int nxp = 0;
         c_next_space_partitions(x_range, x_partitions, &nxp);
-        //printf("line %d \n",__LINE__);
 
         unsigned int y_partitions[2][2];
         unsigned int nyp = 0;
         c_next_space_partitions(y_range, y_partitions, &nyp);
-        //printf("line %d \n",__LINE__);
 
         unsigned int z_partitions[2][2];
         unsigned int nzp = 0;
         c_next_space_partitions(z_range, z_partitions, &nzp);
-        //printf("line %d \n",__LINE__);
 
         for(unsigned int xp=0; xp<nxp; xp=xp+1) {
             for(unsigned int yp=0; yp<nxp; yp=yp+1) {
                 for(unsigned int zp=0; zp<nxp; zp=zp+1) {
                     
-                    //printf("line %d \n",__LINE__);
                     double overlap = c_ray_box_overlap(
                         support,
                         direction,
@@ -218,23 +213,20 @@ extern "C"{
                         z_bin_edges[z_partitions[zp][0]], 
                         z_bin_edges[z_partitions[zp][1]]        
                     );
-                    //printf("line %d \n",__LINE__);
+
                     if( x_partitions[xp][1]-x_partitions[xp][0]==1 &&
                         y_partitions[yp][1]-y_partitions[yp][0]==1 &&
                         z_partitions[zp][1]-z_partitions[zp][0]==1 &&
                         overlap > 0.0
                     ) {
-                        //printf("line %d \n",__LINE__);
                         *number_overlaps = *number_overlaps + 1;
                         x_idxs[*number_overlaps-1] = x_partitions[xp][0];
                         y_idxs[*number_overlaps-1] = y_partitions[yp][0];
                         z_idxs[*number_overlaps-1] = z_partitions[zp][0];
                         overlaps[*number_overlaps-1] = overlap;
-                        //printf("line %d \n",__LINE__);
                     }
                     else if(overlap > 0.0) 
                     {   
-                        //printf("line %d \n",__LINE__);
                         c_overlap_of_ray_with_voxels(
                             support,
                             direction,
@@ -250,7 +242,6 @@ extern "C"{
                             z_idxs,
                             overlaps
                         );
-                        //printf("line %d \n",__LINE__);
                     }
                 }
             }
