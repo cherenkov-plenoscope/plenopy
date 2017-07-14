@@ -13,7 +13,7 @@ def system_matrix(
 ):
     '''
     Returns a tomographic System Matrix. 
-    Along the rows are the rays and along the columns are the voxels.
+    Along the rows are the voxels and along the columns are the rays.
     Each matrix element represents the overlap in euclidean distance of the 
     corresponding ray with the voxel.
 
