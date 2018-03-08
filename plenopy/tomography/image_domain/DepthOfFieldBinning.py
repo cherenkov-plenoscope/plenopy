@@ -57,8 +57,8 @@ class DepthOfFieldBinning(object):
         self._obj_max = obj_max
         self._obj_num = obj_num
 
-        self.b_img_min = g2b(self._obj_max , self.focal_length) # obj MAX is b img MIN
-        self.b_img_max = g2b(self._obj_min , self.focal_length)
+        self.b_img_min = g2b(self._obj_max, self.focal_length) # obj MAX is b img MIN
+        self.b_img_max = g2b(self._obj_min, self.focal_length)
         self.b_img_num = self._obj_num
         self.b_img_width = self.b_img_max - self.b_img_min
         self.b_img_bin_radius = 0.5*self.b_img_width/self.b_img_num

@@ -2,7 +2,7 @@ import os
 import subprocess
 
 
-def images2video(image_path, output_path ,frames_per_second=25):
+def images2video(image_path, output_path, frames_per_second=25):
     """
     Writes an h264 mp4 video to the output_path using the images found in the
     image_path. The image sequence is given via a template path e.g.
