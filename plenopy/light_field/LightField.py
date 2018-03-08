@@ -38,7 +38,7 @@ class LightField(object):
             time_delay_mean=self.time_delay_mean)
 
     def _to_image_sequence(self, axis=1):
-        if axis==1:
+        if axis == 1:
             bins = self.number_pixel
         else:
             bins = self.number_paxel

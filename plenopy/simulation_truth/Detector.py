@@ -36,7 +36,7 @@ class Detector(object):
     def number_air_shower_pulses(self):
         counter = 0
         for lixel in self.stream:
-            counter += (lixel>=0).sum()
+            counter += (lixel >= 0).sum()
         return counter
 
 

@@ -21,7 +21,7 @@ def test_binning_flat_voxel_center_positions():
                 assert xyz_flat[i,0] == binning.xy_bin_centers[x]
                 assert xyz_flat[i,1] == binning.xy_bin_centers[y]
                 assert xyz_flat[i,2] == binning.z_bin_centers[z]
-                i+=1
+                i += 1
 
 """
 The events for testing are 'recorded' on a MAGIC 17m aperture diameter

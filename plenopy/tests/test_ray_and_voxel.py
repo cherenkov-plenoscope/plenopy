@@ -59,7 +59,7 @@ def ray_and_empty_voxel_overlap():
                     for xd in np.linspace(-1.,1.,3):
                         for yd in np.linspace(-1.,1.,3):
                             for zd in np.linspace(-1.,1.,3):
-                                if xd!=0. or yd!=0. or zd!=0.:
+                                if xd != 0. or yd != 0. or zd != 0.:
                                     ol = func(
                                         support=np.array([xs,ys,zs]),
                                         direction=np.array([xd,yd,zd]),
@@ -266,7 +266,7 @@ def test_overlap_single_box_various_rays():
                     for xd in np.linspace(-1.,1.,3):
                         for yd in np.linspace(-1.,1.,3):
                             for zd in np.linspace(-1.,1.,3):
-                                if xd!=0 or yd!=0 or zd!=0:
+                                if xd != 0 or yd != 0 or zd != 0:
                                     #print('----------------------------------')
                                     ol = func(
                                         support=np.array([xs,ys,zs]),

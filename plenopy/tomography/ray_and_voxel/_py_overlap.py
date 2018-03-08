@@ -97,9 +97,9 @@ def _overlap_of_ray_with_voxels(
                 )
 
                 if (
-                    xp[1]-xp[0]==1 and
-                    yp[1]-yp[0]==1 and
-                    zp[1]-zp[0]==1 and
+                    xp[1]-xp[0] == 1 and
+                    yp[1]-yp[0] == 1 and
+                    zp[1]-zp[0] == 1 and
                     overlap > 0.0
                 ):
                     overlaps['x'].append(xp[0])
@@ -141,29 +141,29 @@ def _ray_box_overlap(support, direction, xl, xu, yl, yu, zl, zu):
 
     if d[0] != 0.0:
         ixl = _intersection_plane(s, d, xl, dim=0)
-        if (ixl[1]>=yl and ixl[1]<yu) and (ixl[2]>=zl and ixl[2]<zu):
+        if (ixl[1] >= yl and ixl[1] < yu) and (ixl[2] >= zl and ixl[2] < zu):
             hits_l.append(ixl)
 
         ixu = _intersection_plane(s, d, xu, dim=0)
-        if (ixu[1]>=yl and ixu[1]<=yu) and (ixu[2]>=zl and ixu[2]<=zu):
+        if (ixu[1] >= yl and ixu[1] <= yu) and (ixu[2] >= zl and ixu[2] <= zu):
             hits_u.append(ixu)
 
     if d[1] != 0.0:
         iyl = _intersection_plane(s, d, yl, dim=1)
-        if (iyl[0]>=xl and iyl[0]<xu) and (iyl[2]>=zl and iyl[2]<zu):
+        if (iyl[0] >= xl and iyl[0] < xu) and (iyl[2] >= zl and iyl[2] < zu):
             hits_l.append(iyl)
 
         iyu = _intersection_plane(s, d, yu, dim=1)
-        if (iyu[0]>=xl and iyu[0]<=xu) and (iyu[2]>=zl and iyu[2]<=zu):
+        if (iyu[0] >= xl and iyu[0] <= xu) and (iyu[2] >= zl and iyu[2] <= zu):
             hits_u.append(iyu)
 
     if d[2] != 0.0:
         izl = _intersection_plane(s, d, zl, dim=2)
-        if (izl[0]>=xl and izl[0]<xu) and (izl[1]>=yl and izl[1]<yu):
+        if (izl[0] >= xl and izl[0] < xu) and (izl[1] >= yl and izl[1] < yu):
             hits_l.append(izl)
 
         izu = _intersection_plane(s, d, zu, dim=2)
-        if (izu[0]>=xl and izu[0]<=xu) and (izu[1]>=yl and izu[1]<=yu):
+        if (izu[0] >= xl and izu[0] <= xu) and (izu[1] >= yl and izu[1] <= yu):
             hits_u.append(izu)
 
     norm = np.linalg.norm

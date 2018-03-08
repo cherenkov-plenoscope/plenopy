@@ -173,7 +173,7 @@ def save_slice_video(
             xlabel=xlabel,
             ylabel=ylabel,
         )
-        steps=z_bin_centers.shape[0]
+        steps = z_bin_centers.shape[0]
 
         # duplicate the images and use them again in reverse order
         i = 0
