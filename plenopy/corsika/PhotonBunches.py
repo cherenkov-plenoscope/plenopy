@@ -19,12 +19,13 @@ class PhotonBunches(object):
     wavelength                                      [m]
 
     probability_to_reach_observation_level          In CORSIKA this is the
-                                                    photon bunch weight. However
-                                                    In the mctracer there are
-                                                    only single photons, so this
-                                                    weight is supposed to be
-                                                    less equal 1.0 and encodes
-                                                    the survival probability of
+                                                    photon bunch weight.
+                                                    However in the mctracer
+                                                    there are only single
+                                                    photons, so this weight is
+                                                    supposed to be less equal
+                                                    1.0 and encodes the
+                                                    survival probability of
                                                     this photon to reach the
                                                     observation level [1]
     """

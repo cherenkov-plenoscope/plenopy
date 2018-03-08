@@ -23,9 +23,11 @@ class LightField(object):
         PhotonBunches          the raw corsika photon bunches
         """
 
-        reached_observation_level = self._collapse_probability_to_reach_observation_level(
-            photon_bunches.probability_to_reach_observation_level,
-            random_seed)
+        reached_observation_level = (
+            self._collapse_probability_to_reach_observation_level(
+                photon_bunches.probability_to_reach_observation_level,
+                random_seed)
+            )
 
         self.x = photon_bunches.x[reached_observation_level]
         self.y = photon_bunches.y[reached_observation_level]
@@ -33,8 +35,12 @@ class LightField(object):
         self.cx = photon_bunches.cx[reached_observation_level]
         self.cy = photon_bunches.cy[reached_observation_level]
 
-        self.arrival_time = photon_bunches.arrival_time_since_first_interaction[reached_observation_level]
-        self.arrival_time -= self.arrival_time.min()  # knows only relative arrival times
+        self.arrival_time = (
+            photon_bunches.arrival_time_since_first_interaction[
+                reached_observation_level]
+        )
+        self.arrival_time -= self.arrival_time.min()
+        # knows only relative arrival times
 
         self.wavelength = photon_bunches.wavelength[reached_observation_level]
 
@@ -48,8 +54,10 @@ class LightField(object):
         number_of_bunches = probability_to_reach_observation_level.shape[0]
 
         np.random.seed(random_seed)
-        reached_observation_level = probability_to_reach_observation_level > np.random.rand(
-            number_of_bunches)
+        reached_observation_level = (
+            probability_to_reach_observation_level > np.random.rand(
+                number_of_bunches)
+        )
 
         self._ids = np.arange(number_of_bunches)[reached_observation_level]
 

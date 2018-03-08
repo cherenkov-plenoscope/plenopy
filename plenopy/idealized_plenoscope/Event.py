@@ -17,10 +17,10 @@ class Event(object):
                                 Idealized Plenoscope Events are always
                                 'simulation'
 
-    light_field                 The air shower Cherenkov photons of an extensive
-                                air shower which have passed the atmosphere and
-                                reached the observation level seen by an
-                                idealized light field sensor
+    light_field                 The air shower Cherenkov photons of an
+                                extensive air shower which have passed the
+                                atmosphere and reached the observation level
+                                seen by an idealized light field sensor
 
     simulation_truth            Additional 'true' information known from the
                                 Corsika simulation itself
@@ -28,8 +28,10 @@ class Event(object):
     def __init__(self, path):
         self.path = path
 
-        evth = corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
-        runh = corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
+        evth = corsika.EventHeader(
+            os.path.join(self.path, 'corsika_event_header.bin'))
+        runh = corsika.RunHeader(
+            os.path.join(self.path, '../corsika_run_header.bin'))
 
         simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
