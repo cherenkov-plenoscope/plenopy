@@ -2,8 +2,8 @@ import numpy as np
 from .transform import object_distance_2_image_distance as g2b
 from .transform import image_distance_2_object_distance as b2g
 
-class DepthOfFieldBinning(object):
 
+class DepthOfFieldBinning(object):
     def __init__(
         self,
         cx_min=np.deg2rad(-3.5),

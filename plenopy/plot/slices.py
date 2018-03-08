@@ -9,6 +9,7 @@ from ..tools import FigureSize
 from ..tools import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 
+
 def save_slice_stack(
     intensity_volume,
     event_info_repr,

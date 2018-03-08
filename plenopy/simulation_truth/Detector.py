@@ -1,6 +1,7 @@
 import numpy as np
 import os
 
+
 class Detector(object):
     MCTRACER_DEFAULT = -1
     NIGHT_SKY_BACKGROUND = -100

@@ -34,6 +34,7 @@ run_path = pkg_resources.resource_filename(
     'tests/resources/run.acp'
 )
 
+
 def test_narrow_angle_deconvolution():
     run = pl.Run(run_path)
     event = run[0]

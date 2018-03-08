@@ -4,6 +4,7 @@ import plenopy as pl
 CHANNELS = 137
 TIME_SLICES = 100
 
+
 def test_sequence_peak_detection_zeros():
     seq = np.zeros(shape=(TIME_SLICES, CHANNELS))
     peak_slice = pl.light_field.sequence.time_slice_with_max_intensity(seq)

@@ -6,6 +6,7 @@ from .IdealizedPlenoscopeSimulationTruthDetector import IdealizedPlenoscopeSimul
 from .. import simulation_truth
 import matplotlib.pyplot as plt
 
+
 class Event(object):
     """
     Idealized Plenoscope Event

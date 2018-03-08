@@ -5,6 +5,7 @@ from .PlenoscopeGeometry import PlenoscopeGeometry
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
 from ..tools.HeaderRepresentation import read_float32_header
 
+
 class LightFieldGeometry(object):
     """
     number_lixel    The number of light field cells (lixel)

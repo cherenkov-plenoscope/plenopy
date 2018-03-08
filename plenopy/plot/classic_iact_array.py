@@ -4,6 +4,7 @@ from .. import image
 from ..light_field import sequence
 from ..image import Image
 
+
 def classic_view(
     event,
     output_path='.',

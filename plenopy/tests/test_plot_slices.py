@@ -48,6 +48,7 @@ def test_matrix_2_image_color_channel():
         assert image_bgr[2, 0, color_channel] == 0
         assert image_bgr[2, 1, color_channel] == 0
 
+
 def test_matrix_2_image_min_max():
     color_channel = 1
     matrix2d = np.diag([0, 0, 0.365, 1.0])

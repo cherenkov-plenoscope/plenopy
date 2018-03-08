@@ -1,5 +1,6 @@
 from ..tools import HeaderRepresentation
 
+
 class EventType(object):
     """
     The Atmospheric Cherenkov Plenoscope event type.

@@ -67,6 +67,7 @@ def ramp_kernel_in_frequency_space(x_num, y_num, z_num):
     ramp = ramp/ramp.max()
     return ramp
 
+
 def frequency_filter(hist, kernel):
     ft_hist = np.fft.fftn(hist)
     ft_hist_filtered = ft_hist*kernel

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class LightField(object):
     """
     The ideal Light Field

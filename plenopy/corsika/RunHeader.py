@@ -1,6 +1,7 @@
 import numpy as np
 from ..tools import HeaderRepresentation
 
+
 class RunHeader(object):
     """
     The CORSIKA run header

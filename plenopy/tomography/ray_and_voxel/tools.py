@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
     '''
     For plotting using the xyzI representation.

@@ -5,6 +5,7 @@ from . import plot as add2ax
 from multiprocessing import Process
 from ..tools import FigureSize
 
+
 class PlotLightFieldGeometry(object):
     """
     Creates plots of the light_field_geometry and saves them to disk.

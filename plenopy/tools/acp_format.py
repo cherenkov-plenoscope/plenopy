@@ -2,6 +2,7 @@ import os
 import glob
 import numpy as np
 
+
 def all_folders_with_digit_names_in_path(path):
     """
     Returns an array of event folders found in the input path directory.

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def py_stream2sequence(
     photon_stream,
     time_slice_duration,

@@ -1,6 +1,7 @@
 import numpy as np
 from ..tools import HeaderRepresentation
 
+
 class PlenoscopeGeometry(object):
     """
     The Geometry of the Atmospheric Cherenkov Plenoscope (ACP).

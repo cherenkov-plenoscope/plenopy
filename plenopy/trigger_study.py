@@ -21,6 +21,7 @@ def write_dict_to_file(dictionary, path):
         with open(path, 'w') as outfile:
             json.dump(dictionary, outfile)
 
+
 def un_numpyify_dictionary(dic):
     ret = {}
     for k, v in list(dic.items()):
@@ -37,6 +38,7 @@ def un_numpyify_dictionary(dic):
         else:
             ret[k] = v
     return ret
+
 
 def collect_trigger_relevant_information(event):
     info = {}
@@ -65,6 +67,7 @@ def collect_trigger_relevant_information(event):
         'sum': np.sum(lixel_i)}
 
     return info
+
 
 def export_trigger_information(event):
     info = {}

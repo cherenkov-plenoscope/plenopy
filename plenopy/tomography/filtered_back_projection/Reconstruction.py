@@ -5,6 +5,7 @@ from .filtered_back_projection import ramp_kernel_in_frequency_space
 from .filtered_back_projection import frequency_filter
 from ..Rays import Rays
 
+
 class Reconstruction(object):
     """
     Tomographic Air Shower Reconstruction
@@ -113,6 +114,7 @@ class Reconstruction(object):
         intensities = event.light_field.intensity[valid_photons]
 
         return cls(rays, intensities, binning)
+
 
 def true_volume_intensity(event, binning):
     event.simulation_truth

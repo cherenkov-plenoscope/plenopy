@@ -1,8 +1,8 @@
 import numpy as np
 from ..photon_stream.cython_reader import stream2sequence
 
-class LightField(object):
 
+class LightField(object):
     def __init__(self, raw_light_field_sensor_response, lixel_statistics):
         """
         Parameters

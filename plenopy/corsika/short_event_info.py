@@ -1,6 +1,7 @@
 import numpy as np
 from .primary_particle_id2str import primary_particle_id2str
 
+
 def short_event_info(runh, evth):
     """
     Return string       A short string to summarize the simulation truth.

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Binning(object):
     """
     Binning of the 3D atmospheric detector volume
