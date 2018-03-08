@@ -73,7 +73,7 @@ class Binning(object):
         self.xy_diameter = xy_diameter
         self.number_xy_bins = number_xy_bins
 
-        self.number_bins =  self.number_z_bins*self.number_xy_bins**2
+        self.number_bins = self.number_z_bins*self.number_xy_bins**2
 
         self.xy_bin_edges = np.linspace(
             -xy_diameter/2.0,
