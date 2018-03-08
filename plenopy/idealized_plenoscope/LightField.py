@@ -33,7 +33,7 @@ class LightField(object):
         self.cy = photon_bunches.cy[reached_observation_level]
 
         self.arrival_time = photon_bunches.arrival_time_since_first_interaction[reached_observation_level]
-        self.arrival_time -= self.arrival_time.min() #knows only relative arrival times
+        self.arrival_time -= self.arrival_time.min()  #knows only relative arrival times
 
         self.wavelength = photon_bunches.wavelength[reached_observation_level]
 

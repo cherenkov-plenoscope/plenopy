@@ -36,14 +36,14 @@ class PhotonBunches(object):
         floats_per_photon = 8
         raw = np.fromfile(path, dtype=np.float32)
         raw = raw.reshape([raw.shape[0]//floats_per_photon, floats_per_photon])
-        self.x = raw[:, 0]/100 # in meters
-        self.y = raw[:, 1]/100 # in meters
-        self.cx = raw[:, 2] # in rad
-        self.cy = raw[:, 3] # in rad
-        self.arrival_time_since_first_interaction = raw[:, 4]/1e9 # in seconds
-        self.emission_height = raw[:, 5]/100 # in meters
-        self.probability_to_reach_observation_level = raw[:, 6] # in [1]
-        self.wavelength = raw[:, 7]/1e9 # in meters
+        self.x = raw[:, 0]/100  # in meters
+        self.y = raw[:, 1]/100  # in meters
+        self.cx = raw[:, 2]  # in rad
+        self.cy = raw[:, 3]  # in rad
+        self.arrival_time_since_first_interaction = raw[:, 4]/1e9  # in seconds
+        self.emission_height = raw[:, 5]/100  # in meters
+        self.probability_to_reach_observation_level = raw[:, 6]  # in [1]
+        self.wavelength = raw[:, 7]/1e9  # in meters
 
     def __repr__(self):
         out = 'AirShowerPhotonBunches( '
