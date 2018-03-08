@@ -46,7 +46,7 @@ class Reconstruction(object):
                 xy_diameter=4.5*D,
             )
         else:
-           self.binning = binning
+            self.binning = binning
 
         self.use_low_pass_filter = use_low_pass_filter
 
