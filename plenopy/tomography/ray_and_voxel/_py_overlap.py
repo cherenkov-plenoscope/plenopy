@@ -168,7 +168,7 @@ def _ray_box_overlap(support, direction, xl, xu, yl, yu, zl, zu):
 
     norm = np.linalg.norm
 
-    if   len(hits_l) == 2 and len(hits_u) == 0:
+    if len(hits_l) == 2 and len(hits_u) == 0:
         return norm(hits_l[0] - hits_l[1])
 
     elif len(hits_l) == 0 and len(hits_u) == 2:

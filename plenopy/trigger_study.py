@@ -87,7 +87,7 @@ def export_trigger_information(event):
             'first_interaction_height': np.abs(evth.raw[7-1]/100),
             'observation_level_altitude_asl': runh.raw[6-1]/100}
 
-    elif  event.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
+    elif event.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
         info['trigger_type'] = "EXTERNAL_RANDOM_TRIGGER"
 
     info['acp'] = {
