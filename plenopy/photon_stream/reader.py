@@ -5,8 +5,8 @@ def py_stream2sequence(
     time_slice_duration,
     NEXT_READOUT_CHANNEL_MARKER,
     sequence,
-    time_delay_mean):
-
+    time_delay_mean
+):
     number_time_slices = sequence.shape[0]
 
     lixel = 0

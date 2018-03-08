@@ -4,8 +4,8 @@ class FigureSize(object):
         relative_width=16,
         relative_hight=9,
         pixel_rows=1080,
-        dpi=200):
-
+        dpi=200
+    ):
         self.relative_width = relative_width
         self.relative_hight = relative_hight
 

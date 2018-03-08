@@ -19,8 +19,8 @@ def save_principal_aperture_arrival_stack(
     out_dir,
     steps=7,
     threshold=1,
-    figure_size=None):
-
+    figure_size=None
+):
     if figure_size is None:
         fsz = FigureSize(16, 9, pixel_rows=1080, dpi=240)
     else:
@@ -73,8 +73,8 @@ def save_principal_aperture_arrival_video(
     steps=73,
     threshold=1,
     frames_per_second=12,
-    figure_size=None):
-
+    figure_size=None
+):
     with tempfile.TemporaryDirectory(prefix='plenopy_video') as work_dir:
 
         save_principal_aperture_arrival_stack(

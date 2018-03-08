@@ -5,7 +5,8 @@ def add2ax_object_distance_ruler(
     object_distance_max=10e3,
     label='object distance/km',
     print_value=True,
-    color='blue'):
+    color='blue'
+):
     ax.set_xlim([0, 1])
     ax.set_ylim([object_distance_min/1e3, object_distance_max/1e3])
     ax.yaxis.tick_left()

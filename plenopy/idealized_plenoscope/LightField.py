@@ -42,8 +42,8 @@ class LightField(object):
     def _collapse_probability_to_reach_observation_level(
         self,
         probability_to_reach_observation_level,
-        random_seed):
-
+        random_seed
+    ):
         number_of_bunches = probability_to_reach_observation_level.shape[0]
 
         np.random.seed(random_seed)
