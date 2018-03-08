@@ -10,85 +10,85 @@ class LightFieldGeometry(object):
     number_lixel    The number of light field cells (lixel)
                     This is also the number of read out channels.
 
-    number_pixel    The number of directional bins forming the picture cells. 
+    number_pixel    The number of directional bins forming the picture cells.
                     Each pixel is composed of number_paxel paxel.
 
-    number_paxel    The number of positional bins forming the principal 
+    number_paxel    The number of positional bins forming the principal
                     aperture cells (paxel) on the principal aperture plane.
 
     efficiency      [number_lixel]
-                    The average efficiency of a lixel. During 
+                    The average efficiency of a lixel. During
                     the calibration, photons are thrown
-                    into the plenoscope. The photons are evenly 
+                    into the plenoscope. The photons are evenly
                     spread over the aperture and the field of view.
-                    The more photons reached the lixel sensor, the 
+                    The more photons reached the lixel sensor, the
                     higher is its efficiency. This takes losses into
-                    account except for the photo-electric sensor 
+                    account except for the photo-electric sensor
                     efficiency. [1]
 
-    x_mean, x_std, 
+    x_mean, x_std,
     y_mean, y_std   [number_lixel]
-                    The average x,y position and its spread of positional bins 
+                    The average x,y position and its spread of positional bins
                     on the principal aperture plane. [m]
 
-    cx_mean, cx_std, 
+    cx_mean, cx_std,
     cy_mean, cy_std [number_lixel]
-                    The average cos_x direction and its spread of the 
+                    The average cos_x direction and its spread of the
                     directional bins in the field of view [rad]
 
-                    The cx or cy is short for cos_x or cos_y. cx and cy are 
-                    the x and y components of the normalized incomming 
+                    The cx or cy is short for cos_x or cos_y. cx and cy are
+                    the x and y components of the normalized incomming
                     direction vector vec{d} on the principal aperture plane.
 
                     vec{d} = (cx, cy, sqrt(1 - cx^2 - cy^2))
 
-    time_delay_mean, 
+    time_delay_mean,
     time_delay_std  [number_lixel]
-                    The average arrival time delay and its spread for 
-                    a photon to travel from the principal aperture 
+                    The average arrival time delay and its spread for
+                    a photon to travel from the principal aperture
                     plane to the lixel sensor. [s]
 
-    pixel_pos_cx, 
+    pixel_pos_cx,
     pixel_pos_cy    [number_pixel]
-                    The average direction accross all the lixels cx_mean and 
+                    The average direction accross all the lixels cx_mean and
                     cy_mean in pixel [rad]
 
-    paxel_pos_x, 
+    paxel_pos_x,
     paxel_pos_y     [number_paxel]
-                    The average position accross all the lixels x_mean and 
+                    The average position accross all the lixels x_mean and
                     y_mean in paxel on the principal aperture plane. [m]
 
     expected_focal_length_of_imaging_system     The focal length of the
-                                                imaging system, the light 
-                                                field sensor was designed 
+                                                imaging system, the light
+                                                field sensor was designed
                                                 for [m]
 
     expected_aperture_radius_of_imaging_system  The radius of the imaging
-                                                system's aperture the light 
+                                                system's aperture the light
                                                 field sensor was designed
                                                 for [m]
 
     pixel_pos_tree  Helps to locate neighbor pixels.
                     A 2D quad tree structure storing all the pixel_pos_cx and
-                    pixel_pos_cy pairs. Neighboring pixles can be found 
+                    pixel_pos_cy pairs. Neighboring pixles can be found
                     efficiently with a query on the tree.
 
     paxel_pos_tree  Helps to locate neighbor paxels.
                     A 2D quad tree structure storing all the paxel_pos_x and
-                    paxel_pos_y pairs. Neighboring paxles can be found 
+                    paxel_pos_y pairs. Neighboring paxles can be found
                     efficiently with a query on the tree.
 
-    lixel_outer_radius  The outer radius of the hexagonal lixel sensor area 
+    lixel_outer_radius  The outer radius of the hexagonal lixel sensor area
                         in the light field sensor. [m]
 
-    lixel_z_orientation The orientation angel of the hexagonal lixel sensor area 
+    lixel_z_orientation The orientation angel of the hexagonal lixel sensor area
                         in the light field sensor. [rad]
 
-    lixel_positions_x, 
+    lixel_positions_x,
     lixel_positions_y   The hexagonal lixel sensor center x,y positions in the
-                        light field sensor. With respect to the light field 
-                        sensor plane frame. [m] 
-    ------ 
+                        light field sensor. With respect to the light field
+                        sensor plane frame. [m]
+    ------
     """
 
     def __init__(self, path):
@@ -113,17 +113,17 @@ class LightFieldGeometry(object):
         npix = self.number_pixel
         npax = self.number_paxel
         self.paxel_pos_x = np.nanmean(
-            self.x_mean.reshape(npix, npax), 
+            self.x_mean.reshape(npix, npax),
             axis=0)
         self.paxel_pos_y = np.nanmean(
-            self.y_mean.reshape(npix, npax), 
+            self.y_mean.reshape(npix, npax),
             axis=0)
 
         self.pixel_pos_cx = np.nanmean(
-            self.cx_mean.reshape(npix, npax), 
+            self.cx_mean.reshape(npix, npax),
             axis=1)
         self.pixel_pos_cy = np.nanmean(
-            self.cy_mean.reshape(npix, npax), 
+            self.cy_mean.reshape(npix, npax),
             axis=1)
 
         self.pixel_pos_tree = scipy.spatial.cKDTree(
@@ -132,10 +132,10 @@ class LightFieldGeometry(object):
             np.array([self.paxel_pos_x, self.paxel_pos_y]).T)
 
         self.paxel_efficiency_along_pixel = np.nanmean(
-            self.efficiency.reshape(npix, npax), 
+            self.efficiency.reshape(npix, npax),
             axis=0)
         self.pixel_efficiency_along_paxel = np.nanmean(
-            self.efficiency.reshape(npix, npax), 
+            self.efficiency.reshape(npix, npax),
             axis=1)
 
     def _read_lixel_statistics(self, path):
@@ -204,7 +204,7 @@ class LightFieldGeometry(object):
     def most_efficient_lixels(self, fraction):
         """
         Returns a boolean mask (shape=[numnper_pixel, number_paxel]) of
-        the most efficient lixels. 
+        the most efficient lixels.
 
         Parameters
         ----------

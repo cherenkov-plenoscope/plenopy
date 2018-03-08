@@ -11,7 +11,7 @@ class Run(object):
 
     number_events           The number count of all events in this run.
 
-    event_numbers           All event numbers found in this run 
+    event_numbers           All event numbers found in this run
                             (in ascending order)
 
     light_field_geometry    The Plenoscope (light field) geometry during this
@@ -46,7 +46,7 @@ class Run(object):
 
         Parameters
         ----------
-        index       The index of the event to be returned. (starting at 0).      
+        index       The index of the event to be returned. (starting at 0).
         """
 
         try:

@@ -7,9 +7,9 @@ import os
 
 def test_is_own_data():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp/input/plenoscope')
-    lfg = pl.LightFieldGeometry(light_field_geometry_path)   
+    lfg = pl.LightFieldGeometry(light_field_geometry_path)
 
     assert lfg.cx_mean.flags.owndata
     assert lfg.cx_std.flags.owndata
@@ -24,7 +24,7 @@ def test_is_own_data():
     assert lfg.y_std.flags.owndata
 
     assert lfg.time_delay_mean.flags.owndata
-    assert lfg.time_delay_std.flags.owndata  
+    assert lfg.time_delay_std.flags.owndata
 
     assert lfg.efficiency.flags.owndata
     assert lfg.efficiency_std.flags.owndata
@@ -32,15 +32,15 @@ def test_is_own_data():
 
 def test_init():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp/input/plenoscope')
-    ls = pl.LightFieldGeometry(light_field_geometry_path)    
+    ls = pl.LightFieldGeometry(light_field_geometry_path)
 
     # A 'small' MAGIC 17m class ACP
     number_pixel = 1039
     number_paxel = 19
     number_lixel = number_pixel*number_paxel
-    
+
     assert ls.number_lixel == number_lixel
     assert ls.number_pixel == number_pixel
     assert ls.number_paxel == number_paxel
@@ -69,7 +69,7 @@ def test_init():
 
 def test_plot():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp/input/plenoscope')
     light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
@@ -81,7 +81,7 @@ def test_plot():
 
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
         ls_plot = pl.light_field_geometry.PlotLightFieldGeometry(
-            light_field_geometry=light_field_geometry, 
+            light_field_geometry=light_field_geometry,
             out_dir=tmp,
             figure_size=figure_size)
         ls_plot.save()

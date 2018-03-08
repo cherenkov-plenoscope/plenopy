@@ -13,7 +13,7 @@ class Event(object):
     number                      The event number in the run
 
     type                        A string as type indicator.
-                                Idealized Plenoscope Events are always 
+                                Idealized Plenoscope Events are always
                                 'simulation'
 
     light_field                 The air shower Cherenkov photons of an extensive
@@ -21,7 +21,7 @@ class Event(object):
                                 reached the observation level seen by an
                                 idealized light field sensor
 
-    simulation_truth            Additional 'true' information known from the 
+    simulation_truth            Additional 'true' information known from the
                                 Corsika simulation itself
     """
     def __init__(self, path):
@@ -29,19 +29,19 @@ class Event(object):
 
         evth = corsika.EventHeader(os.path.join(self.path, 'corsika_event_header.bin'))
         runh = corsika.RunHeader(os.path.join(self.path, '../corsika_run_header.bin'))
-        
+
         simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
         simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
                      os.path.join(self.path, 'air_shower_photon_bunches.bin'))
 
         self.light_field = LightField(
-            simulation_truth_air_shower_photon_bunches) 
+            simulation_truth_air_shower_photon_bunches)
 
         simulation_truth_detector = IdealizedPlenoscopeSimulationTruthDetector(
             self.light_field._ids)
 
-        self.simulation_truth = simulation_truth.SimulationTruth(                
+        self.simulation_truth = simulation_truth.SimulationTruth(
             event=simulation_truth_event,
             air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
             detector=simulation_truth_detector)
@@ -71,7 +71,7 @@ class Event(object):
 
         axs[0].set_title('field of view intensity')
         axs[0].hist2d(
-            np.rad2deg(self.light_field.cx), 
+            np.rad2deg(self.light_field.cx),
             np.rad2deg(self.light_field.cy),
             cmap='viridis',
             bins=guess_number_bins)
@@ -81,7 +81,7 @@ class Event(object):
 
         axs[1].set_title('principal aperture plane intensity')
         axs[1].hist2d(
-            self.light_field.x, 
+            self.light_field.x,
             self.light_field.y,
             cmap='viridis',
             bins=int(guess_number_bins/4))

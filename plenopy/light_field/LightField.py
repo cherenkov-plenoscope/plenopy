@@ -7,13 +7,13 @@ class LightField(object):
         """
         Parameters
         ----------
-        raw_light_field_sensor_response 
+        raw_light_field_sensor_response
 
         lixel_statistics
         """
         self.__dict__ = lixel_statistics.__dict__.copy()
         self.__doc__ = """
-    The 5 dimensional Light Field Sequence recorded by the 
+    The 5 dimensional Light Field Sequence recorded by the
     Atmospheric Cherenkov Plenoscope (ACP).
 
     sequence        A sequence of light fields.
@@ -23,11 +23,11 @@ class LightField(object):
         raw = raw_light_field_sensor_response
         self.number_time_slices = raw.number_time_slices
         self.time_slice_duration = raw.time_slice_duration
-    
+
         self.sequence = np.zeros(
             shape=(
                 raw.number_time_slices,
-                raw.number_lixel), 
+                raw.number_lixel),
             dtype=np.uint16)
 
         stream2sequence(
@@ -44,12 +44,12 @@ class LightField(object):
             bins = self.number_paxel
 
         imgs = np.zeros(
-            shape=(self.number_time_slices, bins), 
+            shape=(self.number_time_slices, bins),
             dtype=np.uint16)
 
         for t in range(self.number_time_slices):
             imgs[t,:] = self.sequence[t,:].reshape(
-                self.number_pixel, 
+                self.number_pixel,
                 self.number_paxel).sum(axis=axis)
 
         return imgs
@@ -62,10 +62,10 @@ class LightField(object):
 
     def pixel_sequence_refocus(self, lixels2pixel):
         imgs = np.zeros(
-            shape=(self.number_time_slices, self.number_pixel), 
+            shape=(self.number_time_slices, self.number_pixel),
             dtype=np.uint16)
 
-        for lix, lixel2pixel in enumerate(lixels2pixel):                                 
+        for lix, lixel2pixel in enumerate(lixels2pixel):
             imgs[:,lixel2pixel] += self.sequence[:,lix]
 
         return imgs

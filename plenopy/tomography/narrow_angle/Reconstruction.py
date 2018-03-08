@@ -28,10 +28,10 @@ from .deconvolution import make_cached_tomographic_system_matrix
 class Reconstruction(object):
 
     def __init__(
-        self, 
-        event, 
-        binning=None, 
-        use_low_pass_filter=False, 
+        self,
+        event,
+        binning=None,
+        use_low_pass_filter=False,
         rays_in_voxel_threshold=3.0
     ):
         self.event = event
@@ -61,9 +61,9 @@ class Reconstruction(object):
         self.rays = Rays.from_light_field_geometry(event.light_field)
 
         self.system_matrix = make_cached_tomographic_system_matrix(
-            supports=-self.rays.support, 
-            directions=self.rays.direction, 
-            x_bin_edges=self.binning.xy_bin_edges, 
+            supports=-self.rays.support,
+            directions=self.rays.direction,
+            x_bin_edges=self.binning.xy_bin_edges,
             y_bin_edges=self.binning.xy_bin_edges,
             z_bin_edges=self.binning.z_bin_edges,
         )
@@ -72,13 +72,13 @@ class Reconstruction(object):
         self.iteration = 0
 
         # Total length of ray
-        self.lixel_integral = self.system_matrix.sum(axis=0).T 
+        self.lixel_integral = self.system_matrix.sum(axis=0).T
         self.lixel_integral = np.array(self.lixel_integral).reshape(
             (self.lixel_integral.shape[0],)
         )
 
         # Total distance of all rays in this voxel
-        self.voxel_integral = self.system_matrix.sum(axis=1) 
+        self.voxel_integral = self.system_matrix.sum(axis=1)
         self.voxel_integral = np.array(self.voxel_integral).reshape(
             (self.voxel_integral.shape[0],)
         )
@@ -86,7 +86,7 @@ class Reconstruction(object):
         self.rays_in_voxel_threshold = rays_in_voxel_threshold
         self.expected_ray_voxel_overlap = 2.0*self.binning.voxel_z_radius
         self.valid_voxel = (
-            self.voxel_integral > 
+            self.voxel_integral >
             self.rays_in_voxel_threshold*self.expected_ray_voxel_overlap
         )
         self.valid_voxel = np.array(self.valid_voxel).reshape(
@@ -115,8 +115,8 @@ class Reconstruction(object):
     def reconstructed_volume_intesities(self, filter_sigma=1.0):
         rec_vol_3D = self.rec_vol_I.reshape(
             (
-                self.binning.number_xy_bins, 
-                self.binning.number_xy_bins, 
+                self.binning.number_xy_bins,
+                self.binning.number_xy_bins,
                 self.binning.number_z_bins
             ),
             order='C'
@@ -130,9 +130,9 @@ class Reconstruction(object):
 
 
     def simulation_truth_volume_intesities(
-        self, 
+        self,
         restrict_to_instrument_acceptance=True
-    ):  
+    ):
         limited_aperture_radius = None
         limited_fov_radius = None
         if restrict_to_instrument_acceptance:
@@ -140,8 +140,8 @@ class Reconstruction(object):
             limited_fov_radius = 1.05*self.event.light_field.cx_mean.max()
 
         return histogram_photon_bunches(
-            photon_bunches=self.event.simulation_truth.air_shower_photon_bunches, 
-            binning=self.binning, 
+            photon_bunches=self.event.simulation_truth.air_shower_photon_bunches,
+            binning=self.binning,
             observation_level=5e3,
             limited_aperture_radius=limited_aperture_radius,
             limited_fov_radius=limited_fov_radius,
@@ -150,18 +150,18 @@ class Reconstruction(object):
 
     def low_pass_filter(self, vol_I, filter_sigma=0.5):
         return gaussian_filter(
-            input=vol_I, 
-            sigma=filter_sigma, 
+            input=vol_I,
+            sigma=filter_sigma,
             order=0,
             mode='constant',
             cval=0.0,
             truncate=2*filter_sigma
-        )        
+        )
 
 
     def save_imgae_slice_stack(
-        self, 
-        out_dir='./tomography', 
+        self,
+        out_dir='./tomography',
         sqrt_intensity=False
     ):
         os.makedirs(out_dir, exist_ok=True)
@@ -169,10 +169,10 @@ class Reconstruction(object):
         if hasattr(self.event, 'simulation_truth'):
             if hasattr(self.event.simulation_truth, 'air_shower_photon_bunches'):
                 intensity_volume_2 = self.simulation_truth_volume_intesities()
-        
+
         slices.save_slice_stack(
             intensity_volume=self.reconstructed_volume_intesities(),
-            event_info_repr=self.event.__repr__(), 
+            event_info_repr=self.event.__repr__(),
             xy_extent=[
                 self.binning.xy_bin_edges.min(),
                 self.binning.xy_bin_edges.max(),
@@ -180,7 +180,7 @@ class Reconstruction(object):
                 self.binning.xy_bin_edges.max(),
             ],
             z_bin_centers=self.binning.z_bin_centers,
-            output_path=out_dir, 
+            output_path=out_dir,
             image_prefix='slice_',
             intensity_volume_2=intensity_volume_2,
             xlabel='x/m',
@@ -190,27 +190,27 @@ class Reconstruction(object):
 
 
     def show_xyzI(
-        self, 
-        rec_threshold=0.0, 
-        sim_threshold=0.0, 
-        alpha_max=0.2, 
-        color_steps=32, 
+        self,
+        rec_threshold=0.0,
+        sim_threshold=0.0,
+        alpha_max=0.2,
+        color_steps=32,
         ball_size=100.0
     ):
         rec_xyzIs = xyzI.hist3D_to_xyzI(
-            hist=self.reconstructed_volume_intesities(), 
-            binning=self.binning, 
+            hist=self.reconstructed_volume_intesities(),
+            binning=self.binning,
             threshold=rec_threshold
         )
         sim_xyzIs = xyzI.hist3D_to_xyzI(
             hist=self.simulation_truth_volume_intesities(),
-            binning=self.binning, 
+            binning=self.binning,
             threshold=sim_threshold,
         )
         xyzI.plot_xyzI(
-            xyzIs=rec_xyzIs, 
-            xyzIs2=sim_xyzIs, 
-            alpha_max=alpha_max, 
+            xyzIs=rec_xyzIs,
+            xyzIs2=sim_xyzIs,
+            alpha_max=alpha_max,
             steps=color_steps,
             ball_size=ball_size,
         )
@@ -238,10 +238,10 @@ class Reconstruction(object):
         plt.xlabel('object distance/m')
         plt.ylabel('photon intensity normalized area under curve/1')
         plt.legend(
-            bbox_to_anchor=(0., 1.02, 1., .102), 
+            bbox_to_anchor=(0., 1.02, 1., .102),
             loc=3,
-            ncol=2, 
-            mode="expand", 
+            ncol=2,
+            mode="expand",
             borderaxespad=0.
         )
         plt.show()

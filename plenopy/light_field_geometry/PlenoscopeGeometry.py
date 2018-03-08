@@ -5,36 +5,36 @@ class PlenoscopeGeometry(object):
     """
     The Geometry of the Atmospheric Cherenkov Plenoscope (ACP).
 
-    sensor_plane2imaging_system                 A homogenoues transformation to 
+    sensor_plane2imaging_system                 A homogenoues transformation to
                                                 describe the relative position
-                                                and orientation of the imaging 
-                                                system and the light field 
+                                                and orientation of the imaging
+                                                system and the light field
                                                 sensor.
 
     sensor_plane_distance                       The distance of the light field
-                                                sensor to the imaging system's 
-                                                principal aperture plane along 
-                                                the optical axis of the imaging     
+                                                sensor to the imaging system's
+                                                principal aperture plane along
+                                                the optical axis of the imaging
                                                 system.
 
-    expected_imaging_system_focal_length        The focal length the light field    
+    expected_imaging_system_focal_length        The focal length the light field
                                                 sensor was designed for.
 
-    expected_imaging_system_max_aperture_radius The radius of the imaging 
-                                                system's aperture radius the 
+    expected_imaging_system_max_aperture_radius The radius of the imaging
+                                                system's aperture radius the
                                                 light field sensor was designed
-                                                for. 
+                                                for.
 
-    max_FoV_diameter                            The max. diameter of the Field 
+    max_FoV_diameter                            The max. diameter of the Field
                                                 of View (FoV) of the Plenoscope.
 
-    pixel_FoV_hex_flat2flat                     The FoV of a single pixel 
+    pixel_FoV_hex_flat2flat                     The FoV of a single pixel
                                                 hexagon (flat to flat).
 
-    number_of_paxel_on_pixel_diagonal           The number of paxel on the 
+    number_of_paxel_on_pixel_diagonal           The number of paxel on the
                                                 diagonal of the aperture.
 
-    housing_overhead                            Overhead of the light field 
+    housing_overhead                            Overhead of the light field
                                                 sensor housing.
     """
     def __init__(self, raw):
@@ -44,7 +44,7 @@ class PlenoscopeGeometry(object):
         raw         The raw 273 float32 array.
         """
         HeaderRepresentation.assert_shape_is_valid(raw)
-        
+
         self.sensor_plane2imaging_system = self._read(raw)
         self.sensor_plane_distance = self.sensor_plane2imaging_system[2, 3]
 
@@ -66,9 +66,9 @@ class PlenoscopeGeometry(object):
 
     def __repr__(self):
         out = 'PlenoscopeGeometry('
-        out += str(self.expected_imaging_system_focal_length) 
+        out += str(self.expected_imaging_system_focal_length)
         out += 'm focal length, '
-        out += str(self.expected_imaging_system_max_aperture_radius*2) 
+        out += str(self.expected_imaging_system_max_aperture_radius*2)
         out += 'm mirror diameter'
         out += ')'
         return out

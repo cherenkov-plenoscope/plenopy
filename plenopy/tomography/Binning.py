@@ -43,10 +43,10 @@ class Binning(object):
     """
     def __init__(
         self,
-        z_min=1e3, 
-        z_max=15e3, 
+        z_min=1e3,
+        z_max=15e3,
         number_z_bins=32,
-        xy_diameter=0.3e3, 
+        xy_diameter=0.3e3,
         number_xy_bins=32,
     ):
         """

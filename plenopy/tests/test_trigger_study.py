@@ -6,12 +6,12 @@ import pkg_resources
 
 def test_open_event_in_run():
     run_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
 
     for n, event in enumerate(run):
-        
+
         trigger_summary = pl.trigger_study.export_trigger_information(event)
 
         assert 'id' in trigger_summary
@@ -29,6 +29,6 @@ def test_open_event_in_run():
         assert 'scatter_radius' in trigger_summary['simulation_truth']
         assert 'first_interaction_height' in trigger_summary['simulation_truth']
         assert 'observation_level_altitude_asl' in trigger_summary['simulation_truth']
-        
+
         assert 'acp' in trigger_summary
         assert 'response' in trigger_summary['acp']

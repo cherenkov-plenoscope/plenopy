@@ -6,11 +6,11 @@ def test_depth_of_field_transformations():
     FOCAL_LENGTH = 4.889
     for x in np.linspace(-1e3, 1e3, 13):
         for y in np.linspace(-1e3, 1e3, 13):
-            for z in np.linspace(.1e3, 10e3, 13): 
+            for z in np.linspace(.1e3, 10e3, 13):
                 cxcyb = pl.tomography.image_domain.transform.xyz2cxcyb(
                     x,
                     y,
-                    z, 
+                    z,
                     FOCAL_LENGTH
                 )
 

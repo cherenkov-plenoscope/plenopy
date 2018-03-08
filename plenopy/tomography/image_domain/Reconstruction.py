@@ -10,8 +10,8 @@ from joblib import Memory
 import os
 from ..simulation_truth import emission_positions_of_photon_bunches
 from . import transform
-from ..filtered_back_projection import ramp_kernel_in_frequency_space 
-from ..filtered_back_projection import frequency_filter 
+from ..filtered_back_projection import ramp_kernel_in_frequency_space
+from ..filtered_back_projection import frequency_filter
 
 cachedir = '/tmp/plenopy'
 os.makedirs(cachedir, exist_ok=True)
@@ -43,9 +43,9 @@ class Reconstruction(object):
         self.image_rays = ImageRays(event.light_field)
 
         self.psf = make_tomographic_system_matrix(
-            supports=self.image_rays.support, 
-            directions=self.image_rays.direction, 
-            x_bin_edges=self.binning.x_img_bin_edges, 
+            supports=self.image_rays.support,
+            directions=self.image_rays.direction,
+            x_bin_edges=self.binning.x_img_bin_edges,
             y_bin_edges=self.binning.y_img_bin_edges,
             z_bin_edges=self.binning.b_img_bin_edges,
         )
@@ -77,8 +77,8 @@ class Reconstruction(object):
     def reconstructed_depth_of_field_intesities(self):
         return self.rec_vol_I.reshape(
             (
-                self.binning.x_img_num, 
-                self.binning.y_img_num, 
+                self.binning.x_img_num,
+                self.binning.y_img_num,
                 self.binning.b_img_num
             ),
             order='C'
@@ -110,7 +110,7 @@ class Reconstruction(object):
     def apply_high_pass_filter(self):
         rec_vol_I_3d = self.reconstructed_depth_of_field_intesities()
         rec_vol_I_3d = frequency_filter(
-            hist=rec_vol_I_3d, 
+            hist=rec_vol_I_3d,
             kernel=self._ramp_filter_kernel
         )
         self.rec_vol_I = rec_vol_I_3d.reshape(
@@ -127,8 +127,8 @@ class Reconstruction(object):
 
         true_emission_positions_image_domain = transform.xyz2cxcyb(
             true_emission_positions[:,0],
-            true_emission_positions[:,1], 
-            true_emission_positions[:,2],  
+            true_emission_positions[:,1],
+            true_emission_positions[:,2],
             self.binning.focal_length
         ).T
         tepid = true_emission_positions_image_domain
@@ -138,10 +138,10 @@ class Reconstruction(object):
         tepid[:,1] = -self.binning.focal_length*np.tan(tepid[:,1])
 
         hist = np.histogramdd(
-            tepid, 
+            tepid,
             bins=(
                 self.binning.x_img_bin_edges,
-                self.binning.y_img_bin_edges, 
+                self.binning.y_img_bin_edges,
                 self.binning.b_img_bin_edges
             ),
             weights=photon_bunches.probability_to_reach_observation_level
@@ -158,7 +158,7 @@ def update(vol_I, psf, measured_lixel_I,  voxel_cross_psf, lixel_cross_psf, in_f
     proj_I_lixel = psf.T.dot(vol_I)
     lix_non_zero = lixel_cross_psf > 0.0
     proj_I_lixel[lix_non_zero] /= lixel_cross_psf[lix_non_zero]
-    
+
     proj_I_voxel = psf.dot(proj_I_lixel)
 
     voxel_diffs = measured_I_voxel - proj_I_voxel
@@ -171,16 +171,16 @@ def update(vol_I, psf, measured_lixel_I,  voxel_cross_psf, lixel_cross_psf, in_f
 
 @memory.cache
 def make_tomographic_system_matrix(
-    supports, 
-    directions, 
-    x_bin_edges, 
+    supports,
+    directions,
+    x_bin_edges,
     y_bin_edges,
     z_bin_edges
 ):
     return ray_and_voxel.system_matrix(
         supports=supports,
-        directions=directions, 
-        x_bin_edges=x_bin_edges, 
+        directions=directions,
+        x_bin_edges=x_bin_edges,
         y_bin_edges=y_bin_edges,
         z_bin_edges=z_bin_edges,
     )

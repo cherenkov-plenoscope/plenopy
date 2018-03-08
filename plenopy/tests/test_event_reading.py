@@ -7,7 +7,7 @@ import os
 
 def test_read_photon_stream():
     run_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
 
@@ -20,10 +20,10 @@ def test_read_photon_stream():
     assert raw.NEXT_READOUT_CHANNEL_MARKER == 255
 
     sequence_from_pure_python = np.zeros(
-        shape=(raw.number_time_slices,raw.number_lixel), 
+        shape=(raw.number_time_slices,raw.number_lixel),
         dtype=np.uint16)
     sequence_from_cython = np.zeros(
-        shape=(raw.number_time_slices,raw.number_lixel), 
+        shape=(raw.number_time_slices,raw.number_lixel),
         dtype=np.uint16)
 
     time_delay_mean = run.light_field_geometry.time_delay_mean.copy()
@@ -47,7 +47,7 @@ def test_read_photon_stream():
 
 def test_open_event():
     run_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
     event = run[0]

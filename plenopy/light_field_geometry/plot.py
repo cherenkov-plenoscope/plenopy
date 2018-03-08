@@ -5,9 +5,9 @@ from matplotlib.collections import PolyCollection
 
 def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
     '''
-    Adds histograms of multiple value arrays to the same plotting axes. If not 
-    provided, the bin edges are estimated automatically and applied to all 
-    histograms.  
+    Adds histograms of multiple value arrays to the same plotting axes. If not
+    provided, the bin edges are estimated automatically and applied to all
+    histograms.
 
     vals_array          An array of arrays to be histogramed
 
@@ -22,7 +22,7 @@ def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
         minima = [vals.min() for vals in vals_array]
         maxima = [vals.max() for vals in vals_array]
         number_bins = int(np.floor(np.sqrt(np.max(number_entires))))
-        bin_edges = np.linspace(np.min(minima), np.max(maxima), number_bins) 
+        bin_edges = np.linspace(np.min(minima), np.max(maxima), number_bins)
 
     for i, vals in enumerate(vals_array):
         bins, bin_esdges = np.histogram(vals, bins=bin_edges)

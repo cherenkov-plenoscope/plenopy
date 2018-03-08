@@ -2,7 +2,7 @@ import numpy as np
 
 def primary_particle_id2str(PRMPAR):
     """
-    Return string   Convert the CORSIKA primary particle ID (PRMPAR) to a human 
+    Return string   Convert the CORSIKA primary particle ID (PRMPAR) to a human
                     readable string.
 
     Parameter

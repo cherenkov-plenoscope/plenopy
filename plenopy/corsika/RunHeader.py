@@ -9,8 +9,8 @@ class RunHeader(object):
         """
         Parameters
         ----------
-        path        The path to event header binary 
-        """  
+        path        The path to event header binary
+        """
 
         self.raw = HeaderRepresentation.read_float32_header(path)
         HeaderRepresentation.assert_shape_is_valid(self.raw)

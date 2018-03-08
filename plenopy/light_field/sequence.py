@@ -10,17 +10,17 @@ def time_slice_with_max_intensity(sequence):
 
 
 def integrate_around_arrival_peak(
-    sequence, 
+    sequence,
     integration_radius=1
 ):
     '''
-    Reduces a sequence of light fields or images to just one light field or 
+    Reduces a sequence of light fields or images to just one light field or
     image integrated around the main arrival intensity.
 
     Parameters
     ----------
 
-    sequence                Matrix 2D, sequence of e.g. light fields or images, 
+    sequence                Matrix 2D, sequence of e.g. light fields or images,
                             where the time slices go along axis=0.
 
     integration_radius      Integer, integration radius in units of time slices.

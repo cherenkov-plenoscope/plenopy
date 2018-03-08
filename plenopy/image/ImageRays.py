@@ -8,7 +8,7 @@ class ImageRays(object):
                 plane. [x_mean, y_mean, 0]
 
     direction   [number_lixel x 3]
-                Direction vectors of all the image rays after passing the 
+                Direction vectors of all the image rays after passing the
                 imaging system.
     """
 
@@ -32,15 +32,15 @@ class ImageRays(object):
 
         # 3d intersection with image sensor plane
         sensor_plane_intersections = np.array([
-            bs*np.tan(cx), 
-            bs*np.tan(cy), 
+            bs*np.tan(cx),
+            bs*np.tan(cy),
             bs*np.ones(light_field_geometry.number_lixel)]).T
 
         self.support = np.array([
-            x, 
-            y, 
+            x,
+            y,
             np.zeros(light_field_geometry.number_lixel)]).T
-        
+
         self.direction = sensor_plane_intersections - self.support
         no = np.linalg.norm(self.direction, axis=1)
         self.direction[:,0] /= no
@@ -79,7 +79,7 @@ class ImageRays(object):
         number_nearest_neighbors = 1
 
         distances, pixel_indicies = self.pixel_pos_tree.query(
-            x=cxy, 
+            x=cxy,
             k=number_nearest_neighbors)
 
         return pixel_indicies

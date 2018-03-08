@@ -4,7 +4,7 @@ class LightField(object):
     """
     The ideal Light Field
 
-    x, y        x and y intersection position of photon on observation 
+    x, y        x and y intersection position of photon on observation
                 plane/level, [m]
 
     cx, cy      incoming direction component of relative to the normal vector
@@ -40,7 +40,7 @@ class LightField(object):
         self.intensity = np.ones(reached_observation_level.sum())
 
     def _collapse_probability_to_reach_observation_level(
-        self, 
+        self,
         probability_to_reach_observation_level,
         random_seed):
 

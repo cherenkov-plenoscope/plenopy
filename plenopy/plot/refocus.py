@@ -16,13 +16,13 @@ from ..light_field import sequence
 
 
 def refocus_images(
-    light_field, 
-    object_distances, 
-    tims_slice_start, 
+    light_field,
+    object_distances,
+    tims_slice_start,
     time_slice_end
 ):
     image_rays = ImageRays(light_field)
-    images = []    
+    images = []
     for object_distance in object_distances:
 
         lisel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
@@ -33,7 +33,7 @@ def refocus_images(
         raw_img = raw_img_sequence[tims_slice_start:time_slice_end].sum(axis=0)
 
         img = Image(
-            raw_img, 
+            raw_img,
             light_field.pixel_pos_cx,
             light_field.pixel_pos_cy
         )
@@ -43,7 +43,7 @@ def refocus_images(
 
 def save_side_by_side(
     event,
-    object_distances, 
+    object_distances,
     output_path,
     tims_slice_range,
     cx_limit=None,
@@ -67,24 +67,24 @@ def save_side_by_side(
     space_w = 0.1*scale
 
     fig_w = (
-        l_margin + 
-        ruler_w + 
-        space_w + 
-        image_w + 
+        l_margin +
+        ruler_w +
+        space_w +
+        image_w +
         r_margin
     )
     fig_h = (
-        t_margin + 
-        len(object_distances)*(image_h+space_h) + 
-        colorbar_h + 
+        t_margin +
+        len(object_distances)*(image_h+space_h) +
+        colorbar_h +
         b_margin
     )
     fig = plt.figure(figsize=(fig_w, fig_h), dpi=dpi)
 
     images = refocus_images(
-        light_field=event.light_field, 
-        object_distances=object_distances, 
-        tims_slice_start=tims_slice_range[0], 
+        light_field=event.light_field,
+        object_distances=object_distances,
+        tims_slice_start=tims_slice_range[0],
         time_slice_end=tims_slice_range[1],
     )
 
@@ -102,17 +102,17 @@ def save_side_by_side(
         b_anchor = fig_h - t_margin - (i+1)*ruler_h - i*space_h
         ax_ruler = fig.add_axes(
             (
-                l_anchor/fig_w, 
-                b_anchor/fig_h, 
-                ruler_w/fig_w, 
+                l_anchor/fig_w,
+                b_anchor/fig_h,
+                ruler_w/fig_w,
                 ruler_h/fig_h
             )
         )
         ax_image = fig.add_axes(
             (
-                (l_anchor+space_w+ruler_w)/fig_w, 
-                b_anchor/fig_h, 
-                image_w/fig_w, 
+                (l_anchor+space_w+ruler_w)/fig_w,
+                b_anchor/fig_h,
+                image_w/fig_w,
                 image_h/fig_h
             )
         )
@@ -126,14 +126,14 @@ def save_side_by_side(
             print_value=False,
             color='black'
         )
-        
+
         ax_ruler.set_aspect('equal')
         ax_image.set_aspect('equal')
         patch_collection = add_pixel_image_to_ax(
-            images[i], 
-            ax_image, 
-            vmin=vmin, 
-            vmax=vmax, 
+            images[i],
+            ax_image,
+            vmin=vmin,
+            vmax=vmax,
             colorbar=False
         )
 
@@ -147,35 +147,35 @@ def save_side_by_side(
 
     colorbar_ax = fig.add_axes(
         (
-            (l_anchor+space_w+ruler_w)/fig_w, 
+            (l_anchor+space_w+ruler_w)/fig_w,
             (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
-            image_w/fig_w, 
+            image_w/fig_w,
             (colorbar_h)/fig_h
         )
     )
     plt.colorbar(
-        patch_collection, 
+        patch_collection,
         cax=colorbar_ax,
         orientation='horizontal',
     )
 
     obj_dist_label_ax = fig.add_axes(
         (
-            l_anchor/fig_w, 
+            l_anchor/fig_w,
             (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
             ruler_w/fig_w,
             (colorbar_h)/fig_h
         )
     )
-    obj_dist_label_ax.axis('off')                   
+    obj_dist_label_ax.axis('off')
     obj_dist_label_ax.text(
-        x=0.45, y=1.6, 
-        s='object\ndistance/km', 
+        x=0.45, y=1.6,
+        s='object\ndistance/km',
         horizontalalignment='center'
     )
     obj_dist_label_ax.text(
-        x=0.9, y=0.2, 
-        s='photons/1', 
+        x=0.9, y=0.2,
+        s='photons/1',
         horizontalalignment='center'
     )
     plt.savefig(output_path, dpi=dpi)
@@ -183,12 +183,12 @@ def save_side_by_side(
 
 
 def save_refocus_stack(
-    event, 
-    output_path, 
-    obj_dist_min=2e3, 
+    event,
+    output_path,
+    obj_dist_min=2e3,
     obj_dist_max=27e3,
     time_slices_window_radius=1,
-    steps=16, 
+    steps=16,
     use_absolute_scale=True,
     image_prefix='refocus_'
 ):
@@ -208,14 +208,14 @@ def save_refocus_stack(
     time_end = np.min([time_max+time_slices_window_radius, pix_img_seq.shape[0]-1])
 
     images = refocus_images(
-        light_field=event.light_field, 
+        light_field=event.light_field,
         object_distances=object_distances,
         tims_slice_start=time_start,
         time_slice_end=time_end,
     )
 
     intensities = [i.intensity for i in images]
-    
+
     if use_absolute_scale:
         vmin = np.array(intensities).min()
         vmax = np.array(intensities).max()
@@ -238,7 +238,7 @@ def save_refocus_stack(
             object_distance_min=obj_dist_min,
             object_distance_max=obj_dist_max,
         )
-        
+
         ax_image.set_aspect('equal')
         add_pixel_image_to_ax(images[i], ax_image, vmin=vmin, vmax=vmax)
 
@@ -247,17 +247,17 @@ def save_refocus_stack(
             dpi=fig_size.dpi
         )
         ax_ruler.clear()
-        ax_image.clear()    
+        ax_image.clear()
     plt.close(fig)
 
 
 def save_refocus_video(
-    event, 
-    output_path, 
-    obj_dist_min=2e3, 
-    obj_dist_max=27e3, 
-    steps=25, 
-    fps=25, 
+    event,
+    output_path,
+    obj_dist_min=2e3,
+    obj_dist_max=27e3,
+    steps=25,
+    fps=25,
     use_absolute_scale=True
 ):
     with tempfile.TemporaryDirectory() as work_dir:

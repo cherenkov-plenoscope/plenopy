@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
     """
-    Plot a 3D intensity distribution. Can plot two distributions at the same 
+    Plot a 3D intensity distribution. Can plot two distributions at the same
     time using blue and red color.
 
     Parameters
@@ -31,14 +31,14 @@ def hist3D_to_xyzI(hist, binning, threshold=0):
 
     Parameters
     ----------
-    hist            A 3D intensity histogram with the shape specified in the 
+    hist            A 3D intensity histogram with the shape specified in the
                     binning parameter.
 
-    binning         The 3D volume binning used to create the 3D intensity 
+    binning         The 3D volume binning used to create the 3D intensity
                     histogram.
 
 
-    threshold       Voxels in the 3D intensity histogram below this threshold 
+    threshold       Voxels in the 3D intensity histogram below this threshold
                     are neglected.
     """
     xyzi = []
@@ -67,10 +67,10 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
         steps = length
 
     (starts, ends) = _start_and_end_slices_for_1D_array_chunking(
-        number_of_chunks=steps, 
+        number_of_chunks=steps,
         array_length=length
     )
-    
+
     mean_chunk_intensities = []
     for i in range(steps):
         start = starts[i]
@@ -88,19 +88,19 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
         relative_I = mean_I/max_I
 
         ax.scatter(
-            xyzIs_sorted[start:end,0], 
-            xyzIs_sorted[start:end,1], 
+            xyzIs_sorted[start:end,0],
+            xyzIs_sorted[start:end,1],
             xyzIs_sorted[start:end,2],
             s=ball_size,
             depthshade=False,
             alpha=relative_I*alpha_max,
             c=color,
             lw=0
-        )           
+        )
 
 
 def _start_and_end_slices_for_1D_array_chunking(
-    number_of_chunks, 
+    number_of_chunks,
     array_length
 ):
     assert array_length >= number_of_chunks
@@ -113,5 +113,5 @@ def _start_and_end_slices_for_1D_array_chunking(
         ),
         dtype=np.int64
     )
-    
+
     return (chunk_edges[0:-1], chunk_edges[1:])

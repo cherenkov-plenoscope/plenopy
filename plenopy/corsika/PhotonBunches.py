@@ -4,7 +4,7 @@ class PhotonBunches(object):
     """
     The CORSIKA air shower photon bunches
 
-    x, y        x and y intersection position of photon on observation 
+    x, y        x and y intersection position of photon on observation
                 plane/level, [m]
 
     cx, cy      incoming direction component of relative to the normal vector
@@ -17,21 +17,21 @@ class PhotonBunches(object):
 
     wavelength                                      [m]
 
-    probability_to_reach_observation_level          In CORSIKA this is the 
+    probability_to_reach_observation_level          In CORSIKA this is the
                                                     photon bunch weight. However
-                                                    In the mctracer there are 
-                                                    only single photons, so this 
+                                                    In the mctracer there are
+                                                    only single photons, so this
                                                     weight is supposed to be
                                                     less equal 1.0 and encodes
                                                     the survival probability of
-                                                    this photon to reach the 
+                                                    this photon to reach the
                                                     observation level [1]
     """
     def __init__(self, path):
         """
         Parameters
         ----------
-        path        The path to the air shower photon block of this event 
+        path        The path to the air shower photon block of this event
         """
         floats_per_photon = 8
         raw = np.fromfile(path, dtype=np.float32)

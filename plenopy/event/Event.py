@@ -30,19 +30,19 @@ class Event(object):
     trigger_type                Indicates the trigger mechanism.
 
     light_field                 The light field recorded by the plenoscope.
-                                Created using the raw light field sensor  
+                                Created using the raw light field sensor
                                 response and the light field geometry.
 
     simulation_truth            If type == "simulation"
-                                Additional 'true' information known from the 
+                                Additional 'true' information known from the
                                 simulation itself.
 
     raw_sensor_response         The raw light field sensor response
                                 of the plenoscope.
 
-    sensor_plane2imaging_system     The relative orientation and position of 
-                                    the plenoscope's light field sensor with 
-                                    respect to the plenoscope's imaging system 
+    sensor_plane2imaging_system     The relative orientation and position of
+                                    the plenoscope's light field sensor with
+                                    respect to the plenoscope's imaging system
                                     in the moment this event was recorded.
     """
 
@@ -50,10 +50,10 @@ class Event(object):
         """
         Parameter
         ---------
-        path                    The path of this event. Typically inside a Run 
+        path                    The path of this event. Typically inside a Run
                                 directory.
 
-        light_field_geometry    The light field geometry to calibrate the raw 
+        light_field_geometry    The light field geometry to calibrate the raw
                                 sensor response of this event.
         """
         self._path = os.path.abspath(path)
@@ -72,7 +72,7 @@ class Event(object):
         header_path = os.path.join(self._path, 'event_header.bin')
         raw = read_float32_header(header_path)
         assert_marker_of_header_is(raw, 'PEVT')
-        event_type = EventType(raw)   
+        event_type = EventType(raw)
         self.sensor_plane2imaging_system = PlenoscopeGeometry(raw)
         self.type = event_type.type
         self.trigger_type = event_type.trigger_type
@@ -82,14 +82,14 @@ class Event(object):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
             evth = corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
-            runh = corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))            
+            runh = corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))
             simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
 
             try:
                 simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
                     os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
-                simulation_truth_air_shower_photon_bunches = None         
+                simulation_truth_air_shower_photon_bunches = None
 
             try:
                 simulation_truth_detector = simulation_truth.Detector(
@@ -135,8 +135,8 @@ class Event(object):
 
         2   Positional intensity distribution on the principal aperture plane
 
-        3   The arrival time distribution of photo equivalents accross all 
-            lixels 
+        3   The arrival time distribution of photo equivalents accross all
+            lixels
 
         4   The photo equivalent distribution accross all lixels
         """
@@ -144,7 +144,7 @@ class Event(object):
         plt.suptitle(self._plot_suptitle())
         pix_img_seq = self.light_field.pixel_sequence()
         pix_int = light_field.sequence.integrate_around_arrival_peak(
-            sequence=pix_img_seq, 
+            sequence=pix_img_seq,
             integration_radius=1
         )
         pixel_image = Image(
@@ -158,7 +158,7 @@ class Event(object):
         image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
         pax_img_seq = self.light_field.paxel_sequence()
         pax_int = light_field.sequence.integrate_around_arrival_peak(
-            sequence=pax_img_seq, 
+            sequence=pax_img_seq,
             integration_radius=1
         )
         paxel_image = Image(

@@ -15,8 +15,8 @@ from . import images2video
 c_vacuum = 3e8
 
 def save_principal_aperture_arrival_stack(
-    light_field, 
-    out_dir, 
+    light_field,
+    out_dir,
     steps=7,
     threshold=1,
     figure_size=None):
@@ -51,7 +51,7 @@ def save_principal_aperture_arrival_stack(
 
     ax.set_xlim(-aperture_radius, aperture_radius)
     ax.set_ylim(-aperture_radius, aperture_radius)
-    ax.set_zlim(0, 
+    ax.set_zlim(0,
         c_vacuum*light_field.number_time_slices*light_field.time_slice_duration)
     ax.set_xlabel('X/m')
     ax.set_ylabel('Y/m')
@@ -62,21 +62,21 @@ def save_principal_aperture_arrival_stack(
         ax.view_init(elev=15., azim=azimuth)
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
-            os.path.join(out_dir, 'aperture3D_'+str(i).zfill(6) + ".png"), 
+            os.path.join(out_dir, 'aperture3D_'+str(i).zfill(6) + ".png"),
             dpi=fsz.dpi)
     plt.close()
 
 
 def save_principal_aperture_arrival_video(
-    light_field, 
-    output_path, 
-    steps=73, 
-    threshold=1, 
+    light_field,
+    output_path,
+    steps=73,
+    threshold=1,
     frames_per_second=12,
     figure_size=None):
 
     with tempfile.TemporaryDirectory(prefix='plenopy_video') as work_dir:
-        
+
         save_principal_aperture_arrival_stack(
             light_field=light_field,
             steps=steps,
@@ -85,6 +85,6 @@ def save_principal_aperture_arrival_video(
             figure_size=figure_size)
 
         images2video.images2video(
-            image_path=os.path.join(work_dir, 'aperture3D_%06d.png'), 
+            image_path=os.path.join(work_dir, 'aperture3D_%06d.png'),
             output_path=output_path,
             frames_per_second=frames_per_second)

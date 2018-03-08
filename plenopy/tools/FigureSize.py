@@ -1,9 +1,9 @@
 class FigureSize(object):
     def __init__(
-        self, 
-        relative_width=16, 
-        relative_hight=9, 
-        pixel_rows=1080, 
+        self,
+        relative_width=16,
+        relative_hight=9,
+        pixel_rows=1080,
         dpi=200):
 
         self.relative_width = relative_width

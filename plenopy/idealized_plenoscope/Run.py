@@ -35,7 +35,7 @@ class Run(object):
 
         Parameters
         ----------
-        index       The index of the event to be returned. (starting at 0).      
+        index       The index of the event to be returned. (starting at 0).
         """
 
         try:

@@ -41,4 +41,4 @@ def mct_sensor_plane2imaging_system(h):
 
 def read_float32_header(path):
     raw = np.fromfile(path, dtype=np.float32)
-    return raw  
+    return raw

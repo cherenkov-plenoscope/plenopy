@@ -63,8 +63,8 @@ class DepthOfFieldBinning(object):
         self.b_img_width = self.b_img_max - self.b_img_min
         self.b_img_bin_radius = 0.5*self.b_img_width/self.b_img_num
         self.b_img_bin_edges = np.linspace(
-            start=self.b_img_min, 
-            stop=self.b_img_max, 
+            start=self.b_img_min,
+            stop=self.b_img_max,
             num=self.b_img_num+1
         )
         self.b_img_bin_centers = (
@@ -83,7 +83,7 @@ class DepthOfFieldBinning(object):
 
         assert self._cx_num > 0
         assert self._cy_num > 0
-        assert self._obj_num > 0        
+        assert self._obj_num > 0
 
     def __repr__(self):
         out = 'DepthOfFieldBinning('
@@ -91,7 +91,7 @@ class DepthOfFieldBinning(object):
         out += str(self.x_img_width*self.y_img_width)+'m^2 x '
         out += str(self.b_img_width)+'m)'
         return out
-     
+
     def xyb_voxel_positions(self):
         """
         Returns a flat array of the voxel's center positions.

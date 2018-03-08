@@ -6,14 +6,14 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def add2ax(
-    ax, 
-    I, 
-    px, 
-    py, 
-    colormap='viridis', 
-    hexrotation=30, 
-    vmin=None, 
-    vmax=None, 
+    ax,
+    I,
+    px,
+    py,
+    colormap='viridis',
+    hexrotation=30,
+    vmin=None,
+    vmax=None,
     colorbar=True
 ):
 
@@ -58,11 +58,11 @@ def add2ax(
 
 
 def add_pixel_image_to_ax(
-    img, 
-    ax, 
-    colormap="viridis", 
-    vmin=None, 
-    vmax=None, 
+    img,
+    ax,
+    colormap="viridis",
+    vmin=None,
+    vmax=None,
     colorbar=True
 ):
     ax.set_xlabel('cx/deg')
@@ -84,11 +84,11 @@ def add_pixel_image_to_ax(
 
 
 def add_paxel_image_to_ax(
-    img, 
-    ax, 
-    colormap="viridis", 
-    vmin=None, 
-    vmax=None, 
+    img,
+    ax,
+    colormap="viridis",
+    vmin=None,
+    vmax=None,
     colorbar=True
 ):
     ax.set_xlabel('x/m')

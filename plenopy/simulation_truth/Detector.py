@@ -16,7 +16,7 @@ class Detector(object):
         ----------
         light_field
 
-        detector_pulse_origin_path  The input path to the additional detector 
+        detector_pulse_origin_path  The input path to the additional detector
                                     pulse origin binary file.
         """
 

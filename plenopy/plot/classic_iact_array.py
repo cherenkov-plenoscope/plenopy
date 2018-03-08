@@ -24,7 +24,7 @@ def classic_view(
     )
 
     light_field = sequence.integrate_around_arrival_peak(
-        event.light_field.sequence, 
+        event.light_field.sequence,
         integration_radius=time_slice_integration_radius
     )['integral']
 
@@ -69,9 +69,9 @@ def classic_view(
 
         ax_image = fig.add_axes(
             (
-                l_anchor/fig_w, 
-                b_anchor/fig_h, 
-                (s*iact_img_w)/fig_w, 
+                l_anchor/fig_w,
+                b_anchor/fig_h,
+                (s*iact_img_w)/fig_w,
                 (s*iact_img_h)/fig_h
             )
         )
@@ -80,24 +80,24 @@ def classic_view(
         ax_image.set_aspect('equal')
 
         patch_collection = image.plot.add2ax(
-            ax=ax_image, 
-            I=array_images[:,i], 
-            px=np.rad2deg(event.light_field.pixel_pos_cx), 
-            py=np.rad2deg(event.light_field.pixel_pos_cy), 
-            colormap=colormap, 
-            hexrotation=30, 
-            vmin=min_intensity, 
-            vmax=max_intensity, 
+            ax=ax_image,
+            I=array_images[:,i],
+            px=np.rad2deg(event.light_field.pixel_pos_cx),
+            py=np.rad2deg(event.light_field.pixel_pos_cy),
+            colormap=colormap,
+            hexrotation=30,
+            vmin=min_intensity,
+            vmax=max_intensity,
             colorbar=False,
         )
 
         if add_fov_circles:
             fov_d = event.light_field.sensor_plane2imaging_system.max_FoV_diameter
             fov_limit = plt.Circle(
-                (0, 0), 
-                np.rad2deg(iact_image_fov_radius), 
-                edgecolor='k', 
-                lw=fov_circles_line_width, 
+                (0, 0),
+                np.rad2deg(iact_image_fov_radius),
+                edgecolor='k',
+                lw=fov_circles_line_width,
                 facecolor='none',
                 clip_on=False
             )

@@ -24,13 +24,13 @@ def test_binning_flat_voxel_center_positions():
                 i+=1
 
 """
-The events for testing are 'recorded' on a MAGIC 17m aperture diameter 
-Plenoscope. They are small in size and thus fine to test the interfaces of the 
-reconstruction but they can not give physical results, 17m is just too small of 
+The events for testing are 'recorded' on a MAGIC 17m aperture diameter
+Plenoscope. They are small in size and thus fine to test the interfaces of the
+reconstruction but they can not give physical results, 17m is just too small of
 a baseline.
 """
 run_path = pkg_resources.resource_filename(
-    'plenopy', 
+    'plenopy',
     'tests/resources/run.acp'
 )
 
@@ -58,11 +58,11 @@ def test_narrow_filtered_back_projection():
     event = run[0]
 
     rec = pl.tomography.filtered_back_projection.Reconstruction(
-        rays=pl.tomography.Rays.from_light_field_geometry(event.light_field), 
+        rays=pl.tomography.Rays.from_light_field_geometry(event.light_field),
         intensities=pl.light_field.sequence.integrate_around_arrival_peak(
             sequence=event.light_field.sequence,
             integration_radius=5
-        )['integral'], 
+        )['integral'],
         binning=pl.tomography.Binning(number_z_bins=32, number_xy_bins=16)
     )
 

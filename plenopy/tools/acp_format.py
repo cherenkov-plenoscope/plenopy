@@ -9,7 +9,7 @@ def all_folders_with_digit_names_in_path(path):
 
     Parameters
     ----------
-    path       path of a run directory     
+    path       path of a run directory
     """
 
     files_in_run_folder = glob.glob(os.path.join(path, '*'))

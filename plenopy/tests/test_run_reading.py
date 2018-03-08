@@ -6,7 +6,7 @@ import pkg_resources
 
 def test_open_run():
     run_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
 
@@ -24,7 +24,7 @@ def test_open_run():
 
 def test_open_event_in_run():
     run_path = pkg_resources.resource_filename(
-        'plenopy', 
+        'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
 

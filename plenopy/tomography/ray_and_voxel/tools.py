@@ -3,7 +3,7 @@ import numpy as np
 def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
     '''
     For plotting using the xyzI representation.
-    Returns a 2D matrix (Nx4) of N overlaps of a ray with xoxels. Each row is 
+    Returns a 2D matrix (Nx4) of N overlaps of a ray with xoxels. Each row is
     [x,y,z positions and overlapping distance].
     '''
     x_bin_centers = (x_bin_edges[0:-1] + x_bin_edges[1:])/2

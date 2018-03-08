@@ -17,8 +17,8 @@ def test_plane_intersection():
     dim = 0
 
     isec = pl.tomography.ray_and_voxel._py_overlap._intersection_plane(
-        support=np.array([0.,0.,0.]), 
-        direction=np.array([1.,0.,0.]), 
+        support=np.array([0.,0.,0.]),
+        direction=np.array([1.,0.,0.]),
         off=0.0,
         dim=dim
     )
@@ -28,8 +28,8 @@ def test_plane_intersection():
     assert isec[2] == 0.0
 
     isec = pl.tomography.ray_and_voxel._py_overlap._intersection_plane(
-        support=np.array([0.,0.,0.]), 
-        direction=np.array([1.,0.,1.]), 
+        support=np.array([0.,0.,0.]),
+        direction=np.array([1.,0.,1.]),
         off=0.0,
         dim=dim
     )
@@ -39,8 +39,8 @@ def test_plane_intersection():
     assert isec[2] == 0.0
 
     isec = pl.tomography.ray_and_voxel._py_overlap._intersection_plane(
-        support=np.array([0.,0.,0.]), 
-        direction=np.array([1.,0.,1.]), 
+        support=np.array([0.,0.,0.]),
+        direction=np.array([1.,0.,1.]),
         off=1.0,
         dim=dim
     )
@@ -52,7 +52,7 @@ def test_plane_intersection():
 
 def ray_and_empty_voxel_overlap():
     for func in single_voxel_overlap:
-    
+
         for xs in np.linspace(-1.,1.,3):
             for ys in np.linspace(-1.,1.,3):
                 for zs in np.linspace(-1.,1.,3):
@@ -61,10 +61,10 @@ def ray_and_empty_voxel_overlap():
                             for zd in np.linspace(-1.,1.,3):
                                 if xd!=0. or yd!=0. or zd!=0.:
                                     ol = func(
-                                        support=np.array([xs,ys,zs]), 
-                                        direction=np.array([xd,yd,zd]), 
-                                        xl=0., xu=0., 
-                                        yl=0., yu=0., 
+                                        support=np.array([xs,ys,zs]),
+                                        direction=np.array([xd,yd,zd]),
+                                        xl=0., xu=0.,
+                                        yl=0., yu=0.,
                                         zl=0., zu=0.
                                     )
 
@@ -78,10 +78,10 @@ def test_ray_and_single_voxel_overlap():
             direction[dim] = 1.0
 
             ol = func(
-                support=np.array([0.,0.,0.]), 
-                direction=direction, 
-                xl=-1, xu=1, 
-                yl=-1, yu=1, 
+                support=np.array([0.,0.,0.]),
+                direction=direction,
+                xl=-1, xu=1,
+                yl=-1, yu=1,
                 zl=-1, zu=1
             )
             assert ol == 2.0
@@ -95,40 +95,40 @@ def test_overlap_single_box_edge_cases():
         direction = np.array([1.,0.,0.])
         # z low
         ol = func(
-            support=np.array([0.,0.,-1.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,-1.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # z upper
         ol = func(
-            support=np.array([0.,0.,1.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,1.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
 
         # z low
         ol = func(
-            support=np.array([0.,0.,-1.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,-1.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # z upper
         ol = func(
-            support=np.array([0.,0,1]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0,1]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
@@ -140,40 +140,40 @@ def test_overlap_single_box_edge_cases():
 
         # x low
         ol = func(
-            support=np.array([-1.,0.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([-1.,0.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # x upper
         ol = func(
-            support=np.array([1.,0.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([1.,0.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
 
         # z low
         ol = func(
-            support=np.array([0.,0.,-1.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,-1.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # z upper
         ol = func(
-            support=np.array([0.,0.,1.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,1.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
@@ -184,40 +184,40 @@ def test_overlap_single_box_edge_cases():
 
         # x low
         ol = func(
-            support=np.array([-1.,0.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([-1.,0.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # x upper
         ol = func(
-            support=np.array([1.,0.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([1.,0.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
 
         # y low
         ol = func(
-            support=np.array([0.,-1.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,-1.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 2.0
 
         # y upper
         ol = func(
-            support=np.array([0.,1.,0.]), 
-            direction=direction, 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,1.,0.]),
+            direction=direction,
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol == 0.0
@@ -233,10 +233,10 @@ def test_overlap_single_box_various_supports():
                 for ys in np.linspace(-.5,.5,3):
                     for zs in np.linspace(-.5,.5,3):
                         ol = func(
-                            support=np.array([xs,ys,zs]), 
-                            direction=direction, 
-                            xl=-1, xu=1, 
-                            yl=-1, yu=1, 
+                            support=np.array([xs,ys,zs]),
+                            direction=direction,
+                            xl=-1, xu=1,
+                            yl=-1, yu=1,
                             zl=-1, zu=1
                         )
                         assert ol == 2.0
@@ -246,10 +246,10 @@ def test_overlap_single_box_diagonal_rays():
     for func in single_voxel_overlap:
 
         ol = func(
-            support=np.array([0.,0.,0.]), 
-            direction=np.array([-1.,-1.,-1.]), 
-            xl=-1, xu=1, 
-            yl=-1, yu=1, 
+            support=np.array([0.,0.,0.]),
+            direction=np.array([-1.,-1.,-1.]),
+            xl=-1, xu=1,
+            yl=-1, yu=1,
             zl=-1, zu=1
         )
         assert ol > 0.0
@@ -269,15 +269,15 @@ def test_overlap_single_box_various_rays():
                                 if xd!=0 or yd!=0 or zd!=0:
                                     #print('----------------------------------')
                                     ol = func(
-                                        support=np.array([xs,ys,zs]), 
-                                        direction=np.array([xd,yd,zd]), 
-                                        xl=-1, xu=1, 
-                                        yl=-1, yu=1, 
+                                        support=np.array([xs,ys,zs]),
+                                        direction=np.array([xd,yd,zd]),
+                                        xl=-1, xu=1,
+                                        yl=-1, yu=1,
                                         zl=-1, zu=1
                                     )
                                     #print('[',xs,ys,zs,'][',xd,yd,zd,']', ol)
                                     assert ol > 0.0 and ol <= max_diagonal
-                                    
+
 
 def test_bin_index_space_partitioning():
     nsp = pl.tomography.ray_and_voxel._py_overlap._next_space_partitions
@@ -336,10 +336,10 @@ def test_overlap_in_octtree_space_edge_cases():
         # lower x-edge
         # ------------
         ol = func(
-            support=np.array([-1.,0.,0.]), 
-            direction=np.array([0.,0.,1.]), 
-            x_bin_edges=np.linspace(-1.,1.,3), 
-            y_bin_edges=np.linspace(-1.,1.,3), 
+            support=np.array([-1.,0.,0.]),
+            direction=np.array([0.,0.,1.]),
+            x_bin_edges=np.linspace(-1.,1.,3),
+            y_bin_edges=np.linspace(-1.,1.,3),
             z_bin_edges=np.linspace(-1.,1.,3)
         )
         assert len(ol['x']) == 2
@@ -359,10 +359,10 @@ def test_overlap_in_octtree_space_edge_cases():
         # valid 1st x-bin
         # ---------------
         ol = func(
-            support=np.array([-.5,0,0]), 
-            direction=np.array([0.,0.,1.]), 
-            x_bin_edges=np.linspace(-1,1,3), 
-            y_bin_edges=np.linspace(-1,1,3), 
+            support=np.array([-.5,0,0]),
+            direction=np.array([0.,0.,1.]),
+            x_bin_edges=np.linspace(-1,1,3),
+            y_bin_edges=np.linspace(-1,1,3),
             z_bin_edges=np.linspace(-1,1,3)
         )
         assert len(ol['x']) == 2
@@ -382,10 +382,10 @@ def test_overlap_in_octtree_space_edge_cases():
         # x-center
         # --------
         ol = func(
-            support=np.array([0.,0.,0.]), 
-            direction=np.array([0.,0.,1.]), 
-            x_bin_edges=np.linspace(-1.,1.,3), 
-            y_bin_edges=np.linspace(-1.,1.,3), 
+            support=np.array([0.,0.,0.]),
+            direction=np.array([0.,0.,1.]),
+            x_bin_edges=np.linspace(-1.,1.,3),
+            y_bin_edges=np.linspace(-1.,1.,3),
             z_bin_edges=np.linspace(-1.,1.,3)
         )
         assert len(ol['x']) == 2
@@ -404,10 +404,10 @@ def test_overlap_in_octtree_space_edge_cases():
         # valid 2nd x-bin
         # ---------------
         ol = func(
-            support=np.array([.5,0,0]), 
-            direction=np.array([0.,0.,1.]), 
-            x_bin_edges=np.linspace(-1.,1.,3), 
-            y_bin_edges=np.linspace(-1.,1.,3), 
+            support=np.array([.5,0,0]),
+            direction=np.array([0.,0.,1.]),
+            x_bin_edges=np.linspace(-1.,1.,3),
+            y_bin_edges=np.linspace(-1.,1.,3),
             z_bin_edges=np.linspace(-1.,1.,3)
         )
         assert len(ol['x']) == 2
@@ -426,10 +426,10 @@ def test_overlap_in_octtree_space_edge_cases():
         # upper x-edge
         # ------------
         ol = func(
-            support=np.array([1.,0.,0.]), 
-            direction=np.array([0.,0.,1.]), 
-            x_bin_edges=np.linspace(-1.,1.,3), 
-            y_bin_edges=np.linspace(-1.,1.,3), 
+            support=np.array([1.,0.,0.]),
+            direction=np.array([0.,0.,1.]),
+            x_bin_edges=np.linspace(-1.,1.,3),
+            y_bin_edges=np.linspace(-1.,1.,3),
             z_bin_edges=np.linspace(-1.,1.,3)
         )
         assert len(ol['x']) == 0
@@ -442,10 +442,10 @@ def test_non_straight_overlaps():
     for func in overlap_of_ray_with_voxels:
 
         ol = func(
-            support=np.array([-1.,-1.,-1.]), 
-            direction=np.array([1.,1.,1.]), 
-            x_bin_edges=np.linspace(-1.,1.,3), 
-            y_bin_edges=np.linspace(-1.,1.,3), 
+            support=np.array([-1.,-1.,-1.]),
+            direction=np.array([1.,1.,1.]),
+            x_bin_edges=np.linspace(-1.,1.,3),
+            y_bin_edges=np.linspace(-1.,1.,3),
             z_bin_edges=np.linspace(-1.,1.,3)
         )
         assert len(ol['x']) == 2
@@ -466,10 +466,10 @@ def test_non_linear_voxel_space():
     for func in overlap_of_ray_with_voxels:
 
         ol = func(
-            support=np.array([0.,.1,0.]), 
-            direction=np.array([.1,.5,1.]), 
-            x_bin_edges=np.logspace(0.,1.,10), 
-            y_bin_edges=np.logspace(0.,1.,10), 
+            support=np.array([0.,.1,0.]),
+            direction=np.array([.1,.5,1.]),
+            x_bin_edges=np.logspace(0.,1.,10),
+            y_bin_edges=np.logspace(0.,1.,10),
             z_bin_edges=np.logspace(0.,1.,10)
         )
 
@@ -495,9 +495,9 @@ def test_tomographic_system_matrix():
     N_Y_BINS = 8
     N_Z_BINS = 8
     psf = pl.tomography.ray_and_voxel.system_matrix(
-        supports=supports, 
-        directions=directions, 
-        x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
+        supports=supports,
+        directions=directions,
+        x_bin_edges=np.linspace(-100., 100., N_X_BINS+1),
         y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
         z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
     )
@@ -510,9 +510,9 @@ def test_tomographic_system_matrix():
             for N_Z_BINS in number_bins:
 
                 psf = pl.tomography.ray_and_voxel.system_matrix(
-                    supports=supports, 
-                    directions=directions, 
-                    x_bin_edges=np.linspace(-100., 100., N_X_BINS+1), 
+                    supports=supports,
+                    directions=directions,
+                    x_bin_edges=np.linspace(-100., 100., N_X_BINS+1),
                     y_bin_edges=np.linspace(-100., 100., N_Y_BINS+1),
                     z_bin_edges=np.linspace(0., 200., N_Z_BINS+1),
                 )

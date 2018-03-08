@@ -2,8 +2,8 @@ import numpy as np
 
 
 def histogram_photon_bunches(
-    photon_bunches, 
-    binning, 
+    photon_bunches,
+    binning,
     limited_aperture_radius=None,
     limited_fov_radius=None,
     observation_level=5e3
@@ -18,23 +18,23 @@ def histogram_photon_bunches(
     observation_level   The observation level associated with the photon bunch
 
     return
-    ------                    
+    ------
     hist            A 3D histogram according to the specified binnings, where
-                    the voxel intensity encodes the number count of photon 
+                    the voxel intensity encodes the number count of photon
                     production positions in this voxel.
     """
     ep = emission_positions_of_photon_bunches(
-        photon_bunches=photon_bunches, 
+        photon_bunches=photon_bunches,
         observation_level=observation_level,
         limited_aperture_radius=limited_aperture_radius,
         limited_fov_radius=limited_fov_radius,
     )
 
     hist = np.histogramdd(
-        ep['emission_positions'][ep['valid_acceptence']], 
+        ep['emission_positions'][ep['valid_acceptence']],
         bins=(
-            binning.xy_bin_edges, 
-            binning.xy_bin_edges, 
+            binning.xy_bin_edges,
+            binning.xy_bin_edges,
             binning.z_bin_edges
             ),
             weights=photon_bunches.probability_to_reach_observation_level[ep['valid_acceptence']]
@@ -44,7 +44,7 @@ def histogram_photon_bunches(
 
 
 def emission_positions_of_photon_bunches(
-    photon_bunches, 
+    photon_bunches,
     limited_aperture_radius=None,
     limited_fov_radius=None,
     observation_level=5e3,
@@ -54,11 +54,11 @@ def emission_positions_of_photon_bunches(
     ---------
     photon_bunches          The CORSIKA photon bunches.
 
-    observation_level       The observation level associated with the photon 
+    observation_level       The observation level associated with the photon
                             bunch.
 
     return
-    ------                    
+    ------
     emission_positions      An array of emission positions for each photon bunch
                             in the cartesian frame of the plenoscope.
     """

@@ -3,17 +3,17 @@ import array as ar
 
 
 def overlap_of_ray_with_voxels(
-    support, 
-    direction, 
-    x_bin_edges, 
-    y_bin_edges, 
+    support,
+    direction,
+    x_bin_edges,
+    y_bin_edges,
     z_bin_edges,
     x_range=None,
     y_range=None,
     z_range=None,
-):  
+):
     '''
-    Returns the voxel indices and overlap distances for one single ray 
+    Returns the voxel indices and overlap distances for one single ray
     (defined by support and direction) with voxels defined by the bin_edges
     in x,y and z.
 
@@ -27,11 +27,11 @@ def overlap_of_ray_with_voxels(
 
     z_bin_edges     voxel bin edge positions in z.
 
-    x_range         lower and upper bin indices to truncate voxels in x 
+    x_range         lower and upper bin indices to truncate voxels in x
                     (optional)
-    y_range         lower and upper bin indices to truncate voxels in y 
+    y_range         lower and upper bin indices to truncate voxels in y
                     (optional)
-    z_range         lower and upper bin indices to truncate voxels in z 
+    z_range         lower and upper bin indices to truncate voxels in z
                     (optional)
     '''
     if x_range is None:
@@ -49,10 +49,10 @@ def overlap_of_ray_with_voxels(
     }
 
     _overlap_of_ray_with_voxels(
-        support=support, 
-        direction=direction, 
-        x_bin_edges=x_bin_edges, 
-        y_bin_edges=y_bin_edges, 
+        support=support,
+        direction=direction,
+        x_bin_edges=x_bin_edges,
+        y_bin_edges=y_bin_edges,
         z_bin_edges=z_bin_edges,
         overlaps=overlaps,
         x_range=x_range,
@@ -68,10 +68,10 @@ def overlap_of_ray_with_voxels(
 
 
 def _overlap_of_ray_with_voxels(
-    support, 
-    direction, 
-    x_bin_edges, 
-    y_bin_edges, 
+    support,
+    direction,
+    x_bin_edges,
+    y_bin_edges,
     z_bin_edges,
     overlaps,
     x_range,
@@ -88,18 +88,18 @@ def _overlap_of_ray_with_voxels(
                 overlap = _ray_box_overlap(
                     support=support,
                     direction=direction,
-                    xl=x_bin_edges[xp[0]], 
-                    xu=x_bin_edges[xp[1]], 
-                    yl=y_bin_edges[yp[0]], 
+                    xl=x_bin_edges[xp[0]],
+                    xu=x_bin_edges[xp[1]],
+                    yl=y_bin_edges[yp[0]],
                     yu=y_bin_edges[yp[1]],
                     zl=z_bin_edges[zp[0]],
                     zu=z_bin_edges[zp[1]]
                 )
 
                 if (
-                    xp[1]-xp[0]==1 and 
-                    yp[1]-yp[0]==1 and 
-                    zp[1]-zp[0]==1 and 
+                    xp[1]-xp[0]==1 and
+                    yp[1]-yp[0]==1 and
+                    zp[1]-zp[0]==1 and
                     overlap > 0.0
                 ):
                     overlaps['x'].append(xp[0])
@@ -109,10 +109,10 @@ def _overlap_of_ray_with_voxels(
 
                 elif overlap > 0.0:
                     _overlap_of_ray_with_voxels(
-                        support=support, 
-                        direction=direction, 
-                        x_bin_edges=x_bin_edges, 
-                        y_bin_edges=y_bin_edges, 
+                        support=support,
+                        direction=direction,
+                        x_bin_edges=x_bin_edges,
+                        y_bin_edges=y_bin_edges,
                         z_bin_edges=z_bin_edges,
                         overlaps=overlaps,
                         x_range=xp,
@@ -134,7 +134,7 @@ def _next_space_partitions(dim_range):
 
 
 def _ray_box_overlap(support, direction, xl, xu, yl, yu, zl, zu):
-    s = support 
+    s = support
     d = direction
     hits_l = []
     hits_u = []
@@ -190,7 +190,7 @@ def _ray_box_overlap(support, direction, xl, xu, yl, yu, zl, zu):
         return norm(hits_u[0] - hits_l[0])
 
     elif len(hits_l) == 0 and len(hits_u) == 3:
-        return np.sqrt((xu-xl)**2 + (yu-yl)**2 + (zu-zl)**2)    
+        return np.sqrt((xu-xl)**2 + (yu-yl)**2 + (zu-zl)**2)
 
     else:
         return 0.0

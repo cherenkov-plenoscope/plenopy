@@ -13,7 +13,7 @@ class PlotLightFieldGeometry(object):
         """
         Parameters
         ----------
-        light_field_geometry    The light_field_geometry of the Atmospheric 
+        light_field_geometry    The light_field_geometry of the Atmospheric
                                 Cherenkov Plenoscope (ACP).
 
         out_dir                 The output directory to save the figures in.
@@ -209,22 +209,22 @@ class PlotLightFieldGeometry(object):
 
         jobs.append({'target': self.save_sensor_plane_overview, 'args': [self.lfg.efficiency, 'efficiency', '1']})
 
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [self.lfg.x_mean, 'x_mean', 'm']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [self.lfg.x_std, 'x_stddev', 'm']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [self.lfg.y_mean, 'y_mean', 'm']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [self.lfg.y_std, 'y_stddev', 'm']})
 
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [np.rad2deg(self.lfg.cx_mean), 'cx_mean', 'deg']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [np.rad2deg(self.lfg.cx_std), 'cx_stddev', 'deg']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [np.rad2deg(self.lfg.cy_mean), 'cy_mean', 'deg']})
-        jobs.append({'target': self.save_sensor_plane_overview, 
+        jobs.append({'target': self.save_sensor_plane_overview,
             'args': [np.rad2deg(self.lfg.cy_std), 'cy_stddev', 'deg']})
 
         processes = []

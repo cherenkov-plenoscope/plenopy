@@ -63,7 +63,7 @@ def ramp_kernel_in_frequency_space(x_num, y_num, z_num):
     for z in range(ramp.shape[2]):
         for x in range(ramp.shape[0]):
             ramp[x,:,z]+=yw
-    
+
     ramp = ramp/ramp.max()
     return ramp
 

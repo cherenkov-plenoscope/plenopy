@@ -11,10 +11,10 @@ from ..plot.images2video import images2video
 
 def save_slice_stack(
     intensity_volume,
-    event_info_repr, 
+    event_info_repr,
     xy_extent,
     z_bin_centers,
-    output_path, 
+    output_path,
     image_prefix='slice_',
     intensity_volume_2=None,
     xlabel='x/m',
@@ -23,10 +23,10 @@ def save_slice_stack(
 ):
     fig_size = FigureSize(dpi=200)
     fig = plt.figure(
-        figsize=(fig_size.width, fig_size.hight), 
+        figsize=(fig_size.width, fig_size.hight),
         dpi=fig_size.dpi
     )
-    gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3]) 
+    gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3])
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])
 
@@ -62,7 +62,7 @@ def save_slice_stack(
 
         add2ax_image(
             ax=ax_histogram,
-            xy_extent=xy_extent, 
+            xy_extent=xy_extent,
             image=vol_I_1[:,:,z_slice],
             I_vol_min1=I_vol_min1,
             I_vol_max1=I_vol_max1,
@@ -82,7 +82,7 @@ def save_slice_stack(
             os.path.join(
                 output_path,
                 image_prefix+str(z_slice).zfill(6)+".jpg"
-            ), 
+            ),
             dpi=fig_size.dpi
         )
 
@@ -94,19 +94,19 @@ def save_slice_stack(
 def add2ax_image(
     ax,
     image,
-    I_vol_min1=None, 
+    I_vol_min1=None,
     I_vol_max1=None,
     image_2=None,
-    I_vol_min2=None, 
+    I_vol_min2=None,
     I_vol_max2=None,
     xy_extent=[-500,500,-500,500],
     cmap='viridis'
 ):
     if image_2 is None:
         img = ax.imshow(
-            image, 
-            cmap=cmap, 
-            extent=xy_extent, 
+            image,
+            cmap=cmap,
+            extent=xy_extent,
             interpolation='None'
         )
         img.set_clim(I_vol_min1, I_vol_max1)
@@ -115,21 +115,21 @@ def add2ax_image(
         plt.colorbar(img, cax=cax)
     else:
         rgb_img1 = matrix_2_rgb_image(
-            image, 
+            image,
             color_channel=1,
             I_vol_min1=I_vol_min1,
             I_vol_max1=I_vol_max1
-        ) 
+        )
         rgb_img2 = matrix_2_rgb_image(
-            image_2, 
+            image_2,
             color_channel=0,
             I_vol_min1=I_vol_min2,
             I_vol_max1=I_vol_max2
-        ) 
+        )
         rgb_image = rgb_img1 + rgb_img2
         img = ax.imshow(
-            rgb_image, 
-            extent=xy_extent, 
+            rgb_image,
+            extent=xy_extent,
             interpolation='None'
         )
 
@@ -137,7 +137,7 @@ def add2ax_image(
 def matrix_2_rgb_image(
     matrix,
     color_channel=0,
-    I_vol_min1=None, 
+    I_vol_min1=None,
     I_vol_max1=None
 ):
     if I_vol_min1 is None:
@@ -154,8 +154,8 @@ def save_slice_video(
     event_info_repr,
     xy_extent,
     z_bin_centers,
-    binning, 
-    intensity_volume, 
+    binning,
+    intensity_volume,
     output_path,
     fps=25,
     intensity_volume_2=None,

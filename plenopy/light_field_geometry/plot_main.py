@@ -1,5 +1,5 @@
 '''
-Save plots of a plenoscope light field calibration. 
+Save plots of a plenoscope light field calibration.
 When the output_dir is not set, a plot folder is created in the input
 calibration folder.
 
@@ -28,7 +28,7 @@ def main():
 
         lfg = LightFieldGeometry(path=arguments['--input'])
         lfg_plotter = PlotLightFieldGeometry(
-            light_field_geometry=lfg, 
+            light_field_geometry=lfg,
             out_dir=output_dir)
         lfg_plotter.save()
 
