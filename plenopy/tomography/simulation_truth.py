@@ -36,9 +36,9 @@ def histogram_photon_bunches(
             binning.xy_bin_edges,
             binning.xy_bin_edges,
             binning.z_bin_edges
-            ),
-            weights=photon_bunches.probability_to_reach_observation_level[ep['valid_acceptence']]
-        )
+        ),
+        weights=photon_bunches.probability_to_reach_observation_level[ep['valid_acceptence']]
+    )
 
     return hist[0]
 
