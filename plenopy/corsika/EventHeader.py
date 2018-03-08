@@ -18,8 +18,8 @@ class EventHeader(object):
         HeaderRepresentation.assert_marker_of_header_is(self.raw, 'EVTH')
 
         self.number = int(self.raw[2 - 1])
-        self.primary_particle_id  = int(self.raw[3 - 1])
-        self.primary_particle  = primary_particle_id2str(self.primary_particle_id)
+        self.primary_particle_id = int(self.raw[3 - 1])
+        self.primary_particle = primary_particle_id2str(self.primary_particle_id)
         self.total_energy_GeV = self.raw[4 - 1]
 
     def __repr__(self):
