@@ -44,7 +44,7 @@ class Reconstruction(object):
                 number_xy_bins=96,
                 z_min=15.0*f,
                 z_max=165.0*f,
-                xy_diameter= 4.5*D,
+                xy_diameter=4.5*D,
             )
         else:
            self.binning = binning
