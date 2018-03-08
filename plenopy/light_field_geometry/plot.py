@@ -17,7 +17,7 @@ def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
 
     color_array         1D array of strings for marker colors
     '''
-    if bin_edges == None:
+    if bin_edges is None:
         number_entires = [vals.shape[0] for vals in vals_array]
         minima = [vals.min() for vals in vals_array]
         maxima = [vals.max() for vals in vals_array]
@@ -27,7 +27,7 @@ def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
     for i, vals in enumerate(vals_array):
         bins, bin_esdges = np.histogram(vals, bins=bin_edges)
         bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])
-        if color_array == None:
+        if color_array is None:
             color = None
         else:
             color = color_array[i]
@@ -35,7 +35,7 @@ def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
 
 
 def symmetric_hist(vals, ax, nbins=None):
-    if nbins == None:
+    if nbins is None:
         nbins = int(np.floor(np.sqrt(vals.shape[0])))
     bins, bin_esdges = np.histogram(vals, bins=nbins)
     bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])

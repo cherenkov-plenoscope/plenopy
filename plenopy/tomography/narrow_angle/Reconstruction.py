@@ -37,7 +37,7 @@ class Reconstruction(object):
         f = event.light_field.expected_focal_length_of_imaging_system
         D = 2.0*event.light_field.expected_aperture_radius_of_imaging_system
 
-        if binning == None:
+        if binning is None:
             self.binning = Binning(
                 number_z_bins=96,
                 number_xy_bins=96,

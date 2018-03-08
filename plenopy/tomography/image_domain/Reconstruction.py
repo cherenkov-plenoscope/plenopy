@@ -20,7 +20,7 @@ memory = Memory(cachedir=cachedir, verbose=0)
 
 class Reconstruction(object):
     def __init__(self, event, dof_binning=None, apply_frequency_filter=False):
-        if dof_binning == None:
+        if dof_binning is None:
             focal_length = event.light_field.expected_focal_length_of_imaging_system
             self.binning = DepthOfFieldBinning(
                 cx_min=1.1*event.light_field.cx_mean.min(),
