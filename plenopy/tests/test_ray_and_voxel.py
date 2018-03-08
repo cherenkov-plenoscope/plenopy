@@ -88,7 +88,6 @@ def test_ray_and_single_voxel_overlap():
             assert ol == 2.0
 
 
-
 def test_overlap_single_box_edge_cases():
     for func in single_voxel_overlap:
         # along X-axis
@@ -133,7 +132,6 @@ def test_overlap_single_box_edge_cases():
             zl=-1, zu=1
         )
         assert ol == 0.0
-
 
         # along Y-axis
         # ------------
@@ -256,10 +254,8 @@ def test_overlap_single_box_diagonal_rays():
         assert ol > 0.0
 
 
-
 def test_overlap_single_box_various_rays():
     for func in single_voxel_overlap:
-
         max_diagonal = np.linalg.norm(np.array([2, 2, 2]))
         for xs in np.linspace(-.5, .5, 3):
             for ys in np.linspace(-.5, .5, 3):
@@ -328,7 +324,6 @@ def test_bin_index_space_partitioning():
     assert s[0][1] == 63
 
 
-
 def test_overlap_in_octtree_space_edge_cases():
     for func in overlap_of_ray_with_voxels:
 
@@ -354,7 +349,6 @@ def test_overlap_in_octtree_space_edge_cases():
         assert ol['overlap'][0] == 1.0
         assert ol['overlap'][1] == 1.0
 
-
         # valid 1st x-bin
         # ---------------
         ol = func(
@@ -376,7 +370,6 @@ def test_overlap_in_octtree_space_edge_cases():
         assert ol['z'][1] == 1
         assert ol['overlap'][0] == 1.0
         assert ol['overlap'][1] == 1.0
-
 
         # x-center
         # --------

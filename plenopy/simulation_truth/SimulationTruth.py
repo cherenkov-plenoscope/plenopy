@@ -7,7 +7,6 @@ class SimulationTruth(object):
     """
     SimulationTruth
     """
-
     def __init__(self, event, air_shower_photon_bunches=None, detector=None):
         self.event = event
         self.air_shower_photon_bunches = air_shower_photon_bunches

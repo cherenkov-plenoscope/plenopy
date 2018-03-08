@@ -111,7 +111,6 @@ class DepthOfFieldBinning(object):
         )
         return np.array([x_flat, y_flat, b_flat]).T
 
-
     def voxels_within_field_of_view(self, radius=1.0):
         voxel_centers = self.xyb_voxel_positions()
         voxel_dists_to_optical_axis = np.sqrt(

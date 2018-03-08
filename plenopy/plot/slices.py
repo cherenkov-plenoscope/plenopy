@@ -31,7 +31,6 @@ def save_slice_stack(
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])
 
-
     vol_I_1 = intensity_volume.copy()
     if sqrt_intensity:
         vol_I_1 = np.sqrt(vol_I_1)

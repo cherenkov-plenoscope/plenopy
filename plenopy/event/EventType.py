@@ -31,7 +31,6 @@ class EventType(object):
         else:
             self.trigger_type = 'unknown: '+str(raw[3-1])
 
-
     def __repr__(self):
         out = 'EventType('
         out += str(self.type) + ', Trigger: ' + str(self.trigger_type) + ')'

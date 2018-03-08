@@ -19,7 +19,6 @@ memory = Memory(cachedir=cachedir, verbose=0)
 
 
 class Reconstruction(object):
-
     def __init__(self, event, dof_binning=None, apply_frequency_filter=False):
         if dof_binning == None:
             focal_length = event.light_field.expected_focal_length_of_imaging_system
@@ -53,7 +52,6 @@ class Reconstruction(object):
         self.rec_vol_I = np.zeros(self.binning.bin_num, dtype=np.float32)
         self.iteration = 0
 
-
         self.lixel_integral = self.psf.sum(axis=0).T  # Total length of ray
         self.voxel_integral = self.psf.sum(axis=1)  # Total distance of all rays in this voxel
         self.voxel_cross_psf = self.psf.dot(self.lixel_integral)  # The sum of the length of all rays hiting this voxel weighted with the overlap of the ray and this voxel
@@ -73,7 +71,6 @@ class Reconstruction(object):
                 z_num=self.binning.b_img_num,
             )
 
-
     def reconstructed_depth_of_field_intesities(self):
         return self.rec_vol_I.reshape(
             (
@@ -83,7 +80,6 @@ class Reconstruction(object):
             ),
             order='C'
         )
-
 
     def one_more_iteration(self):
         rec_vol_I_n = update(
@@ -106,7 +102,6 @@ class Reconstruction(object):
 
         self.iteration += 1
 
-
     def apply_high_pass_filter(self):
         rec_vol_I_3d = self.reconstructed_depth_of_field_intesities()
         rec_vol_I_3d = frequency_filter(
@@ -117,7 +112,6 @@ class Reconstruction(object):
             self.binning.bin_num,
             order='C'
         )
-
 
     def simulation_truth_depth_of_field_intesities(self):
         photon_bunches = self.event.simulation_truth.air_shower_photon_bunches

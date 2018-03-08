@@ -104,6 +104,5 @@ def classic_view(
             )
             ax_image.add_artist(fov_limit)
 
-
     plt.savefig(output_path, dpi=dpi)
     return fig

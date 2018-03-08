@@ -159,7 +159,6 @@ class LightFieldGeometry(object):
         self.time_delay_mean = ls[:, 10].copy()
         self.time_delay_std = ls[:, 11].copy()
 
-
     def _read_light_field_sensor_geometry_header(self, path):
         gh = read_float32_header(path)
         assert_marker_of_header_is(gh, 'PLGH')
@@ -174,7 +173,6 @@ class LightFieldGeometry(object):
 
         self.expected_focal_length_of_imaging_system = gh[23 - 1]
         self.expected_aperture_radius_of_imaging_system = gh[24 - 1]
-
 
     def _read_lixel_positions(self, path):
         lp = np.fromfile(path, dtype=np.float32)

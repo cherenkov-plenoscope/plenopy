@@ -70,7 +70,6 @@ class LightField(object):
 
         return imgs
 
-
     def __repr__(self):
         out = 'LightField('
         out += str(self.number_lixel) + ' lixel, '

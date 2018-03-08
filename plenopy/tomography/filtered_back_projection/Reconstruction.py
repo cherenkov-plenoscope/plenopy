@@ -84,7 +84,6 @@ class Reconstruction(object):
         i = self.intensity_volume.flatten()
         return np.hstack((xyz, i.reshape(i.shape[0], 1)))
 
-
     @classmethod
     def from_plenoscope_event(cls, event, valid_lixels, binning):
         # intensity_threshold = 1

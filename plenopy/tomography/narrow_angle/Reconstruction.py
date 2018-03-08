@@ -26,7 +26,6 @@ from .deconvolution import make_cached_tomographic_system_matrix
 
 
 class Reconstruction(object):
-
     def __init__(
         self,
         event,
@@ -93,7 +92,6 @@ class Reconstruction(object):
             (self.valid_voxel.shape[0],)
         )
 
-
     def one_more_iteration(self):
         rec_vol_I_n = update(
             vol_I=self.rec_vol_I.copy(),
@@ -111,7 +109,6 @@ class Reconstruction(object):
 
         self.iteration += 1
 
-
     def reconstructed_volume_intesities(self, filter_sigma=1.0):
         rec_vol_3D = self.rec_vol_I.reshape(
             (
@@ -127,7 +124,6 @@ class Reconstruction(object):
             vol_I=rec_vol_3D,
             filter_sigma=filter_sigma
         )
-
 
     def simulation_truth_volume_intesities(
         self,
@@ -147,7 +143,6 @@ class Reconstruction(object):
             limited_fov_radius=limited_fov_radius,
         )
 
-
     def low_pass_filter(self, vol_I, filter_sigma=0.5):
         return gaussian_filter(
             input=vol_I,
@@ -157,7 +152,6 @@ class Reconstruction(object):
             cval=0.0,
             truncate=2*filter_sigma
         )
-
 
     def save_imgae_slice_stack(
         self,
@@ -188,7 +182,6 @@ class Reconstruction(object):
             sqrt_intensity=sqrt_intensity,
         )
 
-
     def show_xyzI(
         self,
         rec_threshold=0.0,
@@ -216,16 +209,13 @@ class Reconstruction(object):
         )
         plt.show()
 
-
     def _reconstructed_intesity_vs_obj_dist(self):
         rec_vol_I = self.reconstructed_volume_intesities()
         return rec_vol_I.sum(axis=0).sum(axis=0)
 
-
     def _simulated_intesity_vs_obj_dist(self):
         sim_vol_I = self.simulation_truth_volume_intesities()
         return sim_vol_I.sum(axis=0).sum(axis=0)
-
 
     def _show_rec_vs_sim_intesity_vs_obj_dist(self):
         rec_vol_I = self._reconstructed_intesity_vs_obj_dist()

@@ -46,8 +46,6 @@ class ImageRays(object):
         self.direction[:, 0] /= no
         self.direction[:, 1] /= no
         self.direction[:, 2] /= no
-
-
         self.pixel_pos_tree = light_field_geometry.pixel_pos_tree
 
     def cx_cy_in_object_distance(self, object_distance):
@@ -70,7 +68,6 @@ class ImageRays(object):
         cx = np.arctan(ix/image_distance)
         cy = np.arctan(iy/image_distance)
         return cx, cy
-
 
     def pixel_ids_of_lixels_in_object_distance(self, object_distance):
         cx, cy = self.cx_cy_in_object_distance(object_distance)

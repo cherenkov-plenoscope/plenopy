@@ -33,13 +33,11 @@ class Detector(object):
             self.stream.append(
                 np.array(pulses_in_lixel, dtype=np.int32))
 
-
     def number_air_shower_pulses(self):
         counter = 0
         for lixel in self.stream:
             counter += (lixel >= 0).sum()
         return counter
-
 
     def __repr__(self):
         out = 'SimulationTruthDetector('

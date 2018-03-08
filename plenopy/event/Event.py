@@ -45,7 +45,6 @@ class Event(object):
                                     respect to the plenoscope's imaging system
                                     in the moment this event was recorded.
     """
-
     def __init__(self, path, light_field_geometry):
         """
         Parameter
@@ -67,7 +66,6 @@ class Event(object):
             self._read_simulation_truth()
         self.number = int(os.path.basename(self._path))
 
-
     def _read_event_header(self):
         header_path = os.path.join(self._path, 'event_header.bin')
         raw = read_float32_header(header_path)
@@ -76,7 +74,6 @@ class Event(object):
         self.sensor_plane2imaging_system = PlenoscopeGeometry(raw)
         self.type = event_type.type
         self.trigger_type = event_type.trigger_type
-
 
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
@@ -103,14 +100,12 @@ class Event(object):
                 air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
                 detector=simulation_truth_detector)
 
-
     def __repr__(self):
         out = "Event("
         out += "number " + str(self.number) + ", "
         out += "type '" + self.type
         out += "')"
         return out
-
 
     def _plot_suptitle(self):
         if self.type == "SIMULATION":
@@ -124,7 +119,6 @@ class Event(object):
             return 'Observation'
         else:
             return 'unknown event type: '+str(self.type)
-
 
     def show(self):
         """
