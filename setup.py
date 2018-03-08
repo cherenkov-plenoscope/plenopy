@@ -5,6 +5,7 @@ from Cython.Distutils import build_ext
 import numpy
 import os
 
+
 def package_files(directory):
     paths = []
     for (path, directories, filenames) in os.walk(directory):
@@ -14,7 +15,7 @@ def package_files(directory):
 
 setup_py_path = os.path.realpath(__file__)
 setup_py_dir = os.path.dirname(setup_py_path)
-extra_files = package_files(os.path.join(setup_py_dir,'plenopy','tests'))
+extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
 
 setup(
     name='plenopy',
@@ -48,11 +49,12 @@ setup(
         'joblib',
     ],
     entry_points={'console_scripts': [
-        'plenopyPlotLightFieldGeometry = plenopy.light_field_geometry.plot_main:main',
+        'plenopyPlotLightFieldGeometry = ' +
+        'plenopy.light_field_geometry.plot_main:main',
     ]},
     zip_safe=False,
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = [
+    cmdclass={'build_ext': build_ext},
+    ext_modules=[
         Extension(
             "plenopy.tomography.ray_and_voxel.cython_overlap",
             sources=[
@@ -66,7 +68,7 @@ setup(
         Extension(
             "plenopy.photon_stream.cython_reader",
             sources=[
-                "plenopy/photon_stream/cython_reader.pyx", 
+                "plenopy/photon_stream/cython_reader.pyx",
                 "plenopy/photon_stream/reader.cpp"
             ],
             include_dirs=[numpy.get_include(), "plenopy"],
