@@ -1,3 +1,4 @@
+from .. import ray_and_voxel
 import numpy as np
 from joblib import Memory
 import os
@@ -5,8 +6,6 @@ import os
 cachedir = '/tmp/plenopy'
 os.makedirs(cachedir, exist_ok=True)
 memory = Memory(cachedir=cachedir, verbose=0)
-
-from .. import ray_and_voxel
 
 
 def update(
