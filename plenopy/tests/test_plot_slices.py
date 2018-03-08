@@ -58,4 +58,3 @@ def test_matrix_2_image_min_max():
     assert matrix2d[0,0] == image_bgr[0,0,color_channel]
     assert matrix2d[1,1] == image_bgr[1,1,color_channel]
     assert matrix2d[2,2] == image_bgr[2,2,color_channel]
-
