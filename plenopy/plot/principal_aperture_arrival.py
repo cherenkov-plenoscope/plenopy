@@ -51,7 +51,8 @@ def save_principal_aperture_arrival_stack(
 
     ax.set_xlim(-aperture_radius, aperture_radius)
     ax.set_ylim(-aperture_radius, aperture_radius)
-    ax.set_zlim(0,
+    ax.set_zlim(
+        0,
         c_vacuum*light_field.number_time_slices*light_field.time_slice_duration)
     ax.set_xlabel('X/m')
     ax.set_ylabel('Y/m')
