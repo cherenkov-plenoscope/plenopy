@@ -86,11 +86,11 @@ class Reconstruction(object):
 
     @classmethod
     def from_plenoscope_event(cls, event, valid_lixels, binning):
-        #intensity_threshold = 1
-        #valid_geom = event.light_field.valid_lixel.flatten()
-        #valid_intensity = event.light_field.intensity.flatten() >= intensity_threshold
-        #valid_arrival_time = (event.light_field.arrival_time.flatten() > 30e-9)*(event.light_field.arrival_time.flatten() < 40e-9)
-        #valid = valid_geom*valid_intensity*valid_arrival_time
+        # intensity_threshold = 1
+        # valid_geom = event.light_field.valid_lixel.flatten()
+        # valid_intensity = event.light_field.intensity.flatten() >= intensity_threshold
+        # valid_arrival_time = (event.light_field.arrival_time.flatten() > 30e-9)*(event.light_field.arrival_time.flatten() < 40e-9)
+        # valid = valid_geom*valid_intensity*valid_arrival_time
 
         rays = Rays(
             x=event.light_field.x_mean.flatten()[valid_lixels],

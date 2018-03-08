@@ -106,7 +106,7 @@ class LightFieldGeometry(object):
         self._calc_pixel_and_paxel_average_positions()
         self._init_lixel_polygons()
 
-        #self.valid_efficiency = self.efficiency > 0.10
+        # self.valid_efficiency = self.efficiency > 0.10
         self.valid_efficiency = self.most_efficient_lixels(0.95)
 
     def _calc_pixel_and_paxel_average_positions(self):

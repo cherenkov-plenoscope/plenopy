@@ -28,7 +28,7 @@ def images2video(image_path, output_path, frames_per_second=25):
                 '-f', 'image2',
                 '-i', image_path,
                 '-c:v', 'h264',
-                #'-s', '1920x1080', # sample images down to FullHD 1080p
+                # '-s', '1920x1080', # sample images down to FullHD 1080p
                 '-crf', '23',  # high quality 0 (best) to 53 (worst)
                 '-crf_max', '25',  # worst quality allowed
                 outpath+'.mp4'],

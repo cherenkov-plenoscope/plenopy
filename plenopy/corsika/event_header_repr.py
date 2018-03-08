@@ -18,7 +18,7 @@ def event_header_repr(h):
     out += '  3 ' + 'particle id ' + str(int(h[3 - 1])) + '\n'
     out += '  4 ' + 'total energy ' + str(h[4 - 1]) + ' GeV\n'
     out += '  5 ' + 'starting altitude ' + str(h[5 - 1]) + ' g/cm^2\n'
-    #out+= '  6 '+'number of first target if fixed'+str(h[6-1])+'\n'
+    # out+= '  6 '+'number of first target if fixed'+str(h[6-1])+'\n'
     out += '  7 ' + \
         'z coordinate (height) of first interaction ' + str(h[7 - 1]) + ' cm\n'
     out += ' 11 ' + 'zenith angle Theta ' + \

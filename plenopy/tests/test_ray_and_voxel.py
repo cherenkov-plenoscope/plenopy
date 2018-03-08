@@ -267,7 +267,6 @@ def test_overlap_single_box_various_rays():
                         for yd in np.linspace(-1., 1., 3):
                             for zd in np.linspace(-1., 1., 3):
                                 if xd != 0 or yd != 0 or zd != 0:
-                                    #print('----------------------------------')
                                     ol = func(
                                         support=np.array([xs, ys, zs]),
                                         direction=np.array([xd, yd, zd]),
@@ -275,7 +274,6 @@ def test_overlap_single_box_various_rays():
                                         yl=-1, yu=1,
                                         zl=-1, zu=1
                                     )
-                                    #print('[',xs,ys,zs,'][',xd,yd,zd,']', ol)
                                     assert ol > 0.0 and ol <= max_diagonal
 
 
