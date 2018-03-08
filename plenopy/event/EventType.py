@@ -13,22 +13,22 @@ class EventType(object):
         HeaderRepresentation.assert_shape_is_valid(raw)
 
         # Event Type
-        if raw[  2-1] == 0.0:
+        if raw[2-1] == 0.0:
             self.type = 'OBSERVATION'
-        elif raw[  2-1] == 1.0:
+        elif raw[2-1] == 1.0:
             self.type = 'SIMULATION'
         else:
-            self.type = 'unknown: '+str(raw[  2-1])
+            self.type = 'unknown: '+str(raw[2-1])
 
         # Trigger Type
-        if raw[  3-1] == 0.0:
+        if raw[3-1] == 0.0:
             self.trigger_type = 'SELF_TRIGGER'
-        elif raw[  3-1] == 1.0:
+        elif raw[3-1] == 1.0:
             self.trigger_type = 'EXTERNAL_RANDOM_TRIGGER'
-        elif raw[  3-1] == 2.0:
+        elif raw[3-1] == 2.0:
             self.trigger_type = 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'
         else:
-            self.trigger_type = 'unknown: '+str(raw[  3-1])
+            self.trigger_type = 'unknown: '+str(raw[3-1])
 
 
     def __repr__(self):

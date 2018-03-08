@@ -48,13 +48,13 @@ class PlenoscopeGeometry(object):
         self.sensor_plane2imaging_system = self._read(raw)
         self.sensor_plane_distance = self.sensor_plane2imaging_system[2, 3]
 
-        self.expected_imaging_system_focal_length = raw[ 23-1]
-        self.expected_imaging_system_max_aperture_radius = raw[ 24-1]
+        self.expected_imaging_system_focal_length = raw[23-1]
+        self.expected_imaging_system_max_aperture_radius = raw[24-1]
 
-        self.max_FoV_diameter = raw[ 25-1]
-        self.pixel_FoV_hex_flat2flat = raw[ 26-1]
-        self.number_of_paxel_on_pixel_diagonal = raw[ 27-1]
-        self.housing_overhead = raw[ 28-1]
+        self.max_FoV_diameter = raw[25-1]
+        self.pixel_FoV_hex_flat2flat = raw[26-1]
+        self.number_of_paxel_on_pixel_diagonal = raw[27-1]
+        self.housing_overhead = raw[28-1]
 
     def _read(self, raw):
         return np.array([
