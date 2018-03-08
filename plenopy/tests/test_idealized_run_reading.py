@@ -11,7 +11,7 @@ def test_open_idealied_run():
     run = pl.idealized_plenoscope.Run(run_path)
     assert run.number_events == 5
     assert run_path in run.path
-    assert np.array_equal(run.event_numbers, np.array([1,2,3,4,5]))
+    assert np.array_equal(run.event_numbers, np.array([1, 2, 3, 4, 5]))
 
 
 def test_open_idealized_event():

@@ -52,7 +52,7 @@ def baselines_in_voxels(
             light_field_geometry.number_pixel
         )
 
-        paxel_system_matrix_integral = system_matrix[:,rays_in_this_paxel].sum(
+        paxel_system_matrix_integral = system_matrix[:, rays_in_this_paxel].sum(
             axis=1
         )
         paxel_system_matrix_integral = np.array(

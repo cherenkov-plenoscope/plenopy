@@ -48,7 +48,7 @@ class LightField(object):
             dtype=np.uint16)
 
         for t in range(self.number_time_slices):
-            imgs[t,:] = self.sequence[t,:].reshape(
+            imgs[t, :] = self.sequence[t, :].reshape(
                 self.number_pixel,
                 self.number_paxel).sum(axis=axis)
 
@@ -66,7 +66,7 @@ class LightField(object):
             dtype=np.uint16)
 
         for lix, lixel2pixel in enumerate(lixels2pixel):
-            imgs[:,lixel2pixel] += self.sequence[:,lix]
+            imgs[:, lixel2pixel] += self.sequence[:, lix]
 
         return imgs
 

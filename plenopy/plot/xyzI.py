@@ -18,10 +18,10 @@ def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    add2ax_xyzI(ax, xyzIs, color='b', steps=steps, alpha_max=alpha_max,ball_size=ball_size)
+    add2ax_xyzI(ax, xyzIs, color='b', steps=steps, alpha_max=alpha_max, ball_size=ball_size)
 
     if xyzIs2 is not None:
-        add2ax_xyzI(ax, xyzIs2, color='r', steps=steps, alpha_max=alpha_max,ball_size=ball_size)
+        add2ax_xyzI(ax, xyzIs2, color='r', steps=steps, alpha_max=alpha_max, ball_size=ball_size)
 
 
 def hist3D_to_xyzI(hist, binning, threshold=0):
@@ -45,12 +45,12 @@ def hist3D_to_xyzI(hist, binning, threshold=0):
     for x in range(hist.shape[0]):
         for y in range(hist.shape[1]):
             for z in range(hist.shape[2]):
-                if hist[x,y,z] > threshold:
+                if hist[x, y, z] > threshold:
                     xyzi.append(np.array([
                         binning.xy_bin_centers[x],
                         binning.xy_bin_centers[y],
                         binning.z_bin_centers[z],
-                        hist[x,y,z]]))
+                        hist[x, y, z]]))
     xyzi = np.array(xyzi)
     return xyzi
 
@@ -59,7 +59,7 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
     if xyzIs.shape[0] == 0:
         return
 
-    intensities = xyzIs[:,3]
+    intensities = xyzIs[:, 3]
     xyzIs_sorted = xyzIs[np.argsort(intensities)]
     length = xyzIs_sorted.shape[0]
 
@@ -75,7 +75,7 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
     for i in range(steps):
         start = starts[i]
         end = ends[i]
-        mean_chunk_intensities.append(xyzIs_sorted[start:end,3].mean())
+        mean_chunk_intensities.append(xyzIs_sorted[start:end, 3].mean())
     mean_chunk_intensities = np.array(mean_chunk_intensities)
 
     max_chunk_intensities = mean_chunk_intensities.max()
@@ -88,9 +88,9 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
         relative_I = mean_I/max_I
 
         ax.scatter(
-            xyzIs_sorted[start:end,0],
-            xyzIs_sorted[start:end,1],
-            xyzIs_sorted[start:end,2],
+            xyzIs_sorted[start:end, 0],
+            xyzIs_sorted[start:end, 1],
+            xyzIs_sorted[start:end, 2],
             s=ball_size,
             depthshade=False,
             alpha=relative_I*alpha_max,

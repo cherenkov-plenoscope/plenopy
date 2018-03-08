@@ -115,7 +115,7 @@ class DepthOfFieldBinning(object):
     def voxels_within_field_of_view(self, radius=1.0):
         voxel_centers = self.xyb_voxel_positions()
         voxel_dists_to_optical_axis = np.sqrt(
-            voxel_centers[:,0]**2 + voxel_centers[:,1]**2
+            voxel_centers[:, 0]**2 + voxel_centers[:, 1]**2
         )
 
         max_img_offset_xy = np.array([

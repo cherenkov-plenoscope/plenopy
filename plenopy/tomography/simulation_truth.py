@@ -72,27 +72,27 @@ def emission_positions_of_photon_bunches(
         photon_bunches.cy,
         np.sqrt(1.0 - photon_bunches.cx**2 - photon_bunches.cy**2)]).T
 
-    a = (photon_bunches.emission_height - supports[:,2])/directions[:,2]
+    a = (photon_bunches.emission_height - supports[:, 2])/directions[:, 2]
 
     emission_positions = np.array([
-            supports[:,0] - a*directions[:,0],
-            supports[:,1] - a*directions[:,1],
+            supports[:, 0] - a*directions[:, 0],
+            supports[:, 1] - a*directions[:, 1],
             photon_bunches.emission_height
         ]).T
 
     # transform to plenoscope frame
-    emission_positions[:,2] = emission_positions[:,2] - observation_level
+    emission_positions[:, 2] = emission_positions[:, 2] - observation_level
 
 
     valid_aperture = np.ones(supports.shape[0], dtype=np.bool)
     valid_fov = np.ones(supports.shape[0], dtype=np.bool)
 
     if limited_aperture_radius is not None:
-        R_aperture = np.sqrt(supports[:,0]**2 + supports[:,1]**2)
+        R_aperture = np.sqrt(supports[:, 0]**2 + supports[:, 1]**2)
         valid_aperture = R_aperture <= limited_aperture_radius
 
     if limited_fov_radius is not None:
-        R_fov = np.sqrt(directions[:,0]**2 + directions[:,1]**2)
+        R_fov = np.sqrt(directions[:, 0]**2 + directions[:, 1]**2)
         valid_fov = R_fov <= limited_fov_radius
 
     valid_acceptence = valid_aperture*valid_fov

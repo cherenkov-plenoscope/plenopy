@@ -126,16 +126,16 @@ class Reconstruction(object):
         )
 
         true_emission_positions_image_domain = transform.xyz2cxcyb(
-            true_emission_positions[:,0],
-            true_emission_positions[:,1],
-            true_emission_positions[:,2],
+            true_emission_positions[:, 0],
+            true_emission_positions[:, 1],
+            true_emission_positions[:, 2],
             self.binning.focal_length
         ).T
         tepid = true_emission_positions_image_domain
 
         # directions to positions on image screen
-        tepid[:,0] = -self.binning.focal_length*np.tan(tepid[:,0])
-        tepid[:,1] = -self.binning.focal_length*np.tan(tepid[:,1])
+        tepid[:, 0] = -self.binning.focal_length*np.tan(tepid[:, 0])
+        tepid[:, 1] = -self.binning.focal_length*np.tan(tepid[:, 1])
 
         hist = np.histogramdd(
             tepid,

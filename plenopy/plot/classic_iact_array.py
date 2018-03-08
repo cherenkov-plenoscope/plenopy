@@ -81,7 +81,7 @@ def classic_view(
 
         patch_collection = image.plot.add2ax(
             ax=ax_image,
-            I=array_images[:,i],
+            I=array_images[:, i],
             px=np.rad2deg(event.light_field.pixel_pos_cx),
             py=np.rad2deg(event.light_field.pixel_pos_cy),
             colormap=colormap,

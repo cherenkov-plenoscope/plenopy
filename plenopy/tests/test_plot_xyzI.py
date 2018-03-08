@@ -5,7 +5,7 @@ import plenopy as pl
 def test_array_chnunking():
     chunking = pl.plot.xyzI._start_and_end_slices_for_1D_array_chunking
 
-    (s,e) = chunking(number_of_chunks=10, array_length=10)
+    (s, e) = chunking(number_of_chunks=10, array_length=10)
     assert len(s) == 10
     assert len(e) == 10
     for i in range(len(s)):
@@ -13,7 +13,7 @@ def test_array_chnunking():
     assert s[0] == 0
     assert e[-1] == 9
 
-    (s,e) = chunking(number_of_chunks=10, array_length=100)
+    (s, e) = chunking(number_of_chunks=10, array_length=100)
     assert len(s) == 10
     assert len(e) == 10
     for i in range(len(s)):

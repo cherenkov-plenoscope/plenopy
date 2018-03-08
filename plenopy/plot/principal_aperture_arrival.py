@@ -37,7 +37,7 @@ def save_principal_aperture_arrival_stack(
 
     for t in tqdm.tqdm(range(light_field.number_time_slices)):
         for i in range(light_field.number_lixel):
-            intensity = light_field.sequence[t,i]
+            intensity = light_field.sequence[t, i]
             if intensity > threshold:
                 distance = c_vacuum*t*light_field.time_slice_duration
                 pos = rays.support[i] + rays.direction[i]*distance

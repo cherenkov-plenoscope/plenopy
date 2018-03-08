@@ -124,7 +124,7 @@ def _overlap_of_ray_with_voxels(
 
 def _next_space_partitions(dim_range):
     if dim_range[1] - dim_range[0] <= 1:
-        return [[dim_range[0], dim_range[-1]],]
+        return [[dim_range[0], dim_range[-1]], ]
     else:
         cut = (dim_range[1] - dim_range[0])//2
         return [

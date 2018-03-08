@@ -142,21 +142,21 @@ class LightFieldGeometry(object):
         ls = np.fromfile(path, dtype=np.float32)
         ls = ls.reshape([ls.shape[0] // 12, 12])
 
-        self.efficiency = ls[:,0].copy()
-        self.efficiency_std = ls[:,1].copy()
+        self.efficiency = ls[:, 0].copy()
+        self.efficiency_std = ls[:, 1].copy()
 
-        self.cx_mean = ls[:,2].copy()
-        self.cx_std = ls[:,3].copy()
-        self.cy_mean = ls[:,4].copy()
-        self.cy_std = ls[:,5].copy()
+        self.cx_mean = ls[:, 2].copy()
+        self.cx_std = ls[:, 3].copy()
+        self.cy_mean = ls[:, 4].copy()
+        self.cy_std = ls[:, 5].copy()
 
-        self.x_mean = ls[:,6].copy()
-        self.x_std = ls[:,7].copy()
-        self.y_mean = ls[:,8].copy()
-        self.y_std = ls[:,9].copy()
+        self.x_mean = ls[:, 6].copy()
+        self.x_std = ls[:, 7].copy()
+        self.y_mean = ls[:, 8].copy()
+        self.y_std = ls[:, 9].copy()
 
-        self.time_delay_mean = ls[:,10].copy()
-        self.time_delay_std = ls[:,11].copy()
+        self.time_delay_mean = ls[:, 10].copy()
+        self.time_delay_std = ls[:, 11].copy()
 
 
     def _read_light_field_sensor_geometry_header(self, path):

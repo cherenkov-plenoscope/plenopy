@@ -18,18 +18,18 @@ def test_sequence_peak_detection_ones():
 
 def test_sequence_peak_detection_one_peak():
     seq = np.zeros(shape=(TIME_SLICES, CHANNELS))
-    seq[55,:] = np.ones(CHANNELS)
+    seq[55, :] = np.ones(CHANNELS)
     peak_slice = pl.light_field.sequence.time_slice_with_max_intensity(seq)
     assert peak_slice == 55
 
 
 def test_sequence_peak_detection_several_peaks():
     seq = np.zeros(shape=(TIME_SLICES, CHANNELS))
-    seq[12,:] = np.ones(CHANNELS)
-    seq[23,:] = np.ones(CHANNELS)
-    seq[55,:] = 2*np.ones(CHANNELS)
-    seq[60,:] = np.ones(CHANNELS)
-    seq[91,:] = np.ones(CHANNELS)
+    seq[12, :] = np.ones(CHANNELS)
+    seq[23, :] = np.ones(CHANNELS)
+    seq[55, :] = 2*np.ones(CHANNELS)
+    seq[60, :] = np.ones(CHANNELS)
+    seq[91, :] = np.ones(CHANNELS)
     peak_slice = pl.light_field.sequence.time_slice_with_max_intensity(seq)
     assert peak_slice == 55
 
@@ -54,11 +54,11 @@ def test_sequence_integration_zeros():
 
 def test_sequence_integration_several_distinct_peaks():
     seq = np.zeros(shape=(TIME_SLICES, CHANNELS))
-    seq[12,:] = np.ones(CHANNELS)
-    seq[23,:] = np.ones(CHANNELS)
-    seq[55,:] = 2*np.ones(CHANNELS)
-    seq[60,:] = np.ones(CHANNELS)
-    seq[91,:] = np.ones(CHANNELS)
+    seq[12, :] = np.ones(CHANNELS)
+    seq[23, :] = np.ones(CHANNELS)
+    seq[55, :] = 2*np.ones(CHANNELS)
+    seq[60, :] = np.ones(CHANNELS)
+    seq[91, :] = np.ones(CHANNELS)
     integral = pl.light_field.sequence.integrate_around_arrival_peak(seq)
     np.testing.assert_array_equal(
         integral['integral'],
@@ -68,13 +68,13 @@ def test_sequence_integration_several_distinct_peaks():
 
 def test_sequence_integration_several_close_peaks():
     seq = np.zeros(shape=(TIME_SLICES, CHANNELS))
-    seq[12,:] = np.ones(CHANNELS)
-    seq[23,:] = np.ones(CHANNELS)
-    seq[54,:] = 1*np.ones(CHANNELS)
-    seq[55,:] = 2*np.ones(CHANNELS)
-    seq[56,:] = 1*np.ones(CHANNELS)
-    seq[60,:] = np.ones(CHANNELS)
-    seq[91,:] = np.ones(CHANNELS)
+    seq[12, :] = np.ones(CHANNELS)
+    seq[23, :] = np.ones(CHANNELS)
+    seq[54, :] = 1*np.ones(CHANNELS)
+    seq[55, :] = 2*np.ones(CHANNELS)
+    seq[56, :] = 1*np.ones(CHANNELS)
+    seq[60, :] = np.ones(CHANNELS)
+    seq[91, :] = np.ones(CHANNELS)
     integral = pl.light_field.sequence.integrate_around_arrival_peak(seq)
     np.testing.assert_array_equal(
         integral['integral'],

@@ -81,7 +81,7 @@ class Reconstruction(object):
         """
         xyz = self.binning.flat_xyz_voxel_positions()
         i = self.intensity_volume.flatten()
-        return np.hstack((xyz, i.reshape(i.shape[0],1)))
+        return np.hstack((xyz, i.reshape(i.shape[0], 1)))
 
 
     @classmethod

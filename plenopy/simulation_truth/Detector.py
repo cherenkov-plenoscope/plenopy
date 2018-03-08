@@ -26,7 +26,7 @@ class Detector(object):
         i = 0
         for lixel in range(light_field.number_lixel):
             pulses_in_lixel = []
-            for pulse in range(light_field.sequence[:,lixel].sum()):
+            for pulse in range(light_field.sequence[:, lixel].sum()):
                 pulses_in_lixel.append(pulse_IDs[i])
                 i += 1
             self.stream.append(

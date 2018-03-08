@@ -13,9 +13,9 @@ def histogram(rays, binning, intensities=None):
     for idx_z, z in enumerate(binning.z_bin_centers):
 
         xys = rays.xy_intersections_in_object_distance(z)
-        hist[:,:,idx_z] = np.histogram2d(
-            xys[:,0],
-            xys[:,1],
+        hist[:, :, idx_z] = np.histogram2d(
+            xys[:, 0],
+            xys[:, 1],
             weights=intensities,
             bins=(binning.xy_bin_edges, binning.xy_bin_edges))[0]
 
@@ -25,7 +25,7 @@ def histogram(rays, binning, intensities=None):
 def max_intensity_vs_z(hist):
     max_intensity_on_z_slice = np.zeros(hist.shape[2])
     for idx_z in range(hist.shape[2]):
-        max_intensity_on_z_slice[idx_z] = np.max(hist[:,:,idx_z])
+        max_intensity_on_z_slice[idx_z] = np.max(hist[:, :, idx_z])
     return max_intensity_on_z_slice
 
 
@@ -34,8 +34,8 @@ def normalize_ray_histograms(hist_intensities, hist_rays):
     hist_nrom = np.zeros(shape=hist_intensities.shape)
 
     for z in range(hist_intensities.shape[2]):
-        hi = hist_intensities[:,:,z]
-        hist_nrom[:,:,z] = hi/(max_rays_vs_z[z])**(1/3)
+        hi = hist_intensities[:, :, z]
+        hist_nrom[:, :, z] = hi/(max_rays_vs_z[z])**(1/3)
     return hist_nrom
 
 
@@ -43,26 +43,26 @@ def ramp_kernel_in_frequency_space(x_num, y_num, z_num):
 
     ramp = np.zeros(shape=(x_num, y_num, z_num), dtype='float64')
 
-    xw = np.linspace(1,-1,x_num)
+    xw = np.linspace(1, -1, x_num)
     xw = np.abs(xw)
 
-    yw = np.linspace(1,-1,y_num)
+    yw = np.linspace(1, -1, y_num)
     yw = np.abs(yw)
 
-    zw = np.linspace(1,-1,z_num)
+    zw = np.linspace(1, -1, z_num)
     zw = np.abs(zw)
 
     for x in range(ramp.shape[0]):
         for y in range(ramp.shape[1]):
-            ramp[x,y,:] += zw
+            ramp[x, y, :] += zw
 
     for y in range(ramp.shape[1]):
         for z in range(ramp.shape[2]):
-            ramp[:,y,z] += xw
+            ramp[:, y, z] += xw
 
     for z in range(ramp.shape[2]):
         for x in range(ramp.shape[0]):
-            ramp[x,:,z] += yw
+            ramp[x, :, z] += yw
 
     ramp = ramp/ramp.max()
     return ramp

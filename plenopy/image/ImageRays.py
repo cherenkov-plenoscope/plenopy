@@ -43,9 +43,9 @@ class ImageRays(object):
 
         self.direction = sensor_plane_intersections - self.support
         no = np.linalg.norm(self.direction, axis=1)
-        self.direction[:,0] /= no
-        self.direction[:,1] /= no
-        self.direction[:,2] /= no
+        self.direction[:, 0] /= no
+        self.direction[:, 1] /= no
+        self.direction[:, 2] /= no
 
 
         self.pixel_pos_tree = light_field_geometry.pixel_pos_tree
@@ -64,8 +64,8 @@ class ImageRays(object):
 
         scale_factors = image_distance/self.direction[:, 2]
         pos = self.support + (scale_factors * self.direction.T).T
-        ix = pos[:,0]
-        iy = pos[:,1]
+        ix = pos[:, 0]
+        iy = pos[:, 1]
 
         cx = np.arctan(ix/image_distance)
         cy = np.arctan(iy/image_distance)
@@ -74,7 +74,7 @@ class ImageRays(object):
 
     def pixel_ids_of_lixels_in_object_distance(self, object_distance):
         cx, cy = self.cx_cy_in_object_distance(object_distance)
-        cxy = np.vstack((cx,cy)).T
+        cxy = np.vstack((cx, cy)).T
 
         number_nearest_neighbors = 1
 

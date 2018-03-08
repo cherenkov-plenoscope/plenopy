@@ -18,9 +18,9 @@ def test_binning_flat_voxel_center_positions():
     for x in range(binning.number_xy_bins):
         for y in range(binning.number_xy_bins):
             for z in range(binning.number_z_bins):
-                assert xyz_flat[i,0] == binning.xy_bin_centers[x]
-                assert xyz_flat[i,1] == binning.xy_bin_centers[y]
-                assert xyz_flat[i,2] == binning.z_bin_centers[z]
+                assert xyz_flat[i, 0] == binning.xy_bin_centers[x]
+                assert xyz_flat[i, 1] == binning.xy_bin_centers[y]
+                assert xyz_flat[i, 2] == binning.z_bin_centers[z]
                 i += 1
 
 """

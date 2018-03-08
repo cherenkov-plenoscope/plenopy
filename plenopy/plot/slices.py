@@ -58,12 +58,12 @@ def save_slice_stack(
 
         image_2 = None
         if intensity_volume_2 is not None:
-            image_2 = vol_I_2[:,:,z_slice]
+            image_2 = vol_I_2[:, :, z_slice]
 
         add2ax_image(
             ax=ax_histogram,
             xy_extent=xy_extent,
-            image=vol_I_1[:,:,z_slice],
+            image=vol_I_1[:, :, z_slice],
             I_vol_min1=I_vol_min1,
             I_vol_max1=I_vol_max1,
             image_2=image_2,
@@ -99,7 +99,7 @@ def add2ax_image(
     image_2=None,
     I_vol_min2=None,
     I_vol_max2=None,
-    xy_extent=[-500,500,-500,500],
+    xy_extent=[-500, 500, -500, 500],
     cmap='viridis'
 ):
     if image_2 is None:
@@ -146,7 +146,7 @@ def matrix_2_rgb_image(
         I_vol_max1 = matrix.max()
     image = np.zeros(shape=(matrix.shape[0], matrix.shape[1], 3))
     inensity = (matrix - I_vol_min1)/(I_vol_max1 - I_vol_min1)
-    image[:,:,color_channel] = inensity
+    image[:, :, color_channel] = inensity
     return image
 
 
