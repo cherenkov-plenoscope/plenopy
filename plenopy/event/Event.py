@@ -101,7 +101,8 @@ class Event(object):
                 detector=simulation_truth_detector)
 
     def __repr__(self):
-        out = "Event("
+        out = self.__class__.__name__
+        out += "("
         out += "number " + str(self.number) + ", "
         out += "type '" + self.type
         out += "')"

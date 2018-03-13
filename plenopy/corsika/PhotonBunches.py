@@ -48,8 +48,9 @@ class PhotonBunches(object):
         self.wavelength = raw[:, 7]/1e9  # in meters
 
     def __repr__(self):
-        out = 'AirShowerPhotonBunches( '
+        out = self.__class__.__name__
+        out += '('
         out += str(self.x.shape[0])+' bunches, '
         out += str(self.probability_to_reach_observation_level.sum())+' photons'
-        out += ' )'
+        out += ')'
         return out

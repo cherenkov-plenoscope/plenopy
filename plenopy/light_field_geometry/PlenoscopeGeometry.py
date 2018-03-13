@@ -66,7 +66,8 @@ class PlenoscopeGeometry(object):
         ])
 
     def __repr__(self):
-        out = 'PlenoscopeGeometry('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.expected_imaging_system_focal_length)
         out += 'm focal length, '
         out += str(self.expected_imaging_system_max_aperture_radius*2)

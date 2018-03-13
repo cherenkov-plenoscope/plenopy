@@ -64,7 +64,8 @@ class LightField(object):
         return reached_observation_level
 
     def __repr__(self):
-        out = 'IdealizedLightField( '
+        out = self.__class__.__name__
+        out += '('
         out += str(self.x.shape[0])+' photons'
-        out += ' )'
+        out += ')'
         return out

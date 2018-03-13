@@ -27,7 +27,8 @@ class Image:
         plt.show()
 
     def __repr__(self):
-        out = 'Image('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.intensity.shape[0]) + ' channels, '
         out += 'Sum_intensity ' + str(round(self.intensity.sum())) + ' p.e.'
         out += ')'

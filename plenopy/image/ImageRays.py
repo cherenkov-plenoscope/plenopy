@@ -82,7 +82,8 @@ class ImageRays(object):
         return pixel_indicies
 
     def __repr__(self):
-        out = 'ImageRays('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.support.shape[0]) + ' image rays'
         out += ')'
         return out

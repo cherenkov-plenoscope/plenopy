@@ -40,7 +40,8 @@ class Detector(object):
         return counter
 
     def __repr__(self):
-        out = 'SimulationTruthDetector('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.number_air_shower_pulses())+' air-shower pulses'
         out += ')'
         return out

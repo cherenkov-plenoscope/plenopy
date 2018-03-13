@@ -13,7 +13,8 @@ class SimulationTruth(object):
         self.detector = detector
 
     def __repr__(self):
-        out = 'SimulationTruth('
+        out = self.__class__.__name__
+        out += '('
         out += 'primary: '+self.event.corsika_event_header.primary_particle+', '
         out += 'energy: '+str(self.event.corsika_event_header.total_energy_GeV)+'GeV'
         out += ')'

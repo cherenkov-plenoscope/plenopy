@@ -219,8 +219,10 @@ class LightFieldGeometry(object):
         return mask
 
     def __repr__(self):
-        out = 'LightFieldGeometry('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.number_lixel) + ' lixel, '
         out += str(self.number_pixel) + ' pixel, '
-        out += str(self.number_paxel) + ' paxel)'
+        out += str(self.number_paxel) + ' paxel'
+        out += ')'
         return out

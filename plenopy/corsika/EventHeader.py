@@ -25,7 +25,8 @@ class EventHeader(object):
         self.total_energy_GeV = self.raw[4 - 1]
 
     def __repr__(self):
-        out = 'CorsikaEventHeader( '
+        out = self.__class__.__name__
+        out += '('
         out += 'number: '+str(self.number)+', '
         out += 'primary: '+self.primary_particle+', '
         out += 'energy: '+str(self.total_energy_GeV)+'GeV'

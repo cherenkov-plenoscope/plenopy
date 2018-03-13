@@ -53,9 +53,10 @@ class Event(object):
         self.number = int(os.path.basename(self.path))
 
     def __repr__(self):
-        out = 'IdealizedPlenoscopeEvent( '
+        out = self.__class__.__name__
+        out += '('
         out += "path='" + self.path
-        out += ' )'
+        out += ')'
         return out
 
     def plot(self):

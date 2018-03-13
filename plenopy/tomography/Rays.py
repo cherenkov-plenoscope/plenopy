@@ -92,7 +92,8 @@ class Rays(object):
         return pos3D
 
     def __repr__(self):
-        out = 'Rays('
+        out = self.__class__.__name__
+        out += '('
         out += str(self.support.shape[0]) + ' lixels'
         out += ')'
         return out

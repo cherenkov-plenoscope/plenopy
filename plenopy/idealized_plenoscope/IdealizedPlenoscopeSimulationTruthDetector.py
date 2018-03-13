@@ -3,7 +3,8 @@ class IdealizedPlenoscopeSimulationTruthDetector(object):
         self.air_shower = air_shower_photon_ids
 
     def __repr__(self):
-        out = 'IdealizedPlenoscopeSimulationTruthDetector( '
+        out = self.__class__.__name__
+        out += '('
         out += str(self.air_shower.shape[0])+'lixels'
-        out += ' )'
+        out += ')'
         return out

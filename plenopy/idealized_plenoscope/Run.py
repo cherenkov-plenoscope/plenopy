@@ -50,7 +50,9 @@ class Run(object):
         return all_folders_with_digit_names_in_path(self.path)
 
     def __repr__(self):
-        out = 'IdealizedPlenoscopeRun('
+        out = self.__class__.__name__
+        out += '('
         out += "path='" + self.path + "', "
-        out += str(self.number_events) + ' events)'
+        out += str(self.number_events) + ' events'
+        out += ')'
         return out

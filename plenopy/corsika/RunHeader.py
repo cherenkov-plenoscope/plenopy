@@ -22,7 +22,8 @@ class RunHeader(object):
         self.yscatt = self.raw[249 - 1]/100  # cm -> m
 
     def __repr__(self):
-        out = 'CorsikaRunHeader( '
+        out = self.__class__.__name__
+        out += '('
         out += 'number '+str(self.number)
-        out += ' )'
+        out += ')'
         return out

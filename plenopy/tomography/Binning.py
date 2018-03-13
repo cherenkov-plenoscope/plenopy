@@ -129,11 +129,12 @@ class Binning(object):
         return np.array([kx_flat, ky_flat, kz_flat]).T
 
     def __repr__(self):
-        out = 'Binning( '
+        out = self.__class__.__name__
+        out += '('
         out += str(self.total_volume/1e9)+'km^3 from '
         out += 'z_min='+str(self.z_min)+'m to z_max='+str(self.z_max)+'m and '
         out += 'xy_diameter='+str(self.xy_diameter)+'m in '
         out += str(self.number_xy_bins)+' x '
         out += str(self.number_xy_bins)+' x '+str(self.number_z_bins)+' bins'
-        out += ' )'
+        out += ')'
         return out

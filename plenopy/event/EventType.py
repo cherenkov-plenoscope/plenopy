@@ -32,6 +32,8 @@ class EventType(object):
             self.trigger_type = 'unknown: '+str(raw[3-1])
 
     def __repr__(self):
-        out = 'EventType('
-        out += str(self.type) + ', Trigger: ' + str(self.trigger_type) + ')'
+        out = self.__class__.__name__
+        out += '('
+        out += str(self.type) + ', Trigger: ' + str(self.trigger_type)
+        out += ')'
         return out
