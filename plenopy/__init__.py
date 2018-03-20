@@ -12,3 +12,4 @@ from . import tomography
 from . import tools
 from . import photon_stream
 from . import trigger_study
+from . import trigger
