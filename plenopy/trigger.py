@@ -103,10 +103,10 @@ def trigger_windows(
 
 def prepare_trigger_3(
     light_field_geometry,
-    object_disatances=[5e3, 10e3, 25e3, 20e3, 25e3]
+    object_distances=[5e3, 10e3, 25e3, 20e3, 25e3]
 ):
     lfg = light_field_geometry
-    num_refocuses = len(object_disatances)
+    num_refocuses = len(object_distances)
     image_rays = ImageRays(lfg)
     image_fov = lfg.sensor_plane2imaging_system.max_FoV_diameter
     pixel_fov = lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
@@ -116,7 +116,7 @@ def prepare_trigger_3(
     refocus_cx = np.zeros(shape=(num_refocuses, lfg.number_lixel))
     refocus_cy = np.zeros(shape=(num_refocuses, lfg.number_lixel))
 
-    for i, obj in enumerate(object_disatances):
+    for i, obj in enumerate(object_distances):
         cx, cy = image_rays.cx_cy_in_object_distance(obj)
         refocus_cx[i, :] = cx
         refocus_cy[i, :] = cy
