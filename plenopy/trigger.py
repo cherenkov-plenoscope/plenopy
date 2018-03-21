@@ -103,7 +103,7 @@ def trigger_windows(
 
 def prepare_trigger_3(
     light_field_geometry,
-    object_distances=[5e3, 10e3, 25e3, 20e3, 25e3]
+    object_distances=[7.5e3, 15e3, 22.5e3]
 ):
     lfg = light_field_geometry
     num_refocuses = len(object_distances)
