@@ -64,11 +64,13 @@ def coincident_pixels_in_trigger_image(trigger_image, pixel_neighborhood):
     return neighbors_of_pixels_with_trigger.sum() > 0
 
 
-def neighborhood(x, y, epsilon):
+def neighborhood(x, y, epsilon, pixel_itself=False):
     dists = scipy.spatial.distance_matrix(
         np.vstack([x, y]).T,
         np.vstack([x, y]).T)
-    nn = (dists <= epsilon) * (dists != 0)
+    nn = (dists <= epsilon)
+    if not pixel_itself:
+        nn = nn * (dists != 0)
     return nn
 
 
@@ -159,3 +161,39 @@ def trigger_3(
 
 
 
+
+
+
+
+def prepare_sum_trigger(light_field_geometry):
+    epsilon = 1.1*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+    pixel_and_neighborhood = neighborhood(
+        x=light_field_geometry.pixel_pos_cx,
+        y=light_field_geometry.pixel_pos_cy,
+        epsilon=np.deg2rad(0.1),
+        pixel_itself=True)
+    return pixel_and_neighborhood
+
+
+def sum_trigger_image(image, pixel_and_neighborhood):
+    return np.dot(pixel_and_neighborhood, image)
+
+
+def sum_trigger(
+    light_field,
+    pixel_and_neighborhood,
+    trigger_integration_time_window_in_slices=5
+):
+    image_sequence = light_field.sequence.reshape((
+        light_field.number_time_slices,
+        light_field.number_pixel,
+        light_field.number_paxel)).sum(axis=2)
+
+    trigger_window_image_sequece = trigger_windows(
+        image_sequence,
+        trigger_integration_time_window_in_slices)
+
+    sum_trigger_window_image_sequece = trigger_window_image_sequece.dot(
+        pixel_and_neighborhood)
+
+    return np.max(sum_trigger_window_image_sequece)
