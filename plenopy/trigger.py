@@ -2,6 +2,9 @@ import numpy as np
 from .light_field.sequence import integrate_around_arrival_peak
 from .image import ImageRays
 import scipy.spatial.distance
+from scipy.ndimage import convolve1d
+import array
+from scipy.sparse import coo_matrix
 
 
 def trigger_on_light_field_sequence(
@@ -93,14 +96,10 @@ def trigger_windows(
     light_field_sequence,
     trigger_integration_time_window_in_slices=5,
 ):
-    trigger_window = trigger_integration_time_window_in_slices
-    num_time_slices = light_field_sequence.shape[0]
-    num_trigger_trials = num_time_slices - trigger_window
-    trigger_windows = np.zeros(
-        shape=(num_trigger_trials, light_field_sequence.shape[1]))
-    for s in range(num_trigger_trials):
-        trigger_windows[s, :] = light_field_sequence[s:s+trigger_window, :].sum(axis=0)
-    return trigger_windows
+    return convolve1d(
+        light_field_sequence,
+        np.ones(trigger_integration_time_window_in_slices, dtype=np.uint16),
+        axis=0)
 
 
 def prepare_trigger_3(
@@ -197,3 +196,106 @@ def sum_trigger(
         pixel_and_neighborhood)
 
     return np.max(sum_trigger_window_image_sequece)
+
+
+
+
+
+
+
+
+def prepare_refocus_sum_trigger(
+    light_field_geometry,
+    object_distances=[7.5e3, 15e3, 22.5e3]
+):
+    image_rays = ImageRays(light_field_geometry)
+    trigger_matrices = []
+    for object_distance in object_distances:
+        trigger_map = create_trigger_map(
+            light_field_geometry=light_field_geometry,
+            image_rays=image_rays,
+            object_distance=object_distance)
+        trigger_matrices.append(
+            trigger_map_to_trigger_matrix(
+                trigger_map=trigger_map,
+                number_lixel=light_field_geometry.number_lixel,
+                number_pixel=light_field_geometry.number_pixel))
+    return {
+        'object_distances': object_distances,
+        'trigger_matrices': trigger_matrices}
+
+
+def create_trigger_map(
+    light_field_geometry,
+    image_rays,
+    object_distance,
+):
+    number_nearest_neighbors=7
+    epsilon = 2.2*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+    trigger_map = []
+    for pix in range(light_field_geometry.number_pixel):
+            trigger_map.append([])
+    cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
+    cxy = np.vstack((cx, cy)).T
+    distances, pixel_indicies = image_rays.pixel_pos_tree.query(
+        x=cxy,
+        k=number_nearest_neighbors)
+    for nei in range(number_nearest_neighbors):
+        for lix in range(light_field_geometry.number_lixel):
+            if distances[lix, nei] <= epsilon:
+                trigger_map[pixel_indicies[lix, nei]].append(lix)
+    return trigger_map
+
+
+def trigger_map_to_trigger_matrix(
+    trigger_map,
+    number_lixel,
+    number_pixel
+):
+    pixel_indicies = array.array('L')
+    lixel_indicies = array.array('L')
+    for pix, lixels in enumerate(trigger_map):
+        for lix in lixels:
+            pixel_indicies.append(pix)
+            lixel_indicies.append(lix)
+    trigger_matrix = coo_matrix(
+        (np.ones(len(pixel_indicies), dtype=np.bool),
+            (pixel_indicies, lixel_indicies)),
+        shape=(number_pixel, number_lixel),
+        dtype=np.bool)
+    return trigger_matrix.tocsr()
+
+
+def max_and_median(
+    light_field,
+    trigger_matrix,
+    trigger_integration_time_window_in_slices=5
+):
+    trigger_image_seq = np.zeros(
+        shape=(light_field.sequence.shape[0], light_field.number_pixel))
+    for t in range(light_field.sequence.shape[0]):
+        trigger_image_seq[t, :] = trigger_matrix.dot(light_field.sequence[t, :])
+    trigger_window_seq = trigger_windows(
+        trigger_image_seq,
+        trigger_integration_time_window_in_slices)
+    return np.max(trigger_window_seq), np.median(trigger_window_seq)
+
+
+def refocus_sum_trigger(
+    light_field,
+    trigger_preparation,
+    trigger_integration_time_window_in_slices=5
+):
+    tp = trigger_preparation
+    result = []
+    for i, trigger_matrix in enumerate(tp['trigger_matrices']):
+        max_pe, med_pe = max_and_median(
+            light_field,
+            trigger_matrix,
+            trigger_integration_time_window_in_slices)
+        result.append({
+            'object_distance': tp['object_distances'][i],
+            'max': max_pe,
+            'median': med_pe,
+        })
+    return result
