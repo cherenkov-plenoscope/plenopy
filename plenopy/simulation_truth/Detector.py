@@ -20,24 +20,22 @@ class Detector(object):
         detector_pulse_origin_path  The input path to the additional detector
                                     pulse origin binary file.
         """
+        self.pulse_origins = np.fromfile(
+            detector_pulse_origin_path, dtype=np.int32)
 
-        pulse_IDs = np.fromfile(detector_pulse_origin_path, dtype=np.int32)
-        self.stream = []
-
+    def lixel_wise_pulse_origins():
+        stream = []
         i = 0
         for lixel in range(light_field.number_lixel):
             pulses_in_lixel = []
             for pulse in range(light_field.sequence[:, lixel].sum()):
-                pulses_in_lixel.append(pulse_IDs[i])
+                pulses_in_lixel.append(self.pulse_origins[i])
                 i += 1
-            self.stream.append(
-                np.array(pulses_in_lixel, dtype=np.int32))
+            stream.append(np.array(pulses_in_lixel, dtype=np.int32))
+        return stream
 
     def number_air_shower_pulses(self):
-        counter = 0
-        for lixel in self.stream:
-            counter += (lixel >= 0).sum()
-        return counter
+        return (self.pulse_origins >= 0).sum()
 
     def __repr__(self):
         out = self.__class__.__name__
