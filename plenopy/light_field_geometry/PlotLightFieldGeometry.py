@@ -184,6 +184,7 @@ class PlotLightFieldGeometry(object):
         plt.close(fig)
 
     def save(self):
+        os.makedirs(self.out_dir, exist_ok=True)
 
         jobs = []
         jobs.append({'target': self.save_cx_mean, 'args': []})

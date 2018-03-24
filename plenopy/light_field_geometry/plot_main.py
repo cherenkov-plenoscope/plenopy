@@ -24,7 +24,6 @@ def main():
         output_dir = arguments['--output']
         if output_dir is None:
             output_dir = os.path.join(arguments['--input'], 'plots')
-            os.mkdir(output_dir)
 
         lfg = LightFieldGeometry(path=arguments['--input'])
         lfg_plotter = PlotLightFieldGeometry(
