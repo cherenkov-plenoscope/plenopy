@@ -7,234 +7,234 @@ import array
 from scipy.sparse import coo_matrix
 
 
-def trigger_on_light_field_sequence(
-    light_field,
-    pixel_neighborhood,
-    min_photons_in_lixel=2,
-    min_paxels_above_threshold_in_pixel=3,
-    trigger_integration_time_window_in_slices=5,
-):
-    trigger_window = trigger_integration_time_window_in_slices
-    num_time_slices = light_field.sequence.shape[0]
-    num_trigger_trials = num_time_slices - trigger_window
-    trigger_trials = np.zeros(num_trigger_trials, dtype=np.bool)
+"""
+                          Light-Field-Trigger
+             A refocused and patch-wise sum-trigger for the
+                    Atmospheric Cherenkov Plenoscope
 
-    for s in range(num_trigger_trials):
-        lf = light_field.sequence[s:s+trigger_window, :].sum(axis=0)
-        lf = lf.reshape((
-            light_field.number_pixel,
-            light_field.number_paxel))
-        trigger_trials[s] = trigger_1(
-            light_field_pixel_paxel=lf,
-            min_photons_in_lixel=min_photons_in_lixel,
-            min_paxels_above_threshold_in_pixel=min_paxels_above_threshold_in_pixel,
-            pixel_neighborhood=pixel_neighborhood)
+A simulation of a trigger which can be implemented today with proven technology.
 
-    return trigger_trials
+Abstract
+--------
 
+The light-field-trigger searches for coincident flashes of light from
+air-showers in the pool of night-sky-background light.
+The trigger must achive two goals:
 
-def trigger_1(
-    light_field_pixel_paxel,
-    pixel_neighborhood,
-    min_photons_in_lixel=2,
-    min_paxels_above_threshold_in_pixel=3,
-):
-    trigger_image = make_trigger_image_based_on_light_field(
-        light_field_pixel_paxel=light_field_pixel_paxel,
-        min_photons_in_lixel=min_photons_in_lixel,
-        min_paxels_above_threshold_in_pixel=min_paxels_above_threshold_in_pixel)
+1) It must find flashes of coincident light.
 
-    return coincident_pixels_in_trigger_image(
-        trigger_image=trigger_image,
-        pixel_neighborhood=pixel_neighborhood)
+2) It must achive the first goal while the rate of accidental triggers is low.
 
+For the 71 meter ACP we forsee a rate of air-showers in the 100,000s^-1 regime.
+The accidental rate of triggers shall be below the rate of air-showers.
 
-def make_trigger_image_based_on_light_field(
-    light_field_pixel_paxel,
-    min_photons_in_lixel=2,
-    min_paxels_above_threshold_in_pixel=3,
-):
-    trigger_field = light_field_pixel_paxel >= min_photons_in_lixel
-    trigger_image = trigger_field.sum(axis=1)
-    trigger_image = trigger_image >= min_paxels_above_threshold_in_pixel
-    return trigger_image
+Method
+------
 
+The light-field-trigger has multiple and independent layers which are optimized
+for distinct object-distances above the aperture-plane of the plenoscope.
+Air-showers of low energy particles seem to emitt most of the photons from
+10km to 20km above the aperture. Each layer implements the projection of the
+recorded light-field onto an image which is focused to the object-distance of
+the layer.
+In each layer the signals of the individual read-out-channels (lixels) are
+summed up to a group which corresponds to a trigger-patch focused to a the
+layer's object-distance. The corresponding connection-diagram is represented by
+the lixel_summations matrix. A trigger-patch here is a pixel 'c' and its
+direct neighbors:
 
-def coincident_pixels_in_trigger_image(trigger_image, pixel_neighborhood):
-    neighbors_of_pixels_with_trigger = np.multiply(
-        pixel_neighborhood[trigger_image, :],
-        trigger_image)
-    return neighbors_of_pixels_with_trigger.sum() > 0
+    A trigger-patch of pixels for pixel 'c':
+                     ___
+                 ___/   \___
+                /   \___/   \
+                \___/ c \___/
+                /   \___/   \
+                \___/   \___/
+                    \___/
 
+Since the trigger-patches overlap, the trigger-image in each layer has the same
+number of pixels as the original hardware layout. Thus the amlitudes of the
+trigger-patches in the trigger-image are approx. seven times the amplitude of a
+single pixel in the regular image.
+A trigger-patch covers about half the solid-angle of the smallest air-showers
+we are looking for. The trigger also summs up along the time in a window which
+is slided along the sequence of time-slices. The idae is that the fluctuations
+of the night-sky-background are reduced when summed in a trigger-patch.
+When a group of naighboring trigger-patches reaches amplitudes above a
+pre-determined threshold. The trigger on this layer is activated.
 
-def neighborhood(x, y, epsilon, pixel_itself=False):
-    dists = scipy.spatial.distance_matrix(
-        np.vstack([x, y]).T,
-        np.vstack([x, y]).T)
-    nn = (dists <= epsilon)
-    if not pixel_itself:
-        nn = nn * (dists != 0)
-    return nn
+The final trigger decision is not taken here. Here we only condese the
+information to take the decision. We write out the triggers of the individual
+layers.
 
+Exposure-time
+-------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def trigger_windows(
-    light_field_sequence,
-    trigger_integration_time_window_in_slices=5,
-):
-    return convolve1d(
-        light_field_sequence,
-        np.ones(trigger_integration_time_window_in_slices, dtype=np.uint16),
-        axis=0)
-
-
-def prepare_trigger_3(
-    light_field_geometry,
-    object_distances=[7.5e3, 15e3, 22.5e3]
-):
-    lfg = light_field_geometry
-    num_refocuses = len(object_distances)
-    image_rays = ImageRays(lfg)
-    image_fov = lfg.sensor_plane2imaging_system.max_FoV_diameter
-    pixel_fov = lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
-    num_pixel_1D = int(np.ceil(image_fov/pixel_fov))
-    pixel_edges = np.linspace(-image_fov/2, image_fov/2, num_pixel_1D + 1)
-
-    refocus_cx = np.zeros(shape=(num_refocuses, lfg.number_lixel))
-    refocus_cy = np.zeros(shape=(num_refocuses, lfg.number_lixel))
-
-    for i, obj in enumerate(object_distances):
-        cx, cy = image_rays.cx_cy_in_object_distance(obj)
-        refocus_cx[i, :] = cx
-        refocus_cy[i, :] = cy
-
-    return {
-        'refocus_cx': refocus_cx,
-        'refocus_cy': refocus_cy,
-        'pixel_edges': pixel_edges
-    }
-
-
-def trigger_3(
-    light_field,
-    refocus_cx,
-    refocus_cy,
-    pixel_edges,
-    min_photons_in_lixel=2,
-):
-    num_refocuses = refocus_cx.shape[0]
-    num_pixel_1D = pixel_edges.shape[0] - 1
-    refocused_images = np.zeros(
-        shape=(
-            num_refocuses,
-            num_pixel_1D,
-            num_pixel_1D))
-
-    truncated_light_field = light_field.copy()
-    truncated_light_field[light_field < min_photons_in_lixel] = 0
-
-    for i in range(num_refocuses):
-        refocused_images[i, :, :] = np.histogram2d(
-            refocus_cx[i, :],
-            refocus_cy[i, :],
-            weights=truncated_light_field,
-            bins=[pixel_edges, pixel_edges])[0]
-
-    max_pixel_for_object_distance = refocused_images.max(axis=1).max(axis=1)
-
-    return max_pixel_for_object_distance, refocused_images
-
-
-
-
-
-
-
-def prepare_sum_trigger(light_field_geometry):
-    epsilon = 1.1*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
-    pixel_and_neighborhood = neighborhood(
-        x=light_field_geometry.pixel_pos_cx,
-        y=light_field_geometry.pixel_pos_cy,
-        epsilon=np.deg2rad(0.1),
-        pixel_itself=True)
-    return pixel_and_neighborhood
-
-
-def sum_trigger_image(image, pixel_and_neighborhood):
-    return np.dot(pixel_and_neighborhood, image)
-
-
-def sum_trigger(
-    light_field,
-    pixel_and_neighborhood,
-    trigger_integration_time_window_in_slices=5
-):
-    image_sequence = light_field.sequence.reshape((
-        light_field.number_time_slices,
-        light_field.number_pixel,
-        light_field.number_paxel)).sum(axis=2)
-
-    trigger_window_image_sequece = trigger_windows(
-        image_sequence,
-        trigger_integration_time_window_in_slices)
-
-    sum_trigger_window_image_sequece = trigger_window_image_sequece.dot(
-        pixel_and_neighborhood)
-
-    return np.max(sum_trigger_window_image_sequece)
-
-
-
-
-
-
+The accidental rate of the trigger must be estimated. Therefore we need to keep
+track of the exposure-time. Each simulated event is a sequence of light-fields
+over independent time-slices. Usually the records contain 50ns in 100
+time-slices at 2GHz sampling-frequency.
+"""
 
 
 def prepare_refocus_sum_trigger(
     light_field_geometry,
     object_distances=[7.5e3, 15e3, 22.5e3]
 ):
+    """
+    Prepare the simulation of the refocus-sum-trigger. This shall be done
+    simulating the trigger in each event of a 'run'. A 'run' here means a list
+    of events which all share the same light-field-geometry and
+    ambient-conditions.
+
+    Parameters
+    ----------
+
+    light_field_geometry    The light-field-geometry of the plenoscope.
+
+    object_distances        An array of object-distances to focus the trigger
+                            on.
+
+    Returns
+    -------
+
+    trigger_matrices        A boolean matrix [number_lixel x number_pixel] for
+                            each object-distance of the trigger. The
+                            trigger-matrix describes which lixels are added up
+                            (True in the matrix) to compose a pixel.
+                            In the hardware implementation this matrix
+                            corresponds to the wires from the read-out-channels
+                            to the analog-adders which form pixels.
+
+    neighborhood_of_pixel   A boolean matrix [number_pixel x number_pixel] to
+                            represent the nearest neighbors of a pixel. The
+                            reference pixel itself is excluded. Only the
+                            neighbours.
+
+    object_distances        As the input.
+    """
     image_rays = ImageRays(light_field_geometry)
-    trigger_matrices = []
+    lixel_summations = []
     for object_distance in object_distances:
-        trigger_map = create_trigger_map(
+        lixel_summation = create_lixel_summation(
             light_field_geometry=light_field_geometry,
             image_rays=image_rays,
             object_distance=object_distance)
-        trigger_matrices.append(
-            trigger_map_to_trigger_matrix(
-                trigger_map=trigger_map,
+        lixel_summations.append(
+            lixel_summation_to_sparse_matrix(
+                lixel_summation=lixel_summation,
                 number_lixel=light_field_geometry.number_lixel,
                 number_pixel=light_field_geometry.number_pixel))
-    return {
-        'object_distances': object_distances,
-        'trigger_matrices': trigger_matrices}
+
+    pixel_diameter = 1.1*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+    neighborhood_of_pixel = neighborhood(
+        x=light_field_geometry.pixel_pos_cx,
+        y=light_field_geometry.pixel_pos_cy,
+        epsilon=pixel_diameter,
+        itself=False)
+
+    return {'object_distances': object_distances,
+            'lixel_summations': lixel_summations,
+            'neighborhood_of_pixel': neighborhood_of_pixel}
 
 
-def create_trigger_map(
+def apply_refocus_sum_trigger(
+    light_field,
+    trigger_preparation,
+    patch_threshold=63,
+    integration_time_in_slices=5,
+):
+    """
+    This is called for each event in a run. The number of neighboring
+    trigger-patches of pixels which are above the patch_threshold is counted
+    for each recorded time-slice.
+
+    Parameters
+    ----------
+
+    light_field                 The recorded light-field of the plenoscope.
+
+    patch_threshold             The threshold for a trigger-patch of pixels to
+                                be active.
+
+    integration_time_in_slices  The length of the sliding integration-window of
+                                the trigger.
+
+    Returns
+    -------                     A list of dicts is returned. One dict for each
+                                object-distance of the refocus-sum-trigger.
+
+    object_distance             The object-distance the trigger focused on.
+
+    integration_time_in_slices  As in the input.
+
+    patch_threshold             As in the input.
+
+    patch_median                The median amplitude of all trigger-patches in
+                                the sequence of time.
+
+    patch_max                   The max amplitude of all trigger-patches in the
+                                the sequence of time.
+
+    max_coincident_pixel        the maximum number of neighboring
+                                trigger-patches which are above the
+                                patch-threshold. Spans over the whole sequence
+                                of time.
+
+    argmax_coincident_patches   The time-slice in the sequence of time which
+                                had the most coincident trigger-patches.
+    """
+    tp = trigger_preparation
+    results = []
+    for obj, object_distance in enumerate(tp['object_distances']):
+        image_sequence = sum_trigger_image_sequence(
+            light_field_sequence=light_field.sequence,
+            number_pixel=light_field.number_pixel,
+            lixel_summation=tp['lixel_summations'][obj],
+            integration_time_in_slices=integration_time_in_slices)
+
+        coincident_patches = np.zeros(image_sequence.shape[0], dtype=np.int64)
+
+        image_mask_sequence = image_sequence >= patch_threshold
+
+        for time_slice, image_mask in enumerate(image_mask_sequence):
+            coincident_patches[time_slice] = (
+                tp['neighborhood_of_pixel'][image_mask].dot(image_mask).sum())
+
+        results.append({
+            'object_distance': float(object_distance),
+            'integration_time_in_slices': int(integration_time_in_slices),
+            'patch_threshold': int(patch_threshold),
+            'patch_median': int(np.median(image_sequence)),
+            'patch_max': int(np.max(image_sequence)),
+            'max_coincident_patches': int(np.max(coincident_patches)),
+            'argmax_coincident_patches': int(np.argmax(coincident_patches))})
+    return results
+
+
+def create_lixel_summation(
     light_field_geometry,
     image_rays,
     object_distance,
 ):
-    number_nearest_neighbors=7
+    """
+    Find which lixel belongs to which patch of pixels for a given
+    object-distance. Here for the trigger pixels are organized in patches of
+    pixels of seven pixels. A patch of pixel 'c' includes its nearest neighbors.
+
+
+    In the plenoscope each pixel has multiple lixels.
+
+    Returns
+    -------
+
+    lixel_summation         A list over the patches of pixels. Each element
+                            contains a list of the ids of the lixels which
+                            belong to the corresponding patch.
+    """
+    number_nearest_neighbors = 7
     epsilon = 2.2*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
-    trigger_map = []
-    for pix in range(light_field_geometry.number_pixel):
-            trigger_map.append([])
+    lixel_summation = list_of_empty_lists(light_field_geometry.number_pixel)
     cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
     cxy = np.vstack((cx, cy)).T
     distances, pixel_indicies = image_rays.pixel_pos_tree.query(
@@ -243,59 +243,81 @@ def create_trigger_map(
     for nei in range(number_nearest_neighbors):
         for lix in range(light_field_geometry.number_lixel):
             if distances[lix, nei] <= epsilon:
-                trigger_map[pixel_indicies[lix, nei]].append(lix)
-    return trigger_map
+                lixel_summation[pixel_indicies[lix, nei]].append(lix)
+    return lixel_summation
 
 
-def trigger_map_to_trigger_matrix(
-    trigger_map,
+def lixel_summation_to_sparse_matrix(
+    lixel_summation,
     number_lixel,
     number_pixel
 ):
+    """
+    Converts the lixel_summation_list into a sparse matrix. This is only for
+    computation speed. The lixel_summation_matrix contains the same information
+    as the lixel_summation_list.
+
+    Returns
+    -------
+
+    lixel_summation_matrix      A boolean matrix [number_pixel x number_lixel]
+                                which expresses what lixels belong to a
+                                trigger-patch of pixels.
+    """
     pixel_indicies = array.array('L')
     lixel_indicies = array.array('L')
-    for pix, lixels in enumerate(trigger_map):
+    for pix, lixels in enumerate(lixel_summation):
         for lix in lixels:
             pixel_indicies.append(pix)
             lixel_indicies.append(lix)
-    trigger_matrix = coo_matrix(
+    lixel_summation_matrix = coo_matrix(
         (np.ones(len(pixel_indicies), dtype=np.bool),
             (pixel_indicies, lixel_indicies)),
         shape=(number_pixel, number_lixel),
         dtype=np.bool)
-    return trigger_matrix.tocsr()
+    return lixel_summation_matrix.tocsr()
 
 
-def max_and_median(
-    light_field,
-    trigger_matrix,
-    trigger_integration_time_window_in_slices=5
+def sum_trigger_image_sequence(
+    light_field_sequence,
+    number_pixel,
+    lixel_summation,
+    integration_time_in_slices=5,
 ):
+    """
+    Sums up the signals of the lixels into the trigger-patches according to the
+    relations in the lixel_summation.
+    """
     trigger_image_seq = np.zeros(
-        shape=(light_field.sequence.shape[0], light_field.number_pixel))
-    for t in range(light_field.sequence.shape[0]):
-        trigger_image_seq[t, :] = trigger_matrix.dot(light_field.sequence[t, :])
-    trigger_window_seq = trigger_windows(
-        trigger_image_seq,
-        trigger_integration_time_window_in_slices)
-    return np.max(trigger_window_seq), np.median(trigger_window_seq)
+        shape=(light_field_sequence.shape[0], number_pixel))
+    for t in range(light_field_sequence.shape[0]):
+        trigger_image_seq[t, :] = lixel_summation.dot(
+            light_field_sequence[t, :])
+    trigger_window_seq = convole_sequence(
+        sequence=trigger_image_seq,
+        integration_time_in_slices=integration_time_in_slices)
+    return trigger_window_seq
 
 
-def refocus_sum_trigger(
-    light_field,
-    trigger_preparation,
-    trigger_integration_time_window_in_slices=5
+def neighborhood(x, y, epsilon, itself=False):
+    dists = scipy.spatial.distance_matrix(
+        np.vstack([x, y]).T,
+        np.vstack([x, y]).T)
+    nn = (dists <= epsilon)
+    if not itself:
+        nn = nn * (dists != 0)
+    return nn
+
+
+def convole_sequence(
+    sequence,
+    integration_time_in_slices=5,
 ):
-    tp = trigger_preparation
-    result = []
-    for i, trigger_matrix in enumerate(tp['trigger_matrices']):
-        max_pe, med_pe = max_and_median(
-            light_field,
-            trigger_matrix,
-            trigger_integration_time_window_in_slices)
-        result.append({
-            'object_distance': tp['object_distances'][i],
-            'max': max_pe,
-            'median': med_pe,
-        })
-    return result
+    return convolve1d(
+        sequence,
+        np.ones(integration_time_in_slices, dtype=np.uint16),
+        axis=0)
+
+
+def list_of_empty_lists(n):
+    return [[] for i in range(n)]
