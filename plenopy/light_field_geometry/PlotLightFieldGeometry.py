@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from . import plot as add2ax
-from multiprocessing import Process
 from ..tools import FigureSize
 
 
@@ -237,10 +236,5 @@ class PlotLightFieldGeometry(object):
             'target': self.save_sensor_plane_overview,
             'args': [np.rad2deg(self.lfg.cy_std), 'cy_stddev', 'deg']})
 
-        processes = []
         for job in jobs:
-            processes.append(Process(target=job['target'], args=job['args']))
-        for process in processes:
-            process.start()
-        for process in processes:
-            process.join()
+            job['target'](*job['args'])
