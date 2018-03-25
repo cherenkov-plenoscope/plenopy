@@ -11,8 +11,7 @@ from scipy.sparse import coo_matrix
                           Light-Field-Trigger
              A refocused and patch-wise sum-trigger for the
                     Atmospheric Cherenkov Plenoscope
-
-A simulation of a trigger which can be implemented today with proven technology.
+          which can be implemented today with proven technology
 
 Abstract
 --------
@@ -83,8 +82,8 @@ def prepare_refocus_sum_trigger(
 ):
     """
     Prepare the simulation of the refocus-sum-trigger. This shall be done
-    simulating the trigger in each event of a 'run'. A 'run' here means a list
-    of events which all share the same light-field-geometry and
+    before simulating the trigger in each event of a 'run'. A 'run' here means
+    a list of events which all share the same light-field-geometry and
     ambient-conditions.
 
     Parameters
@@ -126,7 +125,9 @@ def prepare_refocus_sum_trigger(
                 number_lixel=light_field_geometry.number_lixel,
                 number_pixel=light_field_geometry.number_pixel))
 
-    pixel_diameter = 1.1*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+    pixel_diameter = (
+        1.1*light_field_geometry.
+        sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
     neighborhood_of_pixel = neighborhood(
         x=light_field_geometry.pixel_pos_cx,
         y=light_field_geometry.pixel_pos_cy,
@@ -220,8 +221,8 @@ def create_lixel_summation(
     """
     Find which lixel belongs to which patch of pixels for a given
     object-distance. Here for the trigger pixels are organized in patches of
-    pixels of seven pixels. A patch of pixel 'c' includes its nearest neighbors.
-
+    pixels of seven pixels. A patch of pixel 'c' includes its nearest
+    neighbors.
 
     In the plenoscope each pixel has multiple lixels.
 
@@ -233,7 +234,9 @@ def create_lixel_summation(
                             belong to the corresponding patch.
     """
     number_nearest_neighbors = 7
-    epsilon = 2.2*light_field_geometry.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+    epsilon = (
+        2.2*light_field_geometry.
+        sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
     lixel_summation = list_of_empty_lists(light_field_geometry.number_pixel)
     cx, cy = image_rays.cx_cy_in_object_distance(object_distance)
     cxy = np.vstack((cx, cy)).T
