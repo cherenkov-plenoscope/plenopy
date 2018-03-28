@@ -142,10 +142,12 @@ def prepare_refocus_sum_trigger(
 def apply_refocus_sum_trigger(
     light_field,
     trigger_preparation,
-    patch_threshold=63,
+    min_number_neighbors=3,
     integration_time_in_slices=5,
+    max_iterations=1000,
 ):
     """
+    Estimates the lowest patch_threshold that would still have triggered.
     This is called for each event in a run. The number of neighboring
     trigger-patches of pixels which are above the patch_threshold is counted
     for each recorded time-slice.
@@ -155,35 +157,38 @@ def apply_refocus_sum_trigger(
 
     light_field                 The recorded light-field of the plenoscope.
 
-    patch_threshold             The threshold for a trigger-patch of pixels to
-                                be active.
+    trigger_preparation         The configuration of the trigger-wiring.
 
     integration_time_in_slices  The length of the sliding integration-window of
-                                the trigger.
+                                the trigger. A.k.a coincidence-window.
+
+    min_number_neighbors        The minimum number of neighboring
+                                patches which have to be above the
+                                threshold.
 
     Returns
     -------                     A list of dicts is returned. One dict for each
                                 object-distance of the refocus-sum-trigger.
 
+    patch_threshold             The lowest threshold for the patches which
+                                still triggers.
+
     object_distance             The object-distance the trigger focused on.
 
     integration_time_in_slices  As in the input.
 
-    patch_threshold             As in the input.
-
     patch_median                The median amplitude of all trigger-patches in
-                                the sequence of time.
+                                the sequence along time.
 
     patch_max                   The max amplitude of all trigger-patches in the
-                                the sequence of time.
+                                the sequence along time.
 
-    max_coincident_pixel        the maximum number of neighboring
+    max_number_neighbors           The maximum number of neighboring
                                 trigger-patches which are above the
-                                patch-threshold. Spans over the whole sequence
-                                of time.
+                                patch-threshold.
 
-    argmax_coincident_patches   The time-slice in the sequence of time which
-                                had the most coincident trigger-patches.
+    argmax_coincident_patches   The time-slice in the sequence along time which
+                                needs the lowest trigger-threshold.
     """
     tp = trigger_preparation
     results = []
@@ -194,22 +199,53 @@ def apply_refocus_sum_trigger(
             lixel_summation=tp['lixel_summations'][obj],
             integration_time_in_slices=integration_time_in_slices)
 
-        coincident_patches = np.zeros(image_sequence.shape[0], dtype=np.int64)
+        patch_threshold = np.max(image_sequence)
+        max_number_neighbors_reached_zero = False
+        iteration = 0
+        iteration_converged = True
+        while True:
+            coincident_patches = np.zeros(
+                image_sequence.shape[0],
+                dtype=np.int64)
+            image_mask_sequence = image_sequence >= patch_threshold
+            for time_slice, image_mask in enumerate(image_mask_sequence):
+                coincident_patches[time_slice] = (
+                    max_number_of_neighboring_trigger_patches(
+                        image_mask=image_mask,
+                        neighborhood_of_pixel=tp['neighborhood_of_pixel'])
+                )
 
-        image_mask_sequence = image_sequence >= patch_threshold
+            argmax_coincident_patches = np.argmax(coincident_patches)
+            max_number_neighbors = np.max(coincident_patches)
 
-        for time_slice, image_mask in enumerate(image_mask_sequence):
-            coincident_patches[time_slice] = (
-                tp['neighborhood_of_pixel'][image_mask].dot(image_mask).sum())
+            if (max_number_neighbors_reached_zero and
+                max_number_neighbors >= min_number_neighbors
+            ):
+                break
+
+            if max_number_neighbors >= min_number_neighbors:
+                patch_threshold += 1
+
+            if max_number_neighbors < min_number_neighbors:
+                patch_threshold -= 1
+                max_number_neighbors_reached_zero = True
+
+            if iteration > max_iterations:
+                iteration_converged = False
+                break
+            iteration += 1
 
         results.append({
+            'exposure_time_in_slices': int(image_sequence.shape[0]),
             'object_distance': float(object_distance),
             'integration_time_in_slices': int(integration_time_in_slices),
             'patch_threshold': int(patch_threshold),
             'patch_median': int(np.median(image_sequence)),
             'patch_max': int(np.max(image_sequence)),
-            'max_coincident_patches': int(np.max(coincident_patches)),
-            'argmax_coincident_patches': int(np.argmax(coincident_patches))})
+            'max_number_neighbors': int(max_number_neighbors),
+            'argmax_coincident_patches': int(argmax_coincident_patches),
+            'iteration_converged': iteration_converged,
+            'min_number_neighbors': int(min_number_neighbors)})
     return results
 
 
@@ -324,3 +360,15 @@ def convole_sequence(
 
 def list_of_empty_lists(n):
     return [[] for i in range(n)]
+
+
+def max_number_of_neighboring_trigger_patches(
+    image_mask,
+    neighborhood_of_pixel
+):
+    if np.sum(image_mask) == 0:
+        return 0
+    else:
+        return np.max(
+            (neighborhood_of_pixel[image_mask]*image_mask).sum(axis=1)
+        )
