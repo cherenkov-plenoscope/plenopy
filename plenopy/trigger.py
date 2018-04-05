@@ -204,19 +204,23 @@ def apply_refocus_sum_trigger(
         iteration = 0
         iteration_converged = True
         while True:
-            coincident_patches = np.zeros(
-                image_sequence.shape[0],
-                dtype=np.int64)
-            image_mask_sequence = image_sequence >= patch_threshold
-            for time_slice, image_mask in enumerate(image_mask_sequence):
-                coincident_patches[time_slice] = (
-                    max_number_of_neighboring_trigger_patches(
-                        image_mask=image_mask,
-                        neighborhood_of_pixel=tp['neighborhood_of_pixel'])
-                )
+            patches_max_neighbors = []
+            patches_argmax_neighbors = []
 
-            argmax_coincident_patches = np.argmax(coincident_patches)
-            max_number_neighbors = np.max(coincident_patches)
+            patch_mask_sequence = image_sequence >= patch_threshold
+            for time_slice, patch_mask in enumerate(patch_mask_sequence):
+                am, m = argmax_number_of_active_neighboring_patches_and_active_itself(
+                    patch_mask=patch_mask,
+                    neighborhood_of_pixel=tp['neighborhood_of_pixel'])
+
+                patches_max_neighbors.append(m)
+                patches_argmax_neighbors.append(am)
+
+            time_slice_with_most_active_neighboring_patches = np.argmax(
+                patches_max_neighbors)
+
+            max_number_neighbors = patches_max_neighbors[
+                time_slice_with_most_active_neighboring_patches]
 
             if (max_number_neighbors_reached_zero and
                 max_number_neighbors >= min_number_neighbors
@@ -243,9 +247,13 @@ def apply_refocus_sum_trigger(
             'patch_median': int(np.median(image_sequence)),
             'patch_max': int(np.max(image_sequence)),
             'max_number_neighbors': int(max_number_neighbors),
-            'argmax_coincident_patches': int(argmax_coincident_patches),
+            'time_slice_with_most_active_neighboring_patches':
+                int(time_slice_with_most_active_neighboring_patches),
             'iteration_converged': iteration_converged,
-            'min_number_neighbors': int(min_number_neighbors)})
+            'min_number_neighbors': int(min_number_neighbors),
+            'patches': list(patches_argmax_neighbors[
+                time_slice_with_most_active_neighboring_patches]),
+        })
     return results
 
 
@@ -355,7 +363,9 @@ def convole_sequence(
     return convolve1d(
         sequence,
         np.ones(integration_time_in_slices, dtype=np.uint16),
-        axis=0)
+        axis=0,
+        mode='constant',
+        cval=0)
 
 
 def list_of_empty_lists(n):
@@ -363,12 +373,44 @@ def list_of_empty_lists(n):
 
 
 def max_number_of_neighboring_trigger_patches(
-    image_mask,
+    patch_mask,
     neighborhood_of_pixel
 ):
-    if np.sum(image_mask) == 0:
+    if np.sum(patch_mask) == 0:
         return 0
     else:
         return np.max(
-            (neighborhood_of_pixel[image_mask]*image_mask).sum(axis=1)
+            (neighborhood_of_pixel[patch_mask]*patch_mask).sum(axis=1)
         )
+
+def number_of_active_neighboring_patches_and_active_itself(
+    patch_mask,
+    neighborhood_of_pixel
+):
+    num_active_neighbors = number_of_active_neighboring_patches(
+        patch_mask,
+        neighborhood_of_pixel)
+    return patch_mask*num_active_neighbors
+
+
+def number_of_active_neighboring_patches(
+    patch_mask,
+    neighborhood_of_pixel
+):
+    return (neighborhood_of_pixel*patch_mask).sum(axis=1)
+
+
+def argmax_number_of_active_neighboring_patches_and_active_itself(
+    patch_mask,
+    neighborhood_of_pixel
+):
+    if np.sum(patch_mask) == 0:
+        return [], 0
+
+    n = (neighborhood_of_pixel[patch_mask]*patch_mask).sum(axis=1)
+    patch_idx = np.arange(patch_mask.shape[0])[patch_mask]
+    an = np.argmax(n)
+    am = patch_idx[an]
+    m = n[an]
+    args_max = patch_idx[n == m]
+    return args_max, m
