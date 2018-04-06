@@ -23,21 +23,43 @@ def write_dict_to_file(dictionary, path):
             json.dump(dictionary, outfile)
 
 
+def un_numpyify(s):
+    if isinstance(s, list):
+        return un_numpyify_list(s)
+    elif isinstance(s, dict):
+        return un_numpyify_dictionary(s)
+    else:
+        return un_numpyify_item(s)
+
+
 def un_numpyify_dictionary(dic):
     ret = {}
     for k, v in list(dic.items()):
-        if isinstance(v, dict):
-            ret[k] = un_numpyify_dictionary(v)
-        elif isinstance(v, np.ndarray):
-            if v.dtype == np.float32:
-                v = v.astype(np.float64)
-            ret[k] = v.tolist()
-        elif isinstance(v, np.floating):
-            ret[k] = float(v)
-        elif isinstance(v, np.integer):
-            ret[k] = int(v)
-        else:
-            ret[k] = v
+        ret[k] = un_numpyify_item(v)
+    return ret
+
+
+def un_numpyify_list(lis):
+    ret = []
+    for item in lis:
+        ret.append(un_numpyify_item(item))
+    return ret
+
+
+def un_numpyify_item(v):
+    ret = None
+    if isinstance(v, dict):
+        ret = un_numpyify_dictionary(v)
+    elif isinstance(v, list):
+        ret = un_numpyify_list(v)
+    elif isinstance(v, np.ndarray):
+        ret = v.tolist()
+    elif isinstance(v, np.floating):
+        ret = float(v)
+    elif isinstance(v, np.integer):
+        ret = int(v)
+    else:
+        ret = v
     return ret
 
 
@@ -106,4 +128,4 @@ def export_trigger_information(event):
         }
     }
 
-    return un_numpyify_dictionary(info)
+    return un_numpyify(info)
