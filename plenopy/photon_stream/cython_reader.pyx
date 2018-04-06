@@ -2,7 +2,7 @@ import numpy as np
 cimport numpy as np
 cimport cython
 
-cdef extern void c_stream2sequence (        
+cdef extern void c_stream2sequence (
     unsigned char* photon_stream,
     unsigned int photon_stream_length,
     unsigned char NEXT_READOUT_CHANNEL_MARKER,
@@ -20,7 +20,7 @@ def stream2sequence(
     unsigned char NEXT_READOUT_CHANNEL_MARKER,
     np.ndarray[unsigned short, ndim=2, mode="c"] sequence not None,
     np.ndarray[float, ndim=1, mode="c"] time_delay_mean not None):
-    
+
     cdef unsigned int photon_stream_length
     photon_stream_length = photon_stream.shape[0]
 
