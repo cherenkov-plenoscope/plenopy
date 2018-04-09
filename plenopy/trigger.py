@@ -414,3 +414,24 @@ def argmax_number_of_active_neighboring_patches_and_active_itself(
     m = n[an]
     args_max = patch_idx[n == m]
     return args_max, m
+
+
+def region_of_interest_from_trigger_response(
+    trigger_response,
+    time_slice_duration,
+    pixel_pos_cx,
+    pixel_pos_cy,
+):
+    patch_thresholds = []
+    for refocus_layer in trigger_response:
+        patch_thresholds.append(refocus_layer['patch_threshold'])
+    m = np.argmax(patch_thresholds)
+
+    time_slice = trigger_response[m][
+        'time_slice_with_most_active_neighboring_patches']
+
+    return {
+        'time_center_roi': time_slice*time_slice_duration,
+        'cx_center_roi': pixel_pos_cx[t[m]['patches'][0]],
+        'cy_center_roi': pixel_pos_cy[t[m]['patches'][0]],
+        'object_distance':trigger_response[m]['object_distance'],}
