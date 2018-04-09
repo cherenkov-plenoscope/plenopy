@@ -13,3 +13,4 @@ from . import tools
 from . import photon_stream
 from . import trigger_study
 from . import trigger
+from . import photon_classification
