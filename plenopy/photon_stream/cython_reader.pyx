@@ -41,3 +41,55 @@ def stream2sequence(
         time_slice_duration)
 
     return None
+
+
+cdef extern void c_stream2_cx_cy_arrivaltime_point_cloud (
+    unsigned char* photon_stream,
+    unsigned int photon_stream_length,
+    unsigned char NEXT_READOUT_CHANNEL_MARKER,
+    float* point_cloud,
+    float* cx,
+    float* cy,
+    float* time_delay_mean,
+    float time_slice_duration,
+    unsigned int* lixel_ids)
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def stream2_cx_cy_arrivaltime_point_cloud(
+    np.ndarray[unsigned char, ndim=1, mode="c"] photon_stream not None,
+    float time_slice_duration,
+    unsigned char NEXT_READOUT_CHANNEL_MARKER,
+    np.ndarray[float, ndim=1, mode="c"] cx not None,
+    np.ndarray[float, ndim=1, mode="c"] cy not None,
+    np.ndarray[float, ndim=1, mode="c"] time_delay not None):
+
+    cdef unsigned int photon_stream_length
+    photon_stream_length = photon_stream.shape[0]
+
+    number_lixel = 1 + np.sum(photon_stream == NEXT_READOUT_CHANNEL_MARKER)
+    assert len(cx) == number_lixel, 'There must be a cx for each lixel.'
+    assert len(cy) == number_lixel, 'There must be a cy for each lixel.'
+    assert len(time_delay) == number_lixel, 'There must be a time_delay for each lixel.'
+
+    number_photons = (photon_stream.shape[0] - (number_lixel - 1))
+    cdef np.ndarray[float, mode = "c"] point_cloud = np.ascontiguousarray(
+        np.zeros(3*number_photons, dtype=np.float32),
+        dtype=np.float32)
+
+    cdef np.ndarray[unsigned int, mode = "c"] lixel_ids = np.ascontiguousarray(
+        np.zeros(number_photons, dtype=np.uint32),
+        dtype=np.uint32)
+
+    c_stream2_cx_cy_arrivaltime_point_cloud(
+        &photon_stream[0],
+        photon_stream_length,
+        NEXT_READOUT_CHANNEL_MARKER,
+        &point_cloud[0],
+        &cx[0],
+        &cy[0],
+        &time_delay[0],
+        time_slice_duration,
+        &lixel_ids[0])
+
+    return point_cloud.reshape((number_photons, 3)), lixel_ids
