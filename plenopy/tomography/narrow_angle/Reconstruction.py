@@ -30,6 +30,9 @@ class Reconstruction(object):
         self,
         event,
         binning=None,
+        lixel_intensities=None,
+        lixel_supports=None,
+        lixel_directions=None,
         use_low_pass_filter=False,
         rays_in_voxel_threshold=3.0
     ):
@@ -50,18 +53,27 @@ class Reconstruction(object):
 
         self.use_low_pass_filter = use_low_pass_filter
 
-        # integrate over time in photon-stream
-        self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
-            sequence=event.light_field.sequence,
-            integration_radius=3
-        )
-        self.lixel_intensities = self._lfs_integral['integral']
+        if lixel_intensities is None:
+            # integrate over time in photon-stream
+            self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
+                sequence=event.light_field.sequence,
+                integration_radius=3
+            )
+            self.lixel_intensities = self._lfs_integral['integral']
+        else:
+            self.lixel_intensities = lixel_intensities
 
-        self.rays = Rays.from_light_field_geometry(event.light_field)
+        if lixel_supports is None or lixel_directions is None:
+            rays = Rays.from_light_field_geometry(event.light_field)
+            self.lixel_supports = rays.support
+            self.direction = rays.direction
+        else:
+            self.lixel_supports = lixel_supports
+            self.direction = lixel_directions
 
         self.system_matrix = make_cached_tomographic_system_matrix(
-            supports=-self.rays.support,
-            directions=self.rays.direction,
+            supports=-self.lixel_supports,
+            directions=self.direction,
             x_bin_edges=self.binning.xy_bin_edges,
             y_bin_edges=self.binning.xy_bin_edges,
             z_bin_edges=self.binning.z_bin_edges,
