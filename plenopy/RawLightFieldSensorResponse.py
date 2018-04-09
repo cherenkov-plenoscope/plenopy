@@ -60,6 +60,9 @@ class RawLightFieldSensorResponse(object):
                 f.read(self.number_symbols),
                 dtype=np.uint8)
 
+            self.number_photons = (
+                self.photon_stream.shape[0] - (self.number_lixel - 1))
+
     def __repr__(self):
         exposure_time = self.number_time_slices*self.time_slice_duration
         out = 'RawLightFieldSensorResponse('
