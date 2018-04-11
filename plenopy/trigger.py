@@ -432,6 +432,6 @@ def region_of_interest_from_trigger_response(
 
     return {
         'time_center_roi': time_slice*time_slice_duration,
-        'cx_center_roi': pixel_pos_cx[t[m]['patches'][0]],
-        'cy_center_roi': pixel_pos_cy[t[m]['patches'][0]],
+        'cx_center_roi': pixel_pos_cx[trigger_response[m]['patches'][0]],
+        'cy_center_roi': pixel_pos_cy[trigger_response[m]['patches'][0]],
         'object_distance':trigger_response[m]['object_distance'],}
