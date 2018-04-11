@@ -23,6 +23,25 @@ class EventHeader(object):
         self.primary_particle = primary_particle_id2str(
             self.primary_particle_id)
         self.total_energy_GeV = self.raw[4 - 1]
+        assert self.number_of_reuses() == 1
+
+    def momentum(self):
+        return self.raw[8-1 : 11-1]
+
+    def zenith_angle_theta_rad(self):
+        return self.raw[11 - 1]
+
+    def azimuth_angle_phi_rad(self):
+        return self.raw[12 - 1]
+
+    def number_of_reuses(self):
+        return int(self.raw[98 - 1])
+
+    def core_position_x_meter(self):
+        return self.raw[98 - 1 + 1]/1e2
+
+    def core_position_y_meter(self):
+        return self.raw[118 - 1 + 1]/1e2
 
     def __repr__(self):
         out = self.__class__.__name__
