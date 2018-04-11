@@ -21,6 +21,11 @@ class RunHeader(object):
         self.xscatt = self.raw[248 - 1]/100  # cm -> m
         self.yscatt = self.raw[249 - 1]/100  # cm -> m
 
+    def observation_level(self):
+        number_observation_levels = self.raw[5 - 1]
+        assert number_observation_levels == 1
+        return self.raw[6 - 1]/1e2
+
     def __repr__(self):
         out = self.__class__.__name__
         out += '('
