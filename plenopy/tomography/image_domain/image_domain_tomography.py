@@ -4,9 +4,9 @@ from .transform import image_distance_2_object_distance as b2g
 from .transform import xyz2cxcyb
 from ..narrow_angle.deconvolution import make_cached_tomographic_system_matrix
 from ..narrow_angle.deconvolution import update
-from ... import trigger
 from ... import photon_classification
 from ... import image
+from ... import trigger
 from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
 import json
@@ -107,37 +107,12 @@ def binning_is_equak(binning_a, binning_b):
     return True
 
 
-def init_reconstruction_from_event(
+def init_reconstruction(
     event,
-    trigger_response,
     binning,
-    roi_time_radius=5e-9,
-    roi_object_distance_radius=5e3,
+    air_shower_photon_ids,
+    lixel_ids_of_photons,
 ):
-    roi = trigger.region_of_interest_from_trigger_response(
-        trigger_response=trigger_response,
-        time_slice_duration=event.light_field.time_slice_duration,
-        pixel_pos_cx=event.light_field.pixel_pos_cx,
-        pixel_pos_cy=event.light_field.pixel_pos_cy)
-
-    (   air_shower_photon_ids,
-        lixel_ids_of_photons
-    ) = photon_classification.classify_air_shower_photons(
-        light_field_geometry=event.light_field,
-        raw_sensor_response=event.raw_sensor_response,
-        start_time_roi=roi['time_center_roi'] - roi_time_radius,
-        end_time_roi=roi['time_center_roi'] + roi_time_radius,
-        cx_center_roi=roi['cx_center_roi'],
-        cy_center_roi=roi['cy_center_roi'],
-        cx_cy_radius_roi=np.deg2rad(0.5),
-        object_distances=np.linspace(
-            roi['object_distance'] - roi_object_distance_radius,
-            roi['object_distance'] + roi_object_distance_radius,
-            5),
-        deg_over_s=0.35e9,
-        epsilon=np.deg2rad(0.1),
-        min_number_photons=20)
-
     image_rays = image.ImageRays(event.light_field)
     intensities = np.zeros(event.light_field.number_lixel)
     for lixel_id in lixel_ids_of_photons[air_shower_photon_ids]:
@@ -157,7 +132,6 @@ def init_reconstruction_from_event(
     r['image_ray_supports'] = image_rays.support
     r['image_ray_directions'] = image_rays.direction
     r['image_ray_intensities'] = intensities
-    r['region_of_interest'] = roi
     r['air_shower_photon_ids'] = air_shower_photon_ids
     r['lixel_ids_of_photons'] = lixel_ids_of_photons
 
@@ -379,3 +353,23 @@ def fit_trajectory_to_point_cloud(
     support[0] = model_robust.params[0][0] - ri*direction[0]
     support[1] = model_robust.params[0][1] - ri*direction[1]
     return support, direction
+
+
+def init_reconstruction_from_event(event, binning):
+    trigger_response = read_trigger_response(event)
+
+    roi = trigger.region_of_interest_from_trigger_response(
+        trigger_response=trigger_response,
+        time_slice_duration=event.light_field.time_slice_duration,
+        pixel_pos_cx=event.light_field.pixel_pos_cx,
+        pixel_pos_cy=event.light_field.pixel_pos_cy)
+
+    (air_shower_photon_ids, lixel_ids_of_photons
+    ) = photon_classification.classify_air_shower_photons_from_trigger_response(
+        event, trigger_region_of_interest=roi)
+
+    return init_reconstruction(
+        event=event,
+        binning=binning,
+        air_shower_photon_ids=air_shower_photon_ids,
+        lixel_ids_of_photons=lixel_ids_of_photons)
