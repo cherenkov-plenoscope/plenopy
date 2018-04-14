@@ -71,9 +71,9 @@ class Event(object):
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
         if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
-            evth = corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin'))
-            runh = corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin'))
-            simulation_truth_event = simulation_truth.Event(evth=evth, runh=runh)
+            simulation_truth_event = simulation_truth.Event(
+                evth=corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin')),
+                runh=corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin')))
 
             try:
                 simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
