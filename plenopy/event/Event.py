@@ -39,11 +39,6 @@ class Event(object):
 
     raw_sensor_response         The raw light field sensor response
                                 of the plenoscope.
-
-    sensor_plane2imaging_system     The relative orientation and position of
-                                    the plenoscope's light field sensor with
-                                    respect to the plenoscope's imaging system
-                                    in the moment this event was recorded.
     """
     def __init__(self, path, light_field_geometry):
         """
@@ -69,8 +64,6 @@ class Event(object):
     def _read_event_header(self):
         header_path = os.path.join(self._path, 'event_header.bin')
         header = read_float32_header(header_path)
-        assert_marker_of_header_is(header, 'PEVT')
-        self.sensor_plane2imaging_system = PlenoscopeGeometry(header)
         self.type = plenoscope_event_header.event_type(header)
         self.trigger_type = plenoscope_event_header.trigger_type(header)
 
