@@ -50,13 +50,14 @@ class Event(object):
         light_field_geometry    The light field geometry to calibrate the raw
                                 sensor response of this event.
         """
+        self.light_field_geometry = light_field_geometry
         self._path = os.path.abspath(path)
         self._read_event_header()
         raw_path = os.path.join(self._path, 'raw_light_field_sensor_response.phs')
         self.raw_sensor_response = RawLightFieldSensorResponse(raw_path)
         self.light_field = LightField(
             self.raw_sensor_response,
-            light_field_geometry)
+            self.light_field_geometry)
         if self.type == 'SIMULATION':
             self._read_simulation_truth()
         self.number = int(os.path.basename(self._path))
@@ -82,7 +83,6 @@ class Event(object):
 
             try:
                 simulation_truth_detector = simulation_truth.Detector(
-                    self.light_field,
                     os.path.join(sim_truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
