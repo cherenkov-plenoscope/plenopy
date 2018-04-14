@@ -23,7 +23,7 @@ def test_event():
         'tests/resources/run.acp')
     event = pl.Run(path)[0]
     print(event.__repr__())
-    print(event.light_field.__repr__())
+    print(event.light_field_geometry.__repr__())
     print(event.light_field_geometry.sensor_plane2imaging_system.__repr__())
     print(event.simulation_truth.__repr__())
     print(event.simulation_truth.event.__repr__())

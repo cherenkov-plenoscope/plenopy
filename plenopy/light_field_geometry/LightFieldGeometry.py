@@ -1,10 +1,11 @@
 import numpy as np
 import scipy.spatial
+from scipy.constants import speed_of_light
 import os
 from .PlenoscopeGeometry import PlenoscopeGeometry
 from ..tools.HeaderRepresentation import assert_marker_of_header_is
 from ..tools.HeaderRepresentation import read_float32_header
-
+from . import isochor_image
 
 class LightFieldGeometry(object):
     """
@@ -48,6 +49,13 @@ class LightFieldGeometry(object):
                     The average arrival time delay and its spread for
                     a photon to travel from the principal aperture
                     plane to the lixel sensor. [s]
+
+    time_delay_image_mean,
+    time_delay_image_std    [number_lixel]
+                            The time-delay which needs to be added to each
+                            lixel so that the photons of a light-front
+                            coming from direction cx, cy arrive isochor in
+                            pixel-cx-cy.
 
     pixel_pos_cx,
     pixel_pos_cy    [number_pixel]
@@ -109,6 +117,7 @@ class LightFieldGeometry(object):
 
         # self.valid_efficiency = self.efficiency > 0.10
         self.valid_efficiency = self.most_efficient_lixels(0.95)
+        self._init_time_delay_image()
 
     def _calc_pixel_and_paxel_average_positions(self):
         npix = self.number_pixel
@@ -217,6 +226,22 @@ class LightFieldGeometry(object):
         mask = np.zeros(self.number_lixel, dtype=bool)
         mask[idxs] = True
         return mask
+
+    def _init_time_delay_image(self):
+        # distances d from pap to plane of isochor light-front
+        d_mean, d_std  = isochor_image.relative_path_length_for_isochor_image(
+            cx_mean=self.cx_mean, cx_std=self.cx_std,
+            cy_mean=self.cy_mean, cy_std=self.cy_std,
+            x_mean=self.x_mean, x_std=self.x_std,
+            y_mean=self.y_mean, y_std=self.y_std)
+
+        t_mean = d_mean/speed_of_light
+        t_std = d_std/speed_of_light
+
+        self.time_delay_image_mean = -self.time_delay_mean + t_mean
+        self.time_delay_image_mean -= np.min(self.time_delay_image_mean)
+        self.time_delay_image_std = np.sqrt(
+            self.time_delay_std**2 + t_std**2)
 
     def __repr__(self):
         out = self.__class__.__name__

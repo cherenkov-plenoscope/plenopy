@@ -12,6 +12,7 @@ from ..simulation_truth import emission_positions_of_photon_bunches
 from . import transform
 from ..filtered_back_projection import ramp_kernel_in_frequency_space
 from ..filtered_back_projection import frequency_filter
+from ...photon_stream import cython_reader as phscr
 
 cachedir = '/tmp/plenopy'
 os.makedirs(cachedir, exist_ok=True)
@@ -21,25 +22,40 @@ memory = Memory(cachedir=cachedir, verbose=0)
 class Reconstruction(object):
     def __init__(self, event, dof_binning=None, apply_frequency_filter=False):
         if dof_binning is None:
-            focal_length = event.light_field.expected_focal_length_of_imaging_system
+            focal_length = event.light_field_geometry.expected_focal_length_of_imaging_system
             self.binning = DepthOfFieldBinning(
-                cx_min=1.1*event.light_field.cx_mean.min(),
-                cx_max=1.1*event.light_field.cx_mean.max(),
-                cy_min=1.1*event.light_field.cy_mean.min(),
-                cy_max=1.1*event.light_field.cy_mean.max(),
+                cx_min=1.1*event.light_field_geometry.cx_mean.min(),
+                cx_max=1.1*event.light_field_geometry.cx_mean.max(),
+                cy_min=1.1*event.light_field_geometry.cy_mean.min(),
+                cy_max=1.1*event.light_field_geometry.cy_mean.max(),
                 focal_length=focal_length,
             )
 
         self.event = event
 
+        raw = event.raw_sensor_response
+        lixel_sequence = np.zeros(
+            shape=(
+                raw.number_time_slices,
+                raw.number_lixel),
+            dtype=np.uint16)
+
+        phscr.stream2sequence(
+            photon_stream=raw.photon_stream,
+            time_slice_duration=raw.time_slice_duration,
+            NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
+            sequence=lixel_sequence,
+            time_delay_mean=event.light_field_geometry.time_delay_mean)
+
+
         # integrate over time in photon-stream
         self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
-            sequence=event.light_field.sequence,
+            sequence=lixel_sequence,
             integration_radius=1
         )
         self.lixel_intensities = self._lfs_integral['integral']
 
-        self.image_rays = ImageRays(event.light_field)
+        self.image_rays = ImageRays(event.light_field_geometry)
 
         self.psf = make_tomographic_system_matrix(
             supports=self.image_rays.support,

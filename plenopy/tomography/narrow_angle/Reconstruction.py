@@ -23,6 +23,7 @@ from ...plot import slices
 from ...plot import xyzI
 from .deconvolution import update
 from .deconvolution import make_cached_tomographic_system_matrix
+from ...photon_stream import cython_reader as phscr
 
 
 class Reconstruction(object):
@@ -37,8 +38,8 @@ class Reconstruction(object):
         rays_in_voxel_threshold=3.0
     ):
         self.event = event
-        f = event.light_field.expected_focal_length_of_imaging_system
-        D = 2.0*event.light_field.expected_aperture_radius_of_imaging_system
+        f = event.light_field_geometry.expected_focal_length_of_imaging_system
+        D = 2.0*event.light_field_geometry.expected_aperture_radius_of_imaging_system
 
         if binning is None:
             self.binning = Binning(
@@ -55,8 +56,23 @@ class Reconstruction(object):
 
         if lixel_intensities is None:
             # integrate over time in photon-stream
+            raw = event.raw_sensor_response
+            lixel_sequence = np.zeros(
+                shape=(
+                    raw.number_time_slices,
+                    raw.number_lixel),
+                dtype=np.uint16)
+
+            phscr.stream2sequence(
+                photon_stream=raw.photon_stream,
+                time_slice_duration=raw.time_slice_duration,
+                NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
+                sequence=lixel_sequence,
+                time_delay_mean=event.light_field_geometry.time_delay_mean)
+
+
             self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
-                sequence=event.light_field.sequence,
+                sequence=lixel_sequence,
                 integration_radius=3
             )
             self.lixel_intensities = self._lfs_integral['integral']
@@ -64,7 +80,7 @@ class Reconstruction(object):
             self.lixel_intensities = lixel_intensities
 
         if lixel_supports is None or lixel_directions is None:
-            rays = Rays.from_light_field_geometry(event.light_field)
+            rays = Rays.from_light_field_geometry(event.light_field_geometry)
             self.lixel_supports = rays.support
             self.direction = rays.direction
         else:

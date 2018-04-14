@@ -34,3 +34,38 @@ def integrate_around_arrival_peak(
         'start_slice': start_slice,
         'stop_slice': stop_slice,
     }
+
+
+def pixel_sequence(lixel_sequence, number_pixel, number_paxel):
+    return _to_image_sequence(
+        lixel_sequence,
+        number_pixel,
+        number_paxel,
+        axis=1)
+
+
+def paxel_sequence(lixel_sequence, number_pixel, number_paxel):
+    return _to_image_sequence(
+        lixel_sequence,
+        number_pixel,
+        number_paxel,
+        axis=0)
+
+
+def _to_image_sequence(lixel_sequence, number_pixel, number_paxel, axis):
+    if axis == 1:
+        bins = number_pixel
+    else:
+        bins = number_paxel
+
+    number_time_slices = lixel_sequence.shape[0]
+    imgs = np.zeros(
+        shape=(number_time_slices, bins),
+        dtype=np.uint16)
+
+    for t in range(number_time_slices):
+        imgs[t, :] = lixel_sequence[t, :].reshape(
+            number_pixel,
+            number_paxel).sum(axis=axis)
+
+    return imgs

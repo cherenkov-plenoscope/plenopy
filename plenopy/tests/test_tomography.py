@@ -58,14 +58,29 @@ def test_narrow_filtered_back_projection():
     run = pl.Run(run_path)
     event = run[0]
 
+    raw = event.raw_sensor_response
+    lixel_sequence = np.zeros(
+        shape=(
+            raw.number_time_slices,
+            raw.number_lixel),
+        dtype=np.uint16)
+
+    pl.photon_stream.cython_reader.stream2sequence(
+        photon_stream=raw.photon_stream,
+        time_slice_duration=raw.time_slice_duration,
+        NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
+        sequence=lixel_sequence,
+        time_delay_mean=event.light_field_geometry.time_delay_mean)
+
+    lixel_intensities = pl.light_field.sequence.integrate_around_arrival_peak(
+        sequence=lixel_sequence,
+        integration_radius=5
+    )['integral']
+
     rec = pl.tomography.filtered_back_projection.Reconstruction(
-        rays=pl.tomography.Rays.from_light_field_geometry(event.light_field),
-        intensities=pl.light_field.sequence.integrate_around_arrival_peak(
-            sequence=event.light_field.sequence,
-            integration_radius=5
-        )['integral'],
-        binning=pl.tomography.Binning(number_z_bins=32, number_xy_bins=16)
-    )
+        rays=pl.tomography.Rays.from_light_field_geometry(event.light_field_geometry),
+        intensities=lixel_intensities,
+        binning=pl.tomography.Binning(number_z_bins=32, number_xy_bins=16))
 
     vol = rec.intensity_volume
     assert vol.shape[0] == 16
