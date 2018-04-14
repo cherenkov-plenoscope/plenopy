@@ -1,2 +1,2 @@
 from .Event import Event
-from .EventType import EventType
+from . import plenoscope_event_header

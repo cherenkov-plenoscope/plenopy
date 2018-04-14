@@ -3,7 +3,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from .EventType import EventType
+from . import plenoscope_event_header
 from ..light_field_geometry import PlenoscopeGeometry
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..light_field.LightField import LightField
@@ -68,12 +68,11 @@ class Event(object):
 
     def _read_event_header(self):
         header_path = os.path.join(self._path, 'event_header.bin')
-        raw = read_float32_header(header_path)
-        assert_marker_of_header_is(raw, 'PEVT')
-        event_type = EventType(raw)
-        self.sensor_plane2imaging_system = PlenoscopeGeometry(raw)
-        self.type = event_type.type
-        self.trigger_type = event_type.trigger_type
+        header = read_float32_header(header_path)
+        assert_marker_of_header_is(header, 'PEVT')
+        self.sensor_plane2imaging_system = PlenoscopeGeometry(header)
+        self.type = plenoscope_event_header.event_type(header)
+        self.trigger_type = plenoscope_event_header.trigger_type(header)
 
     def _read_simulation_truth(self):
         sim_truth_path = os.path.join(self._path, 'simulation_truth')
