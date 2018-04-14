@@ -1,11 +1,8 @@
 import numpy as np
+from . import mctracer_pulse_origins as po
 
 
 class Detector(object):
-    MCTRACER_DEFAULT = -1
-    NIGHT_SKY_BACKGROUND = -100
-    PHOTO_ELECTRIC_CONVERTER_ACCIDENTAL = - 201
-    PHOTO_ELECTRIC_CONVERTER_CROSSTALK = - 202
     """
     The full simulation-truth on the origin of the pulses in a read-out-channel
     of the light-field-sensor.
@@ -21,6 +18,9 @@ class Detector(object):
 
     def number_air_shower_pulses(self):
         return (self.pulse_origins >= 0).sum()
+
+    def number_night_sky_background_pulses(self):
+        return (self.pulse_origins == po.NIGHT_SKY_BACKGROUND).sum()
 
     def __repr__(self):
         out = self.__class__.__name__
