@@ -208,6 +208,10 @@ class PlotLightFieldGeometry(object):
         jobs.append({'target': self.save_x_y_hist2d, 'args': []})
         jobs.append({'target': self.save_cx_cy_hist2d, 'args': []})
 
+
+        jobs.append({
+            'target': self.save_sensor_plane_overview,
+            'args': [self.lfg.time_delay_mean, 'time delay to pap', 's']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [self.lfg.efficiency, 'efficiency', '1']})
