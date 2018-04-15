@@ -6,7 +6,7 @@ import os
 import tempfile
 import shutil
 from .FigureSize import FigureSize
-from ..tools import add2ax_object_distance_ruler
+from .ruler import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 
 
