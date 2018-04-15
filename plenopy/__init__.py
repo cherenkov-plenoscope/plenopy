@@ -4,7 +4,6 @@ from .event.Event import Event
 from .Run import Run
 from .image.Image import Image
 from . import plot
-from . import idealized_plenoscope
 from . import corsika
 from . import simulation_truth
 from . import tomography
