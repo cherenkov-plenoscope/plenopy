@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from . import plot as add2ax
+from . import light_field_geometry as add2ax
 from ..tools import FigureSize
 
 

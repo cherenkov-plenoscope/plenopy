@@ -48,10 +48,7 @@ setup(
         'numpy',            # in anaconda
         'joblib',
     ],
-    entry_points={'console_scripts': [
-        'plenopyPlotLightFieldGeometry = ' +
-        'plenopy.light_field_geometry.plot_main:main',
-    ]},
+    entry_points={'console_scripts': []},
     zip_safe=False,
     cmdclass={'build_ext': build_ext},
     ext_modules=[

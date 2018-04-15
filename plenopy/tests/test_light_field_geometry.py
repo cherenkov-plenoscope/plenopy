@@ -81,7 +81,7 @@ def test_plot():
         dpi=50)
 
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
-        ls_plot = pl.light_field_geometry.PlotLightFieldGeometry(
+        ls_plot = pl.plot.light_field_geometry_2.PlotLightFieldGeometry(
             light_field_geometry=light_field_geometry,
             out_dir=tmp,
             figure_size=figure_size)
