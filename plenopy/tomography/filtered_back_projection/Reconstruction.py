@@ -101,7 +101,3 @@ class Reconstruction(object):
         intensities = event.light_field.intensity.flatten()[valid_lixels]
 
         return cls(rays, intensities, binning)
-
-
-def true_volume_intensity(event, binning):
-    event.simulation_truth
