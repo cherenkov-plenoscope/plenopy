@@ -1,6 +1,6 @@
 import numpy as np
 from ..tools import HeaderRepresentation
-from .primary_particle_id2str import primary_particle_id2str
+from .utils import prmpar_repr
 
 
 class EventHeader(object):
@@ -20,7 +20,7 @@ class EventHeader(object):
 
         self.number = int(self.raw[2 - 1])
         self.primary_particle_id = int(self.raw[3 - 1])
-        self.primary_particle = primary_particle_id2str(
+        self.primary_particle = prmpar_repr(
             self.primary_particle_id)
         self.total_energy_GeV = self.raw[4 - 1]
         assert self.number_of_reuses() == 1

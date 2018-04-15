@@ -2,7 +2,7 @@ import numpy as np
 import os
 from os import path as op
 import matplotlib.pyplot as plt
-from . import plenoscope_event_header as peh
+from . import utils
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..photon_stream import cython_reader as phs
 from ..tools import HeaderRepresentation as hr
@@ -57,8 +57,8 @@ class Event(object):
     def _read_event_header(self):
         header_path = op.join(self._path, 'event_header.bin')
         header = hr.read_float32_header(header_path)
-        self.type = peh.event_type(header)
-        self.trigger_type = peh.trigger_type(header)
+        self.type = utils.event_type_from_header(header)
+        self.trigger_type = utils.trigger_type_from_header(header)
 
     def _read_simulation_truth(self):
         truth_path = op.join(self._path, 'simulation_truth')
@@ -94,21 +94,6 @@ class Event(object):
         out += "type '" + self.type
         out += "')"
         return out
-
-    def _plot_suptitle(self):
-        if self.type == "SIMULATION":
-            if (self.trigger_type ==
-                "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH"):
-                return self.simulation_truth.event.short_event_info()
-            elif self.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
-                return 'Extrenal random trigger, no air shower'
-            else:
-                return 'Simulation, but trigger type is unknown: '+str(
-                    self.trigger_type)
-        elif self.type == "OBSERVATION":
-            return 'Observation'
-        else:
-            return 'unknown event type: '+str(self.type)
 
     def _light_field_sequence(self, time_delays):
         raw = self.raw_sensor_response
@@ -175,7 +160,7 @@ class Event(object):
             number_paxel=self.light_field_geometry.number_paxel)
 
         fig, axs = plt.subplots(2, 2)
-        plt.suptitle(self._plot_suptitle())
+        plt.suptitle(short_info(self))
         pix_int = lfs.integrate_around_arrival_peak(
             sequence=pix_img_seq,
             integration_radius=1)
