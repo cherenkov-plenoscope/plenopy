@@ -74,7 +74,7 @@ def test_plot():
         'tests/resources/run.acp/input/plenoscope')
     light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
-    figure_size = pl.tools.FigureSize(
+    figure_size = pl.plot.FigureSize(
         relative_width=16,
         relative_hight=9,
         pixel_rows=480,

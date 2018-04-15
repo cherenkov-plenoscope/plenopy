@@ -7,3 +7,4 @@ from . import event
 from . import image
 from . import light_field_geometry
 from . import light_field_geometry_2
+from .FigureSize import FigureSize

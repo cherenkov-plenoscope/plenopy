@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from . import light_field_geometry as add2ax
-from ..tools import FigureSize
+from .FigureSize import FigureSize
 
 
 class PlotLightFieldGeometry(object):

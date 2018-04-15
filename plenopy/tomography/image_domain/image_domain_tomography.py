@@ -113,8 +113,8 @@ def init_reconstruction(
     air_shower_photon_ids,
     lixel_ids_of_photons,
 ):
-    image_rays = image.ImageRays(event.light_field)
-    intensities = np.zeros(event.light_field.number_lixel)
+    image_rays = image.ImageRays(event.light_field_geometry)
+    intensities = np.zeros(event.light_field_geometry.number_lixel)
     for lixel_id in lixel_ids_of_photons[air_shower_photon_ids]:
         intensities[lixel_id] += 1
 
@@ -213,7 +213,7 @@ def init_simulation_truth_from_event(
     r = {}
     r['binning'] = binning
 
-    s2i = event.light_field.sensor_plane2imaging_system
+    s2i = event.light_field_geometry.sensor_plane2imaging_system
     crh = event.simulation_truth.event.corsika_run_header
     aspb = event.simulation_truth.air_shower_photon_bunches
 

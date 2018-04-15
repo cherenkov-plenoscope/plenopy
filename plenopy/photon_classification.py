@@ -3,6 +3,8 @@ import numpy as np
 import array
 from .photon_stream.cython_reader import stream2_cx_cy_arrivaltime_point_cloud
 from .image.ImageRays import ImageRays
+from . import trigger
+
 
 def classify_air_shower_photons(
     light_field_geometry,
@@ -11,11 +13,11 @@ def classify_air_shower_photons(
     end_time_roi,
     cx_center_roi,
     cy_center_roi,
-    cx_cy_radius_roi=np.deg2rad(0.5),
-    object_distances=np.linspace(5e3, 20e3, 15),
-    deg_over_s=0.35e9,
-    epsilon=np.deg2rad(0.1),
-    min_number_photons=20,
+    cx_cy_radius_roi,
+    object_distances,
+    deg_over_s,
+    epsilon_cx_cy_radius,
+    min_number_photons,
 ):
     """
     Classifiy air-shower-photons and night-sky-background photons based on the
@@ -63,7 +65,7 @@ def classify_air_shower_photons(
 
         photon_labels = cluster_air_shower_photons_based_on_density(
             cx_cy_arrival_time_point_cloud=cxcyt_tc,
-            epsilon_cx_cy_radius=np.deg2rad(0.1),
+            epsilon_cx_cy_radius=epsilon_cx_cy_radius,
             min_number_photons=min_number_photons,
             deg_over_s=deg_over_s)
         mask_air_shower = photon_labels >= 0
@@ -110,3 +112,38 @@ def cluster_air_shower_photons_based_on_density(
     ).fit(xyt)
 
     return dbscan.labels_
+
+
+def classify_air_shower_photons_from_trigger_response(
+    event,
+    trigger_region_of_interest,
+    roi_time_radius=5e-9,
+    roi_cx_cy_radius=np.deg2rad(0.3),
+    roi_object_distance_radius=5e3,
+    deg_over_s=0.20e9,
+    refocusses_for_classification=7,
+    epsilon_cx_cy_radius=np.deg2rad(0.055),
+    min_number_photons=9
+):
+    """
+    These defaults give for the 71m ACP 61-paxel x 8433-pixel:
+    true air-shower-photons over nsb-photons: 0.62
+    median number of photons in cluster: 131
+    fratction of all true air-shower-photons: 0.65
+    """
+    roi = trigger_region_of_interest
+    return classify_air_shower_photons(
+        light_field_geometry=event.light_field_geometry,
+        raw_sensor_response=event.raw_sensor_response,
+        start_time_roi=roi['time_center_roi'] - roi_time_radius,
+        end_time_roi=roi['time_center_roi'] + roi_time_radius,
+        cx_center_roi=roi['cx_center_roi'],
+        cy_center_roi=roi['cy_center_roi'],
+        cx_cy_radius_roi=roi_cx_cy_radius,
+        object_distances=np.logspace(
+            np.log10(roi['object_distance'] - roi_object_distance_radius),
+            np.log10(roi['object_distance'] + roi_object_distance_radius),
+            refocusses_for_classification),
+        deg_over_s=deg_over_s,
+        epsilon_cx_cy_radius=epsilon_cx_cy_radius,
+        min_number_photons=min_number_photons)

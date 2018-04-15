@@ -5,7 +5,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 import tempfile
 import shutil
-from ..tools import FigureSize
+from .FigureSize import FigureSize
 from ..tools import add2ax_object_distance_ruler
 from ..plot.images2video import images2video
 

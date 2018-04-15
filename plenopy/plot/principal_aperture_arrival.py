@@ -8,7 +8,7 @@ import os
 import tempfile
 import subprocess
 import tqdm
-from ..tools import FigureSize
+from .FigureSize import FigureSize
 from ..tomography import Rays
 from . import images2video
 

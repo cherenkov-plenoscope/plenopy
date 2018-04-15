@@ -93,12 +93,36 @@ def test_image_domain():
     run = pl.Run(run_path)
     event = run[0]
 
-    rec = pl.tomography.image_domain.Reconstruction(
+    trigger_preparation = pl.trigger.prepare_refocus_sum_trigger(
+        light_field_geometry=run.light_field_geometry,
+        object_distances=[10e3])
+
+    trig = pl.trigger.apply_refocus_sum_trigger(
         event=event,
-    )
+        trigger_preparation=trigger_preparation)
+
+    roi = pl.trigger.region_of_interest_from_trigger_response(
+        trigger_response=trig,
+        time_slice_duration=event.raw_sensor_response.time_slice_duration,
+        pixel_pos_cx=run.light_field_geometry.pixel_pos_cx,
+        pixel_pos_cy=run.light_field_geometry.pixel_pos_cy,)
+
+    (air_shower_photon_ids, lixel_ids_of_photons
+        ) = pl.photon_classification.classify_air_shower_photons_from_trigger_response(
+            event=event,
+            trigger_region_of_interest=roi)
+
+    binning = pl.tomography.image_domain.image_domain_tomography.init_binning_for_depth_of_field(
+        focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length)
+
+    rec = pl.tomography.image_domain.image_domain_tomography.init_reconstruction(
+        event=event,
+        binning=binning,
+        air_shower_photon_ids=air_shower_photon_ids,
+        lixel_ids_of_photons=lixel_ids_of_photons,)
 
     for i in range(10):
-        rec.one_more_iteration()
+        rec = pl.tomography.image_domain.image_domain_tomography.one_more_iteration(rec)
 
-    vol = rec.reconstructed_depth_of_field_intesities()
+    vol = rec['reconstructed_volume_intensity']
     assert (vol < 0.0).sum() == 0
