@@ -3,9 +3,10 @@ import scipy.spatial
 from scipy.constants import speed_of_light
 import os
 from .PlenoscopeGeometry import PlenoscopeGeometry
-from ..tools.HeaderRepresentation import assert_marker_of_header_is
-from ..tools.HeaderRepresentation import read_float32_header
+from ..tools.header273float32 import assert_marker_of_header_is
+from ..tools.header273float32 import read_float32_header
 from . import isochor_image
+
 
 class LightFieldGeometry(object):
     """

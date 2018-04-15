@@ -1,4 +1,4 @@
-from ..tools import HeaderRepresentation as hr
+from ..tools import header273float32 as hr
 
 
 def event_type_from_header(plenoscope_event_header):

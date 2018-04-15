@@ -1,5 +1,5 @@
 import numpy as np
-from ..tools import HeaderRepresentation
+from ..tools import header273float32
 
 
 class PlenoscopeGeometry(object):
@@ -44,7 +44,7 @@ class PlenoscopeGeometry(object):
         ----------
         raw         The raw 273 float32 array.
         """
-        HeaderRepresentation.assert_shape_is_valid(raw)
+        header273float32.assert_shape_is_valid(raw)
 
         self.sensor_plane2imaging_system = self._read(raw)
         self.sensor_plane_distance = self.sensor_plane2imaging_system[2, 3]

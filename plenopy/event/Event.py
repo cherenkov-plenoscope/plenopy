@@ -3,7 +3,7 @@ from os import path as op
 from . import utils
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..photon_stream import cython_reader as phs
-from ..tools import HeaderRepresentation as hr
+from ..tools import header273float32 as hr
 from .. import corsika
 from .. import simulation_truth
 

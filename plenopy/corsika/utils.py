@@ -1,5 +1,5 @@
 import numpy as np
-from ..tools import HeaderRepresentation as hr
+from ..tools import header273float32 as hr
 
 
 def event_header_repr(h):

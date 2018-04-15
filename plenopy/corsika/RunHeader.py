@@ -1,5 +1,5 @@
 import numpy as np
-from ..tools import HeaderRepresentation
+from ..tools import header273float32 as hr
 
 
 class RunHeader(object):
@@ -13,9 +13,9 @@ class RunHeader(object):
         path        The path to event header binary
         """
 
-        self.raw = HeaderRepresentation.read_float32_header(path)
-        HeaderRepresentation.assert_shape_is_valid(self.raw)
-        HeaderRepresentation.assert_marker_of_header_is(self.raw, 'RUNH')
+        self.raw = hr.read_float32_header(path)
+        hr.assert_shape_is_valid(self.raw)
+        hr.assert_marker_of_header_is(self.raw, 'RUNH')
 
         self.number = int(self.raw[2 - 1])
         self.xscatt = self.raw[248 - 1]/100  # cm -> m
