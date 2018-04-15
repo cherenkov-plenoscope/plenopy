@@ -1,9 +1,10 @@
 import numpy as np
 import os
+from os import path as op
 import matplotlib.pyplot as plt
 from . import plenoscope_event_header as peh
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
-from ..photon_stream import cython_reader as phscr
+from ..photon_stream import cython_reader as phs
 from ..tools import HeaderRepresentation as hr
 from ..light_field import sequence as lfs
 from .. import image
@@ -18,21 +19,20 @@ class Event(object):
 
     number                      The ID of this event in its run.
 
-    type                        Event type indicator (string)
+    type                        Event-type indicator (string)
                                 "simulation" in case this event was simulated
                                 "observation" in case this event was observed
 
-    trigger_type                Indicates the trigger mechanism.
+    trigger_type                Indicates the trigger-mechanism.
 
-    light_field                 The light field recorded by the plenoscope.
-                                Created using the raw light field sensor
-                                response and the light field geometry.
+    light_field_geometry        The light-field-geometry when this event was
+                                recorded.
 
     simulation_truth            If type == "simulation"
                                 Additional 'true' information known from the
                                 simulation itself.
 
-    raw_sensor_response         The raw light field sensor response
+    raw_sensor_response         The raw response of the light-field-sensor
                                 of the plenoscope.
     """
     def __init__(self, path, light_field_geometry):
@@ -42,46 +42,49 @@ class Event(object):
         path                    The path of this event. Typically inside a Run
                                 directory.
 
-        light_field_geometry    The light field geometry to calibrate the raw
-                                sensor response of this event.
+        light_field_geometry    The light-field-geometry to calibrate the raw
+                                sensor-response of this event.
         """
         self.light_field_geometry = light_field_geometry
-        self._path = os.path.abspath(path)
+        self._path = op.abspath(path)
         self._read_event_header()
-        raw_path = os.path.join(self._path, 'raw_light_field_sensor_response.phs')
-        self.raw_sensor_response = RawLightFieldSensorResponse(raw_path)
+        self.raw_sensor_response = RawLightFieldSensorResponse(
+            op.join(self._path, 'raw_light_field_sensor_response.phs'))
         if self.type == 'SIMULATION':
             self._read_simulation_truth()
-        self.number = int(os.path.basename(self._path))
+        self.number = int(op.basename(self._path))
 
     def _read_event_header(self):
-        header_path = os.path.join(self._path, 'event_header.bin')
+        header_path = op.join(self._path, 'event_header.bin')
         header = hr.read_float32_header(header_path)
         self.type = peh.event_type(header)
         self.trigger_type = peh.trigger_type(header)
 
     def _read_simulation_truth(self):
-        sim_truth_path = os.path.join(self._path, 'simulation_truth')
-        if self.trigger_type == 'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH':
+        truth_path = op.join(self._path, 'simulation_truth')
+        if (self.trigger_type ==
+            'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'):
             simulation_truth_event = simulation_truth.Event(
-                evth=corsika.EventHeader(os.path.join(sim_truth_path, 'corsika_event_header.bin')),
-                runh=corsika.RunHeader(os.path.join(sim_truth_path, 'corsika_run_header.bin')))
+                evth=corsika.EventHeader(
+                    op.join(truth_path, 'corsika_event_header.bin')),
+                runh=corsika.RunHeader(
+                    op.join(truth_path, 'corsika_run_header.bin')))
 
             try:
-                simulation_truth_air_shower_photon_bunches = corsika.PhotonBunches(
-                    os.path.join(sim_truth_path, 'air_shower_photon_bunches.bin'))
+                air_shower_photon_bunches = corsika.PhotonBunches(
+                    op.join(truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
-                simulation_truth_air_shower_photon_bunches = None
+                air_shower_photon_bunches = None
 
             try:
                 simulation_truth_detector = simulation_truth.Detector(
-                    os.path.join(sim_truth_path, 'detector_pulse_origins.bin'))
+                    op.join(truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
 
             self.simulation_truth = simulation_truth.SimulationTruth(
                 event=simulation_truth_event,
-                air_shower_photon_bunches=simulation_truth_air_shower_photon_bunches,
+                air_shower_photon_bunches=air_shower_photon_bunches,
                 detector=simulation_truth_detector)
 
     def __repr__(self):
@@ -94,16 +97,55 @@ class Event(object):
 
     def _plot_suptitle(self):
         if self.type == "SIMULATION":
-            if self.trigger_type == "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH":
+            if (self.trigger_type ==
+                "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH"):
                 return self.simulation_truth.event.short_event_info()
             elif self.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
                 return 'Extrenal random trigger, no air shower'
             else:
-                return 'Simulation, but trigger type is unknown: '+str(self.trigger_type)
+                return 'Simulation, but trigger type is unknown: '+str(
+                    self.trigger_type)
         elif self.type == "OBSERVATION":
             return 'Observation'
         else:
             return 'unknown event type: '+str(self.type)
+
+    def _light_field_sequence(self, time_delays):
+        raw = self.raw_sensor_response
+        lixel_sequence = np.zeros(
+            shape=(raw.number_time_slices, raw.number_lixel),
+            dtype=np.uint16)
+        phs.stream2sequence(
+            photon_stream=raw.photon_stream,
+            time_slice_duration=raw.time_slice_duration,
+            NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
+            sequence=lixel_sequence,
+            time_delay_mean=time_delays)
+        return lixel_sequence
+
+    def photon_arrival_times_and_lixel_ids(self):
+        """
+        Returns (arrival_slices, lixel_ids) of all recorded photons.
+        """
+        (arrival_slices, lixel_ids
+            ) = phs.arrival_slices_and_lixel_ids(
+                self.raw_sensor_response)
+        return (
+            arrival_slices*self.raw_sensor_response.time_slice_duration,
+            lixel_ids)
+
+    def light_field_sequence_for_isochor_image(self):
+        return self._light_field_sequence(
+            time_delays=self.light_field_geometry.time_delay_image_mean)
+
+    def light_field_sequence_for_isochor_aperture(self):
+        return self._light_field_sequence(
+            time_delays=self.light_field_geometry.time_delay_mean)
+
+    def light_field_sequence_raw(self):
+        return self._light_field_sequence(
+            time_delays=np.zeros(
+                self.light_field_geometry.number_lixel, dtype=np.float32))
 
     def show(self):
         """
@@ -120,16 +162,7 @@ class Event(object):
         4)  The photo equivalent distribution accross all lixels
         """
         raw = self.raw_sensor_response
-        lixel_sequence = np.zeros(
-            shape=(raw.number_time_slices, raw.number_lixel),
-            dtype=np.uint16)
-
-        phscr.stream2sequence(
-            photon_stream=raw.photon_stream,
-            time_slice_duration=raw.time_slice_duration,
-            NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
-            sequence=lixel_sequence,
-            time_delay_mean=self.light_field_geometry.time_delay_image_mean)
+        lixel_sequence = self.lixel_sequence_raw()
 
         pix_img_seq = lfs.pixel_sequence(
             lixel_sequence=lixel_sequence,

@@ -63,4 +63,25 @@ extern "C"{
         }
         return;
     }
+
+    void c_photon_stream_to_arrival_slices_and_lixel_ids(
+        unsigned char* photon_stream,
+        unsigned int photon_stream_length,
+        unsigned char NEXT_READOUT_CHANNEL_MARKER,
+        unsigned char* arrival_slices,
+        unsigned int* lixel_ids
+    ) {
+        unsigned int lixel = 0;
+        unsigned int photon = 0;
+        for (unsigned int s = 0; s < photon_stream_length; s++) {
+            if (photon_stream[s] == NEXT_READOUT_CHANNEL_MARKER) {
+                lixel++;
+            } else {
+                arrival_slices[photon] = photon_stream[s];
+                lixel_ids[photon] = lixel;
+                photon++;
+            }
+        }
+        return;
+    }
 }

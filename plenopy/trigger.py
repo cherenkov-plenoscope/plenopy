@@ -140,7 +140,7 @@ def prepare_refocus_sum_trigger(
 
 
 def apply_refocus_sum_trigger(
-    light_field,
+    event,
     trigger_preparation,
     min_number_neighbors=3,
     integration_time_in_slices=5,
@@ -155,7 +155,7 @@ def apply_refocus_sum_trigger(
     Parameters
     ----------
 
-    light_field                 The recorded light-field of the plenoscope.
+    event                       The recorded event of the plenoscope.
 
     trigger_preparation         The configuration of the trigger-wiring.
 
@@ -194,8 +194,7 @@ def apply_refocus_sum_trigger(
     results = []
     for obj, object_distance in enumerate(tp['object_distances']):
         image_sequence = sum_trigger_image_sequence(
-            light_field_sequence=light_field.sequence,
-            number_pixel=light_field.number_pixel,
+            light_field_sequence=event.light_field_sequence_for_isochor_image(),
             lixel_summation=tp['lixel_summations'][obj],
             integration_time_in_slices=integration_time_in_slices)
 
@@ -327,7 +326,6 @@ def lixel_summation_to_sparse_matrix(
 
 def sum_trigger_image_sequence(
     light_field_sequence,
-    number_pixel,
     lixel_summation,
     integration_time_in_slices=5,
 ):
@@ -335,6 +333,7 @@ def sum_trigger_image_sequence(
     Sums up the signals of the lixels into the trigger-patches according to the
     relations in the lixel_summation.
     """
+    number_pixel = lixel_summation.shape[0]
     trigger_image_seq = np.zeros(
         shape=(light_field_sequence.shape[0], number_pixel))
     for t in range(light_field_sequence.shape[0]):

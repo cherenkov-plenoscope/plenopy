@@ -108,3 +108,44 @@ def stream2_cx_cy_arrivaltime_point_cloud(
         &lixel_ids[0])
 
     return point_cloud.reshape((number_photons, 3)), lixel_ids
+
+
+cdef extern void c_photon_stream_to_arrival_slices_and_lixel_ids(
+    unsigned char* photon_stream,
+    unsigned int photon_stream_length,
+    unsigned char NEXT_READOUT_CHANNEL_MARKER,
+    unsigned char* arrival_slices,
+    unsigned int* lixel_ids)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def arrival_slices_and_lixel_ids(
+    raw_sensor_response,
+):
+    """
+    Returns the arrival-time-slices and the light-field-cell-ids
+    (lixel-ids) in which the photon arrived.
+
+    Parameters
+    ----------
+    raw_sensor_response     The raw photon-stream response of the
+                            light-field-sensor.
+    """
+    raw = raw_sensor_response
+    cdef np.ndarray[unsigned char, mode = "c"] photon_stream = raw.photon_stream
+    cdef unsigned int photon_stream_length = raw.number_symbols
+    cdef unsigned char NEXT_MARKER = raw.NEXT_READOUT_CHANNEL_MARKER
+    cdef np.ndarray[unsigned char, mode = "c"] arrival_slices = np.zeros(
+        raw.number_photons, dtype=np.uint8)
+    cdef np.ndarray[unsigned int, mode = "c"] lixel_ids = np.zeros(
+        raw.number_photons, dtype=np.uint32)
+
+    c_photon_stream_to_arrival_slices_and_lixel_ids(
+        &photon_stream[0],
+        photon_stream_length,
+        NEXT_MARKER,
+        &arrival_slices[0],
+        &lixel_ids[0])
+
+    return arrival_slices, lixel_ids
