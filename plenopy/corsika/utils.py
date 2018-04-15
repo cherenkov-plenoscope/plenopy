@@ -13,7 +13,6 @@ def event_header_repr(h):
     """
     hr.assert_shape_is_valid(h)
     hr.assert_marker_of_header_is(h, 'EVTH')
-
     out = 'CORSIKA event header\n'
     out += '  2 ' + 'event number ' + str(int(h[2 - 1])) + '\n'
     out += '  3 ' + 'particle id ' + str(int(h[3 - 1])) + '\n'
@@ -44,7 +43,6 @@ def run_header_repr(h):
     """
     hr.assert_shape_is_valid(h)
     hr.assert_marker_of_header_is(h, 'RUNH')
-
     out = 'CORSIKA run header\n'
     out += '  2 ' + 'run number ' + str(int(h[2 - 1])) + '\n'
     out += '  4 ' + 'date of begin run (yymmdd) ' + str(int(h[3 - 1])) + '\n'

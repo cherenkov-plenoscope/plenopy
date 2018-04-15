@@ -14,7 +14,9 @@ class SimulationTruth(object):
     def __repr__(self):
         out = self.__class__.__name__
         out += '('
-        out += 'primary: '+self.event.corsika_event_header.primary_particle+', '
-        out += 'energy: '+str(self.event.corsika_event_header.total_energy_GeV)+'GeV'
+        out += 'primary: '+self.event.corsika_event_header.primary_particle
+        out += ', '
+        out += 'energy: '+str(self.event.corsika_event_header.total_energy_GeV)
+        out += 'GeV'
         out += ')'
         return out

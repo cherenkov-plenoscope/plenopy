@@ -220,7 +220,8 @@ def apply_refocus_sum_trigger(
             max_number_neighbors = patches_max_neighbors[
                 time_slice_with_most_active_neighboring_patches]
 
-            if (max_number_neighbors_reached_zero and
+            if (
+                max_number_neighbors_reached_zero and
                 max_number_neighbors >= min_number_neighbors
             ):
                 break
@@ -381,6 +382,7 @@ def max_number_of_neighboring_trigger_patches(
             (neighborhood_of_pixel[patch_mask]*patch_mask).sum(axis=1)
         )
 
+
 def number_of_active_neighboring_patches_and_active_itself(
     patch_mask,
     neighborhood_of_pixel
@@ -432,4 +434,4 @@ def region_of_interest_from_trigger_response(
         'time_center_roi': time_slice*time_slice_duration,
         'cx_center_roi': pixel_pos_cx[trigger_response[m]['patches'][0]],
         'cy_center_roi': pixel_pos_cy[trigger_response[m]['patches'][0]],
-        'object_distance':trigger_response[m]['object_distance'],}
+        'object_distance': trigger_response[m]['object_distance']}

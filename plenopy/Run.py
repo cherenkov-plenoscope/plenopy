@@ -33,8 +33,8 @@ class Run(object):
         self._path_input = os.path.join(self.path, 'input')
         self._path_input_plenoscope = os.path.join(
             self._path_input, 'plenoscope')
-
-        self.light_field_geometry = LightFieldGeometry(self._path_input_plenoscope)
+        self.light_field_geometry = LightFieldGeometry(
+            self._path_input_plenoscope)
         self.event_numbers = self._event_numbers_in_run()
         self.number_events = self.event_numbers.shape[0]
 
@@ -49,7 +49,6 @@ class Run(object):
         ----------
         index       The index of the event to be returned. (starting at 0).
         """
-
         try:
             event_number = self.event_numbers[index]
         except(IndexError):

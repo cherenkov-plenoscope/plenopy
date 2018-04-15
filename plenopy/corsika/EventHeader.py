@@ -13,20 +13,17 @@ class EventHeader(object):
         ----------
         path        The path to event header binary
         """
-
         self.raw = hr.read_float32_header(path)
         hr.assert_shape_is_valid(self.raw)
         hr.assert_marker_of_header_is(self.raw, 'EVTH')
-
         self.number = int(self.raw[2 - 1])
         self.primary_particle_id = int(self.raw[3 - 1])
-        self.primary_particle = prmpar_repr(
-            self.primary_particle_id)
+        self.primary_particle = prmpar_repr(self.primary_particle_id)
         self.total_energy_GeV = self.raw[4 - 1]
         assert self.number_of_reuses() == 1
 
     def momentum(self):
-        return self.raw[8-1 : 11-1]
+        return self.raw[8-1: 11-1]
 
     def zenith_angle_theta_rad(self):
         return self.raw[11 - 1]

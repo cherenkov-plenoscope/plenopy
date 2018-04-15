@@ -23,11 +23,13 @@ def integrate_around_arrival_peak(
     sequence                Matrix 2D, sequence of e.g. light fields or images,
                             where the time slices go along axis=0.
 
-    integration_radius      Integer, integration radius in units of time slices.
+    integration_radius      Integer, integration radius in units of
+                            time-slices.
     '''
     peak_slice = time_slice_with_max_intensity(sequence)
     start_slice = np.max([peak_slice - integration_radius, 0])
-    stop_slice = np.min([peak_slice + integration_radius + 1, sequence.shape[0]-1])
+    stop_slice = np.min(
+        [peak_slice + integration_radius + 1, sequence.shape[0]-1])
     return {
         'integral': np.sum(sequence[start_slice:stop_slice, :], axis=0),
         'peak_slice': peak_slice,
@@ -57,15 +59,12 @@ def _to_image_sequence(lixel_sequence, number_pixel, number_paxel, axis):
         bins = number_pixel
     else:
         bins = number_paxel
-
     number_time_slices = lixel_sequence.shape[0]
     imgs = np.zeros(
         shape=(number_time_slices, bins),
         dtype=np.uint16)
-
     for t in range(number_time_slices):
         imgs[t, :] = lixel_sequence[t, :].reshape(
             number_pixel,
             number_paxel).sum(axis=axis)
-
     return imgs

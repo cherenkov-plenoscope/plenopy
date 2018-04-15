@@ -57,38 +57,29 @@ class Event(object):
 
     def _read_simulation_truth(self):
         truth_path = op.join(self._path, 'simulation_truth')
-        if (self.trigger_type ==
-            'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'):
+        if (
+            self.trigger_type ==
+            'EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH'
+        ):
             simulation_truth_event = simulation_truth.Event(
                 evth=corsika.EventHeader(
                     op.join(truth_path, 'corsika_event_header.bin')),
                 runh=corsika.RunHeader(
                     op.join(truth_path, 'corsika_run_header.bin')))
-
             try:
                 air_shower_photon_bunches = corsika.PhotonBunches(
                     op.join(truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
                 air_shower_photon_bunches = None
-
             try:
                 simulation_truth_detector = simulation_truth.Detector(
                     op.join(truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
-
             self.simulation_truth = simulation_truth.SimulationTruth(
                 event=simulation_truth_event,
                 air_shower_photon_bunches=air_shower_photon_bunches,
                 detector=simulation_truth_detector)
-
-    def __repr__(self):
-        out = self.__class__.__name__
-        out += "("
-        out += "number " + str(self.number) + ", "
-        out += "type '" + self.type
-        out += "')"
-        return out
 
     def _light_field_sequence(self, time_delays):
         raw = self.raw_sensor_response
@@ -107,9 +98,8 @@ class Event(object):
         """
         Returns (arrival_slices, lixel_ids) of all recorded photons.
         """
-        (arrival_slices, lixel_ids
-            ) = phs.arrival_slices_and_lixel_ids(
-                self.raw_sensor_response)
+        (arrival_slices, lixel_ids) = phs.arrival_slices_and_lixel_ids(
+            self.raw_sensor_response)
         return (
             arrival_slices*self.raw_sensor_response.time_slice_duration,
             lixel_ids)
@@ -126,3 +116,11 @@ class Event(object):
         return self._light_field_sequence(
             time_delays=np.zeros(
                 self.light_field_geometry.number_lixel, dtype=np.float32))
+
+    def __repr__(self):
+        out = self.__class__.__name__
+        out += "("
+        out += "number " + str(self.number) + ", "
+        out += "type '" + self.type
+        out += "')"
+        return out

@@ -29,8 +29,10 @@ def trigger_type_from_header(plenoscope_event_header):
 
 def short_info(event):
     if event.type == "SIMULATION":
-        if (event.trigger_type ==
-            "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH"):
+        if (
+            event.trigger_type ==
+            "EXTERNAL_TRIGGER_BASED_ON_AIR_SHOWER_SIMULATION_TRUTH"
+        ):
             return event.simulation_truth.event.short_event_info()
         elif event.trigger_type == "EXTERNAL_RANDOM_TRIGGER":
             return 'Extrenal random trigger, no air shower'

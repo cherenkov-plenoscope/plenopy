@@ -91,8 +91,8 @@ class LightFieldGeometry(object):
     lixel_outer_radius  The outer radius of the hexagonal lixel sensor area
                         in the light field sensor. [m]
 
-    lixel_z_orientation The orientation angel of the hexagonal lixel sensor area
-                        in the light field sensor. [rad]
+    lixel_z_orientation The orientation angel of the hexagonal lixel sensor
+                        area in the light field sensor. [rad]
 
     lixel_positions_x,
     lixel_positions_y   The hexagonal lixel sensor center x,y positions in the
@@ -103,20 +103,14 @@ class LightFieldGeometry(object):
 
     def __init__(self, path):
         path = os.path.abspath(path)
-
         self._read_light_field_sensor_geometry_header(
             os.path.join(path, 'light_field_sensor_geometry.header.bin'))
-
         self._read_lixel_positions(
             os.path.join(path, 'lixel_positions.bin'))
-
         self._read_lixel_statistics(
             os.path.join(path, 'lixel_statistics.bin'))
-
         self._calc_pixel_and_paxel_average_positions()
         self._init_lixel_polygons()
-
-        # self.valid_efficiency = self.efficiency > 0.10
         self.valid_efficiency = self.most_efficient_lixels(0.95)
         self._init_time_delay_image()
 
@@ -129,19 +123,16 @@ class LightFieldGeometry(object):
         self.paxel_pos_y = np.nanmean(
             self.y_mean.reshape(npix, npax),
             axis=0)
-
         self.pixel_pos_cx = np.nanmean(
             self.cx_mean.reshape(npix, npax),
             axis=1)
         self.pixel_pos_cy = np.nanmean(
             self.cy_mean.reshape(npix, npax),
             axis=1)
-
         self.pixel_pos_tree = scipy.spatial.cKDTree(
             np.array([self.pixel_pos_cx, self.pixel_pos_cy]).T)
         self.paxel_pos_tree = scipy.spatial.cKDTree(
             np.array([self.paxel_pos_x, self.paxel_pos_y]).T)
-
         self.paxel_efficiency_along_pixel = np.nanmean(
             self.efficiency.reshape(npix, npax),
             axis=0)
@@ -152,7 +143,6 @@ class LightFieldGeometry(object):
     def _read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32)
         ls = ls.reshape([ls.shape[0] // 12, 12])
-
         self.efficiency = ls[:, 0].copy()
         self.efficiency_std = ls[:, 1].copy()
 
@@ -191,7 +181,7 @@ class LightFieldGeometry(object):
         self.lixel_positions_y = lp[:, 1]
 
     def _init_lixel_polygons(self):
-        s32 = np.sqrt(3) / 2.
+        s32 = np.sqrt(3)/2.
 
         poly_template = np.array([
             [0, 1],
@@ -199,14 +189,12 @@ class LightFieldGeometry(object):
             [-s32, -0.5],
             [0, -1],
             [s32, -0.5],
-            [s32, 0.5],
-        ])
+            [s32, 0.5]])
         poly_template *= self.lixel_outer_radius
 
         lixel_centers_xy = np.array([
             self.lixel_positions_x,
-            self.lixel_positions_y
-        ])
+            self.lixel_positions_y])
 
         self.lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
 
@@ -230,7 +218,7 @@ class LightFieldGeometry(object):
 
     def _init_time_delay_image(self):
         # distances d from pap to plane of isochor light-front
-        d_mean, d_std  = isochor_image.relative_path_length_for_isochor_image(
+        d_mean, d_std = isochor_image.relative_path_length_for_isochor_image(
             cx_mean=self.cx_mean, cx_std=self.cx_std,
             cy_mean=self.cy_mean, cy_std=self.cy_std,
             x_mean=self.x_mean, x_std=self.x_std,

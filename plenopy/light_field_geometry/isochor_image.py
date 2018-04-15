@@ -71,6 +71,7 @@ def relative_path_length_for_isochor_image(
     y_std
 ):
     """
+    # It turns out that the relative-path-lengths can be computed like this:
     # Making plane models [cx, cy, cz, d]
     # normal-vector: [cx, cy, cz]
     # distance of plane to origin: d
@@ -92,14 +93,12 @@ def relative_path_length_for_isochor_image(
         relative_distances[lixel] = (
             plane_models[lixel].dot(lixel_supports_on_pap[lixel]))
     """
-
-    # It turns out that the relative-path-lengths can be computed like this:
     d_mean = cx_mean*x_mean + cy_mean*y_mean
 
-    # der(d_mean)/der(cx) = x
-    # der(d_mean)/der(cy) = y
-    # der(d_mean)/der(x) = cx
-    # der(d_mean)/der(y) = cy
+    # del d_mean / del cx = x
+    # del d_mean / del cy = y
+    # del d_mean / del x = cx
+    # del d_mean / del y = cy
 
     d_std = np.sqrt(
         (x_mean**2)*(cx_std**2) +
@@ -131,11 +130,8 @@ def time_delay_from_sensors_to_image(
             x_std=x_std,
             y_mean=y_mean,
             y_std=y_std,))
-
     time_delay_principal_aperture_plane_2_image = rel_dists_mean/speed_of_light
-
     time_delay_sesnsor_2_image = (
         time_delay_from_sensors_to_principal_aperture_plane -
         time_delay_principal_aperture_plane_2_image)
-
     return time_delay_sesnsor_2_image

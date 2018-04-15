@@ -12,11 +12,9 @@ class RunHeader(object):
         ----------
         path        The path to event header binary
         """
-
         self.raw = hr.read_float32_header(path)
         hr.assert_shape_is_valid(self.raw)
         hr.assert_marker_of_header_is(self.raw, 'RUNH')
-
         self.number = int(self.raw[2 - 1])
         self.xscatt = self.raw[248 - 1]/100  # cm -> m
         self.yscatt = self.raw[249 - 1]/100  # cm -> m
