@@ -102,18 +102,6 @@ class Reconstruction(object):
 
         return cls(rays, intensities, binning)
 
-    @classmethod
-    def from_idealized_plenoscope_event(cls, event, valid_photons, binning):
-        rays = Rays(
-            x=event.air_shower_photons.x[valid_photons],
-            y=event.air_shower_photons.y[valid_photons],
-            cx=event.air_shower_photons.cx[valid_photons],
-            cy=event.air_shower_photons.cy[valid_photons])
-
-        intensities = event.light_field.intensity[valid_photons]
-
-        return cls(rays, intensities, binning)
-
 
 def true_volume_intensity(event, binning):
     event.simulation_truth
