@@ -5,6 +5,12 @@ from matplotlib.collections import PatchCollection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
+def show(image):
+    fig, ax = plt.subplots()
+    add_pixel_image_to_ax(image, ax)
+    plt.show()
+
+
 def add2ax(
     ax,
     I,

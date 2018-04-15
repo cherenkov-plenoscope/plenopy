@@ -1,16 +1,11 @@
 import numpy as np
-import os
 from os import path as op
-import matplotlib.pyplot as plt
 from . import utils
 from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
 from ..photon_stream import cython_reader as phs
 from ..tools import HeaderRepresentation as hr
-from ..light_field import sequence as lfs
-from .. import image
 from .. import corsika
 from .. import simulation_truth
-from .. import light_field
 
 
 class Event(object):
@@ -131,59 +126,3 @@ class Event(object):
         return self._light_field_sequence(
             time_delays=np.zeros(
                 self.light_field_geometry.number_lixel, dtype=np.float32))
-
-    def show(self):
-        """
-        Shows an overview figure of the Event.
-
-        1)  Directional intensity distribution accross the field of view
-            (the classic IACT image)
-
-        2)  Positional intensity distribution on the principal aperture plane
-
-        3)  The arrival time distribution of photo equivalents accross all
-            lixels
-
-        4)  The photo equivalent distribution accross all lixels
-        """
-        raw = self.raw_sensor_response
-        lixel_sequence = self.lixel_sequence_raw()
-
-        pix_img_seq = lfs.pixel_sequence(
-            lixel_sequence=lixel_sequence,
-            number_pixel=self.light_field_geometry.number_pixel,
-            number_paxel=self.light_field_geometry.number_paxel)
-
-        pax_img_seq = lfs.paxel_sequence(
-            lixel_sequence=lixel_sequence,
-            number_pixel=self.light_field_geometry.number_pixel,
-            number_paxel=self.light_field_geometry.number_paxel)
-
-        fig, axs = plt.subplots(2, 2)
-        plt.suptitle(short_info(self))
-        pix_int = lfs.integrate_around_arrival_peak(
-            sequence=pix_img_seq,
-            integration_radius=1)
-        pixel_image = image.Image(
-            pix_int['integral'],
-            self.light_field_geometry.pixel_pos_cx,
-            self.light_field_geometry.pixel_pos_cy)
-        axs[0][0].set_title(
-            'directional image at time slice '+str(pix_int['peak_slice']))
-        image.plot.add_pixel_image_to_ax(pixel_image, axs[0][0])
-        pax_int = lfs.integrate_around_arrival_peak(
-            sequence=pax_img_seq,
-            integration_radius=1)
-        paxel_image = image.Image(
-            pax_int['integral'],
-            self.light_field_geometry.paxel_pos_x,
-            self.light_field_geometry.paxel_pos_y)
-        axs[0][1].set_title(
-            'principal aperture at time slice '+str(pax_int['peak_slice']))
-        image.plot.add_paxel_image_to_ax(paxel_image, axs[0][1])
-        light_field.plot.add2ax_hist_arrival_time(
-            sequence=lixel_sequence,
-            time_slice_duration=raw.time_slice_duration,
-            ax=axs[1][0])
-        light_field.plot.add2ax_hist_intensity(lixel_sequence, axs[1][1])
-        plt.show()

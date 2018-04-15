@@ -11,7 +11,7 @@ from .images2video import images2video
 from .. import image
 from ..image import Image
 from ..image import ImageRays
-from ..image.plot import add_pixel_image_to_ax
+from .image import add_pixel_image_to_ax
 from ..light_field import sequence
 
 
