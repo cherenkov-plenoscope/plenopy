@@ -1,5 +1,5 @@
 import numpy as np
-from ... import light_field
+from ... import sequence
 from ...image import ImageRays
 from .. import ray_and_voxel
 import matplotlib.pyplot as plt
@@ -49,7 +49,7 @@ class Reconstruction(object):
 
 
         # integrate over time in photon-stream
-        self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
+        self._lfs_integral = sequence.integrate_around_arrival_peak(
             sequence=lixel_sequence,
             integration_radius=1
         )

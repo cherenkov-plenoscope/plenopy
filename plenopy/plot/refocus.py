@@ -12,7 +12,7 @@ from .. import image
 from ..image import Image
 from ..image import ImageRays
 from .image import add_pixel_image_to_ax
-from ..light_field import sequence
+from .. import sequence
 
 
 def refocus_images(

@@ -1,4 +1,4 @@
-from ..light_field import sequence as lfs
+from . import sequence
 
 
 def show(event):
@@ -50,9 +50,9 @@ def show(event):
     axs[0][1].set_title(
         'principal aperture at time slice '+str(pax_int['peak_slice']))
     image.plot.add_paxel_image_to_ax(paxel_image, axs[0][1])
-    light_field.plot.add2ax_hist_arrival_time(
+    sequence.add2ax_hist_arrival_time(
         sequence=lixel_sequence,
         time_slice_duration=raw.time_slice_duration,
         ax=axs[1][0])
-    light_field.plot.add2ax_hist_intensity(lixel_sequence, axs[1][1])
+    sequence.add2ax_hist_intensity(lixel_sequence, axs[1][1])
     plt.show()

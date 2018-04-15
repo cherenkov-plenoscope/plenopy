@@ -12,3 +12,4 @@ from . import photon_stream
 from . import trigger_study
 from . import trigger
 from . import photon_classification
+from . import sequence

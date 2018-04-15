@@ -15,7 +15,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
-from ... import light_field
+from ... import sequence
 from ..Rays import Rays
 from ..simulation_truth import histogram_photon_bunches
 from ..Binning import Binning
@@ -71,7 +71,7 @@ class Reconstruction(object):
                 time_delay_mean=event.light_field_geometry.time_delay_mean)
 
 
-            self._lfs_integral = light_field.sequence.integrate_around_arrival_peak(
+            self._lfs_integral = sequence.integrate_around_arrival_peak(
                 sequence=lixel_sequence,
                 integration_radius=3
             )
@@ -160,8 +160,8 @@ class Reconstruction(object):
         limited_aperture_radius = None
         limited_fov_radius = None
         if restrict_to_instrument_acceptance:
-            limited_aperture_radius = 1.05*self.event.light_field.expected_aperture_radius_of_imaging_system
-            limited_fov_radius = 1.05*self.event.light_field.cx_mean.max()
+            limited_aperture_radius = 1.05*self.event.light_field_geometry.expected_aperture_radius_of_imaging_system
+            limited_fov_radius = 1.05*self.event.light_field_geometry.cx_mean.max()
 
         return histogram_photon_bunches(
             photon_bunches=self.event.simulation_truth.air_shower_photon_bunches,

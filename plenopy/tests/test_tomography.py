@@ -72,7 +72,7 @@ def test_narrow_filtered_back_projection():
         sequence=lixel_sequence,
         time_delay_mean=event.light_field_geometry.time_delay_mean)
 
-    lixel_intensities = pl.light_field.sequence.integrate_around_arrival_peak(
+    lixel_intensities = pl.sequence.integrate_around_arrival_peak(
         sequence=lixel_sequence,
         integration_radius=5
     )['integral']

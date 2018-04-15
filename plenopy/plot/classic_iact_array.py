@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .. import image
-from ..light_field import sequence
+from .. import sequence
 from ..image import Image
 
 

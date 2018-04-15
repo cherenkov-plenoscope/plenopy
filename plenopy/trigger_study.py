@@ -3,7 +3,7 @@ import os
 import gzip
 import json
 from .photon_stream import cython_reader as phscr
-from .light_field import sequence as lfs
+from . import sequence as lfs
 
 
 def write_dict_to_file(dictionary, path):

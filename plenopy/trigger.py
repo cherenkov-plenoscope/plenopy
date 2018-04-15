@@ -1,5 +1,4 @@
 import numpy as np
-from .light_field.sequence import integrate_around_arrival_peak
 from .image import ImageRays
 import scipy.spatial.distance
 from scipy.ndimage import convolve1d
