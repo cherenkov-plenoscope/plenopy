@@ -62,7 +62,7 @@ def run_header_repr(h):
     return out
 
 
-def primary_particle_id2str(PRMPAR):
+def prmpar_repr(PRMPAR):
     """
     Return string   Convert the CORSIKA primary particle ID (PRMPAR) to a human
                     readable string.
@@ -118,7 +118,7 @@ def short_event_info(runh, evth):
     evt_id = str(int(evth[2 - 1]))
     return str(
         "Run: " + run_id + ", Event: " + evt_id + ", " +
-        primary_particle_id2str(PRMPAR) + ', ' +
+        prmpar_repr(PRMPAR) + ', ' +
         "E: " + E + "GeV, \n" +
         "core pos: x=" + core_x + 'm, ' +
         "y=" + core_y + 'm, ' +
