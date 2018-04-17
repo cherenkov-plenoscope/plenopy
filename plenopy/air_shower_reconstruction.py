@@ -36,9 +36,9 @@ for event in run:
     trigger_response = pl.tomography.image_domain.image_domain_tomography.read_trigger_response(event)
     roi = pl.trigger.region_of_interest_from_trigger_response(
         trigger_response=trigger_response,
-        time_slice_duration=event.light_field.time_slice_duration,
-        pixel_pos_cx=event.light_field.pixel_pos_cx,
-        pixel_pos_cy=event.light_field.pixel_pos_cy)
+        time_slice_duration=event.raw_sensor_response.time_slice_duration,
+        pixel_pos_cx=event.light_field_geometry.pixel_pos_cx,
+        pixel_pos_cy=event.light_field_geometry.pixel_pos_cy)
 
     trigger_offset = np.sqrt(
         (roi['cx_center_roi'] - core_cx)**2 +
@@ -58,9 +58,9 @@ for event in run:
         photon_stream=event.raw_sensor_response.photon_stream,
         time_slice_duration=event.raw_sensor_response.time_slice_duration,
         NEXT_READOUT_CHANNEL_MARKER=event.raw_sensor_response.NEXT_READOUT_CHANNEL_MARKER,
-        cx=event.light_field.cx_mean,
-        cy=event.light_field.cy_mean,
-        time_delay=event.light_field.time_delay_mean)
+        cx=event.light_field_geometry.cx_mean,
+        cy=event.light_field_geometry.cy_mean,
+        time_delay=event.light_field_geometry.time_delay_mean)
 
     arrival_times = cxcyt[:, 2][air_shower_photon_ids]
 
@@ -91,8 +91,8 @@ for event in run:
             cx_air_shower = cx[lixel_ids[air_shower_photon_ids]]
             cy_air_shower = cy[lixel_ids[air_shower_photon_ids]]
 
-            x = event.light_field.x_mean[lixel_ids[air_shower_photon_ids]]
-            y = event.light_field.y_mean[lixel_ids[air_shower_photon_ids]]
+            x = event.light_field_geometry.x_mean[lixel_ids[air_shower_photon_ids]]
+            y = event.light_field_geometry.y_mean[lixel_ids[air_shower_photon_ids]]
             """
             for tel in range(number_telescopes):
                 dist = np.sqrt((x - pos_x[tel])**2 + (y - pos_y[tel])**2)
