@@ -81,7 +81,7 @@ class Event(object):
                 air_shower_photon_bunches=air_shower_photon_bunches,
                 detector=simulation_truth_detector)
 
-    def _light_field_sequence(self, time_delays):
+    def _light_field_sequence(self, time_delays_to_be_subtracted):
         raw = self.raw_sensor_response
         lixel_sequence = np.zeros(
             shape=(raw.number_time_slices, raw.number_lixel),
@@ -91,7 +91,7 @@ class Event(object):
             time_slice_duration=raw.time_slice_duration,
             NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
             sequence=lixel_sequence,
-            time_delay_mean=time_delays)
+            time_delay_mean=time_delays_to_be_subtracted)
         return lixel_sequence
 
     def photon_arrival_times_and_lixel_ids(self):
@@ -106,15 +106,17 @@ class Event(object):
 
     def light_field_sequence_for_isochor_image(self):
         return self._light_field_sequence(
-            time_delays=self.light_field_geometry.time_delay_image_mean)
+            time_delays_to_be_subtracted=
+                -self.light_field_geometry.time_delay_image_mean)
 
     def light_field_sequence_for_isochor_aperture(self):
         return self._light_field_sequence(
-            time_delays=self.light_field_geometry.time_delay_mean)
+            time_delays_to_be_subtracted=
+                +self.light_field_geometry.time_delay_mean)
 
     def light_field_sequence_raw(self):
         return self._light_field_sequence(
-            time_delays=np.zeros(
+            time_delays_to_be_subtracted=np.zeros(
                 self.light_field_geometry.number_lixel, dtype=np.float32))
 
     def __repr__(self):
