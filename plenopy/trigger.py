@@ -193,9 +193,7 @@ def apply_refocus_sum_trigger(
     results = []
     for obj, object_distance in enumerate(tp['object_distances']):
         image_sequence = sum_trigger_image_sequence(
-            # I do not know why yet, but the timing-correction for the isochor
-            # aperture-plane gives the most isochore image.
-            light_field_sequence=event.light_field_sequence_for_isochor_aperture(),
+            light_field_sequence=event.light_field_sequence_for_isochor_image(),
             lixel_summation=tp['lixel_summations'][obj],
             integration_time_in_slices=integration_time_in_slices)
 
