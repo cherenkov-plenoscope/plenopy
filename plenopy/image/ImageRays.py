@@ -29,8 +29,8 @@ class ImageRays(object):
         bs = lfg.sensor_plane2imaging_system.sensor_plane_distance
         # 3d intersection with image sensor plane
         sensor_plane_intersections = np.array([
-            bs*np.tan(cx),
-            bs*np.tan(cy),
+            -bs*np.tan(cx),
+            -bs*np.tan(cy),
             bs*np.ones(lfg.number_lixel)]).T
         self.support = np.array([
             x,
@@ -57,8 +57,8 @@ class ImageRays(object):
         pos = self.support + (scale_factors * self.direction.T).T
         ix = pos[:, 0]
         iy = pos[:, 1]
-        cx = np.arctan(ix/image_distance)
-        cy = np.arctan(iy/image_distance)
+        cx = -np.arctan(ix/image_distance)
+        cy = -np.arctan(iy/image_distance)
         return cx, cy
 
     def pixel_ids_of_lixels_in_object_distance(self, object_distance):
