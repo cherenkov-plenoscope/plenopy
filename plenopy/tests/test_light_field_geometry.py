@@ -81,11 +81,10 @@ def test_plot():
         dpi=50)
 
     with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
-        ls_plot = pl.plot.light_field_geometry_2.PlotLightFieldGeometry(
+        ls_plot = pl.plot.light_field_geometry.save_all(
             light_field_geometry=light_field_geometry,
             out_dir=tmp,
             figure_size=figure_size)
-        ls_plot.save()
 
         assert os.path.exists(os.path.join(tmp, 'cx_mean.png'))
         assert os.path.exists(os.path.join(tmp, 'cy_mean.png'))
