@@ -19,13 +19,14 @@ def refocus_images(
     image_rays = image.ImageRays(light_field_geometry)
     images = []
     for object_distance in object_distances:
-        lixel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
+        lixel2pixel, valid = image_rays.pixel_ids_of_lixels_in_object_distance(
             object_distance)
 
         raw_img = np.zeros(light_field_geometry.number_pixel, dtype=np.int64)
 
         for ph in range(len(photon_lixel_ids)):
-            raw_img[lixel2pixel[photon_lixel_ids[ph]]] += 1
+            if valid[photon_lixel_ids[ph]]:
+                raw_img[lixel2pixel[photon_lixel_ids[ph]]] += 1
 
         img = image.Image(
             raw_img,
