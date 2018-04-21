@@ -12,16 +12,28 @@ def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
 
     xyzIs           An array of x,y,z positions and Intensities.
 
-    xyzIs2          A second (optional) array of x,y,z positions and Intensities
-                    to be plotted in red color.
+    xyzIs2          A second (optional) array of x,y,z positions and
+                    intensities to be plotted in red color.
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    add2ax_xyzI(ax, xyzIs, color='b', steps=steps, alpha_max=alpha_max, ball_size=ball_size)
+    add2ax_xyzI(
+        ax,
+        xyzIs,
+        color='b',
+        steps=steps,
+        alpha_max=alpha_max,
+        ball_size=ball_size)
 
     if xyzIs2 is not None:
-        add2ax_xyzI(ax, xyzIs2, color='r', steps=steps, alpha_max=alpha_max, ball_size=ball_size)
+        add2ax_xyzI(
+            ax,
+            xyzIs2,
+            color='r',
+            steps=steps,
+            alpha_max=alpha_max,
+            ball_size=ball_size)
 
 
 def hist3D_to_xyzI(hist, binning, threshold=0):
@@ -55,7 +67,14 @@ def hist3D_to_xyzI(hist, binning, threshold=0):
     return xyzi
 
 
-def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
+def add2ax_xyzI(
+    ax,
+    xyzIs,
+    color='b',
+    alpha_max=0.2,
+    steps=32,
+    ball_size=100.0
+):
     if xyzIs.shape[0] == 0:
         return
 
@@ -68,8 +87,7 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
 
     (starts, ends) = _start_and_end_slices_for_1D_array_chunking(
         number_of_chunks=steps,
-        array_length=length
-    )
+        array_length=length)
 
     mean_chunk_intensities = []
     for i in range(steps):
@@ -95,8 +113,7 @@ def add2ax_xyzI(ax, xyzIs, color='b', alpha_max=0.2, steps=32, ball_size=100.0):
             depthshade=False,
             alpha=relative_I*alpha_max,
             c=color,
-            lw=0
-        )
+            lw=0)
 
 
 def _start_and_end_slices_for_1D_array_chunking(
@@ -109,9 +126,7 @@ def _start_and_end_slices_for_1D_array_chunking(
 
     chunk_edges = np.array(
         np.floor(
-            np.linspace(0.0, array_length-1, number_of_chunks+1)
-        ),
-        dtype=np.int64
-    )
+            np.linspace(0.0, array_length-1, number_of_chunks+1)),
+        dtype=np.int64)
 
     return (chunk_edges[0:-1], chunk_edges[1:])
