@@ -231,7 +231,7 @@ def save_refocus_video(
     fps=25,
     use_absolute_scale=True
 ):
-    with tempfile.TemporaryDirectory() as work_dir:
+    with tempfile.TemporaryDirectory() as tmp:
         image_prefix = 'refocus_'
         save_refocus_stack(
             light_field_geometry=light_field_geometry,
@@ -240,7 +240,7 @@ def save_refocus_video(
             obj_dist_min=obj_dist_min,
             obj_dist_max=obj_dist_max,
             steps=steps,
-            output_path=work_dir,
+            output_path=tmp,
             use_absolute_scale=use_absolute_scale,
             image_prefix=image_prefix)
 
@@ -248,30 +248,29 @@ def save_refocus_video(
         i = 0
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(0).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(tmp, image_prefix+str(0).zfill(6)+'.jpg'),
+                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
+                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(5):
             shutil.copy(
-                os.path.join(
-                    work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(tmp, image_prefix+str(steps-1).zfill(6)+'.jpg'),
+                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
+                os.path.join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
+                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         images2video(
-            image_path=os.path.join(work_dir, 'video_%06d.jpg'),
+            image_path=os.path.join(tmp, 'video_%06d.jpg'),
             output_path=output_path,
             frames_per_second=fps)
