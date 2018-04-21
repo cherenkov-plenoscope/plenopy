@@ -39,7 +39,8 @@ def refocus_images(
 
 
 def save_side_by_side(
-    event,
+    light_field_geometry,
+    photon_lixel_ids,
     object_distances,
     output_path,
     tims_slice_range,
@@ -76,14 +77,8 @@ def save_side_by_side(
         b_margin)
     fig = plt.figure(figsize=(fig_w, fig_h), dpi=dpi)
 
-    (photon_arrival_times, photon_lixel_ids
-        ) = event.photon_arrival_times_and_lixel_ids()
-
-    photon_arrival_times += event.light_field_geometry.time_delay_image_mean[
-        photon_lixel_ids]
-
     images = refocus_images(
-        light_field_geometry=event.light_field_geometry,
+        light_field_geometry=light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         object_distances=object_distances,)
 
@@ -137,10 +132,9 @@ def save_side_by_side(
 
     i+1
 
-    colorbar_ax = fig.add_axes(
-        (
+    colorbar_ax = fig.add_axes((
             (l_anchor+space_w+ruler_w)/fig_w,
-            (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
+            (fig_h-t_margin-(i+1)*ruler_h-colorbar_h-(i+1)*space_h)/fig_h,
             image_w/fig_w,
             (colorbar_h)/fig_h))
     plt.colorbar(
@@ -148,10 +142,9 @@ def save_side_by_side(
         cax=colorbar_ax,
         orientation='horizontal',)
 
-    obj_dist_label_ax = fig.add_axes(
-        (
+    obj_dist_label_ax = fig.add_axes((
             l_anchor/fig_w,
-            (fig_h - t_margin - (i+1)*ruler_h - colorbar_h - (i+1)*space_h)/fig_h,
+            (fig_h-t_margin-(i+1)*ruler_h-colorbar_h-(i+1)*space_h)/fig_h,
             ruler_w/fig_w,
             (colorbar_h)/fig_h))
     obj_dist_label_ax.axis('off')
@@ -168,8 +161,10 @@ def save_side_by_side(
 
 
 def save_refocus_stack(
-    event,
+    light_field_geometry,
+    photon_lixel_ids,
     output_path,
+    title=None,
     obj_dist_min=2e3,
     obj_dist_max=27e3,
     time_slices_window_radius=1,
@@ -186,14 +181,8 @@ def save_refocus_stack(
         np.log10(obj_dist_max),
         steps,)
 
-    (photon_arrival_times, photon_lixel_ids
-        ) = event.photon_arrival_times_and_lixel_ids()
-
-    photon_arrival_times += event.light_field_geometry.time_delay_image_mean[
-        photon_lixel_ids]
-
     images = refocus_images(
-        light_field_geometry=event.light_field_geometry,
+        light_field_geometry=light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         object_distances=object_distances,)
 
@@ -213,7 +202,7 @@ def save_refocus_stack(
     ax_image = plt.subplot(gs[1])
 
     for i in range(len(images)):
-        plt.suptitle(event.simulation_truth.event.short_event_info())
+        plt.suptitle(title)
 
         add2ax_object_distance_ruler(
             ax=ax_ruler,
@@ -233,8 +222,9 @@ def save_refocus_stack(
 
 
 def save_refocus_video(
-    event,
-    output_path,
+    light_field_geometry,
+    photon_lixel_ids,
+    title=None,
     obj_dist_min=2e3,
     obj_dist_max=27e3,
     steps=25,
@@ -244,7 +234,9 @@ def save_refocus_video(
     with tempfile.TemporaryDirectory() as work_dir:
         image_prefix = 'refocus_'
         save_refocus_stack(
-            event,
+            light_field_geometry=light_field_geometry,
+            photon_lixel_ids=photon_lixel_ids,
+            title=title,
             obj_dist_min=obj_dist_min,
             obj_dist_max=obj_dist_max,
             steps=steps,
@@ -268,7 +260,8 @@ def save_refocus_video(
 
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
+                os.path.join(
+                    work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
                 os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
