@@ -232,6 +232,11 @@ class LightFieldGeometry(object):
         self.time_delay_image_std = np.sqrt(
             self.time_delay_std**2 + t_std**2)
 
+    def pixel_and_paxel_of_lixel(self, lixel):
+        pix = lixel//self.number_paxel
+        pax = lixel - pix*self.number_paxel
+        return pix, pax
+
     def __repr__(self):
         out = self.__class__.__name__
         out += '('
