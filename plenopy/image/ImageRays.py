@@ -65,6 +65,8 @@ class ImageRays(object):
         self.direction[:, 1] /= no
         self.direction[:, 2] /= no
         self.pixel_pos_tree = lfg.pixel_pos_tree
+        self.pixel_outer_radius = 2/np.sqrt(3) * 0.5*(
+            lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
 
     def cx_cy_in_object_distance(self, object_distance):
         """
@@ -91,7 +93,8 @@ class ImageRays(object):
         distances, pixel_indicies = self.pixel_pos_tree.query(
             x=cxy,
             k=number_nearest_neighbors)
-        return pixel_indicies
+        inside_fov = distances <= 1.1*self.pixel_outer_radius
+        return pixel_indicies, inside_fov
 
     def __repr__(self):
         out = self.__class__.__name__
