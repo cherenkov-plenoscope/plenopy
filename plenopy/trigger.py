@@ -4,6 +4,8 @@ import scipy.spatial.distance
 from scipy.ndimage import convolve1d
 import array
 from scipy.sparse import coo_matrix
+#from .import plot
+#from .image import Image
 
 
 """
@@ -237,6 +239,14 @@ def apply_refocus_sum_trigger(
                 iteration_converged = False
                 break
             iteration += 1
+
+        """
+        plot.image.show(Image(
+            intensity=image_sequence[
+                time_slice_with_most_active_neighboring_patches],
+            positions_x=event.light_field_geometry.pixel_pos_cx,
+            positions_y=event.light_field_geometry.pixel_pos_cy))
+        """
 
         results.append({
             'exposure_time_in_slices': int(image_sequence.shape[0]),
