@@ -12,14 +12,32 @@ from .FigureSize import FigureSize
 from ..tomography import Rays
 from . import images2video
 
-c_vacuum = 3e8
+SPEED_OF_LIGHT = 299792458
+
+
+def add2ax(
+    light_field_geometry,
+    photon_lixel_ids,
+    photon_arrival_times,
+    ax,
+    alpha=1.0,
+    size=35.
+):
+    xs = light_field_geometry.x_mean[photon_lixel_ids]
+    ys = light_field_geometry.y_mean[photon_lixel_ids]
+    zs = photon_arrival_times*SPEED_OF_LIGHT
+    return ax.scatter(xs, ys, zs, linewidth=0, s=size, alpha=alpha)
 
 
 def save_principal_aperture_arrival_stack(
-    light_field,
+    light_field_geometry,
+    photon_lixel_ids,
+    photon_arrival_times,
     out_dir,
+    elev=15,
     steps=7,
-    threshold=1,
+    alpha=0.3,
+    size=35.,
     figure_size=None
 ):
     if figure_size is None:
@@ -33,60 +51,67 @@ def save_principal_aperture_arrival_stack(
     fig = plt.figure(figsize=(fsz.width, fsz.hight))
     ax = fig.gca(projection='3d')
 
-    rays = Rays.from_light_field_geometry(light_field)
-    intensity_max = light_field.sequence.max()
+    time_start = np.min(photon_arrival_times)
+    time_stop = np.max(photon_arrival_times)
 
-    for t in tqdm.tqdm(range(light_field.number_time_slices)):
-        for i in range(light_field.number_lixel):
-            intensity = light_field.sequence[t, i]
-            if intensity > threshold:
-                distance = c_vacuum*t*light_field.time_slice_duration
-                pos = rays.support[i] + rays.direction[i]*distance
-                I = intensity/intensity_max
-                ax.scatter(pos[0], pos[1], pos[2], lw=0, s=35., alpha=I**2)
+    add2ax(
+        light_field_geometry=light_field_geometry,
+        photon_lixel_ids=photon_lixel_ids,
+        photon_arrival_times=photon_arrival_times,
+        ax=ax,
+        alpha=alpha,
+        size=size)
 
-    aperture_radius = light_field.expected_aperture_radius_of_imaging_system
-    p = Circle((0, 0), aperture_radius, edgecolor='k', facecolor='none', lw=1.)
+    aperture_radius = (
+        light_field_geometry.expected_aperture_radius_of_imaging_system)
+    p = Circle(
+        (0, 0),
+        aperture_radius,
+        edgecolor='k',
+        facecolor='none',
+        linewidth=1.)
     ax.add_patch(p)
     art3d.pathpatch_2d_to_3d(p, z=0, zdir="z")
 
     ax.set_xlim(-aperture_radius, aperture_radius)
     ax.set_ylim(-aperture_radius, aperture_radius)
-    ax.set_zlim(
-        0,
-        c_vacuum*light_field.number_time_slices*light_field.time_slice_duration)
-    ax.set_xlabel('X/m')
-    ax.set_ylabel('Y/m')
-    ax.set_zlabel('Z/m')
+    ax.set_zlim(time_start*SPEED_OF_LIGHT, time_stop*SPEED_OF_LIGHT)
+    ax.set_xlabel('x/m')
+    ax.set_ylabel('y/m')
+    ax.set_zlabel('z/m')
 
     azimuths = np.linspace(0., 360., steps, endpoint=False)
     for i, azimuth in enumerate(azimuths):
-        ax.view_init(elev=15., azim=azimuth)
+        ax.view_init(elev=elev, azim=azimuth)
         plt.subplots_adjust(left=0.01, right=0.99, top=0.99, bottom=0.01)
         plt.savefig(
-            os.path.join(out_dir, 'aperture3D_'+str(i).zfill(6) + ".png"),
+            os.path.join(out_dir, 'aperture3D_{:06d}.png'.format(i)),
             dpi=fsz.dpi)
     plt.close()
 
 
 def save_principal_aperture_arrival_video(
-    light_field,
+    light_field_geometry,
+    photon_lixel_ids,
+    photon_arrival_times,
     output_path,
+    elev=15,
     steps=73,
-    threshold=1,
     frames_per_second=12,
     figure_size=None
 ):
-    with tempfile.TemporaryDirectory(prefix='plenopy_video') as work_dir:
+    with tempfile.TemporaryDirectory(prefix='plenopy_video') as tmp:
 
         save_principal_aperture_arrival_stack(
-            light_field=light_field,
+            light_field_geometry=light_field_geometry,
+            photon_lixel_ids=photon_lixel_ids,
+            photon_arrival_times=photon_arrival_times,
+            out_dir=tmp,
+            elev=elev,
             steps=steps,
-            threshold=threshold,
-            out_dir=work_dir,
-            figure_size=figure_size)
+            figure_size=None)
 
         images2video.images2video(
-            image_path=os.path.join(work_dir, 'aperture3D_%06d.png'),
+            image_path=os.path.join(tmp, 'aperture3D_%06d.png'),
             output_path=output_path,
             frames_per_second=frames_per_second)
