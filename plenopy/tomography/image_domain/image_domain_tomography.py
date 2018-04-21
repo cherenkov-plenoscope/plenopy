@@ -99,7 +99,7 @@ def init_binning_for_depth_of_field(
     return b
 
 
-def binning_is_equak(binning_a, binning_b):
+def binning_is_equal(binning_a, binning_b):
     keys = [
         'focal_length',
         'cx_min',
@@ -275,7 +275,7 @@ def save_imgae_slice_stack(
     if simulation_truth is None:
         intensity_volume_2 = None
     else:
-        assert binning_is_equak(
+        assert binning_is_equal(
             simulation_truth['binning'],
             reconstruction['binning'])
         intensity_volume_2 = reconstructed_volume_intensity_as_cube(
