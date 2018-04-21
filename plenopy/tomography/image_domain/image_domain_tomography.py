@@ -15,7 +15,7 @@ from skimage.measure import LineModelND, ransac
 
 
 def read_trigger_response(event):
-    path = os.path.join(event._path,'refocus_sum_trigger.jsonl')
+    path = os.path.join(event._path, 'refocus_sum_trigger.jsonl')
     with open(path, 'rt') as fin:
         t = json.loads(fin.read())
     return t
@@ -47,7 +47,8 @@ def init_binning_for_depth_of_field(
     b['cx_min'] = cx_min
     b['cx_max'] = cx_max
     b['number_cx_bins'] = number_cx_bins
-    (   b['cx_bin_edges'],
+    (
+        b['cx_bin_edges'],
         b['cx_bin_centers'],
         b['cx_width'],
         b['cx_bin_radius']) = linspace_edges_centers(
@@ -60,11 +61,11 @@ def init_binning_for_depth_of_field(
     b['sen_x_bin_edges'] = np.tan(b['cx_bin_edges'])*focal_length
     b['sen_x_bin_centers'] = np.tan(b['cx_bin_centers'])*focal_length
 
-
     b['cy_min'] = cy_min
     b['cy_max'] = cy_max
     b['number_cy_bins'] = number_cy_bins
-    (   b['cy_bin_edges'],
+    (
+        b['cy_bin_edges'],
         b['cy_bin_centers'],
         b['cy_width'],
         b['cy_bin_radius']) = linspace_edges_centers(
@@ -77,13 +78,13 @@ def init_binning_for_depth_of_field(
     b['sen_y_bin_edges'] = np.tan(b['cy_bin_edges'])*focal_length
     b['sen_y_bin_centers'] = np.tan(b['cy_bin_centers'])*focal_length
 
-
     b['number_bins'] = number_cx_bins*number_cy_bins*number_obj_bins
 
     b['sen_z_min'] = g2b(obj_max, focal_length)
     b['sen_z_max'] = g2b(obj_min, focal_length)
     b['number_sen_z_bins'] = number_obj_bins
-    (   b['sen_z_bin_edges'],
+    (
+        b['sen_z_bin_edges'],
         b['sen_z_bin_centers'],
         b['sen_z_width'],
         b['sen_z_bin_radius']) = linspace_edges_centers(
@@ -99,8 +100,17 @@ def init_binning_for_depth_of_field(
 
 
 def binning_is_equak(binning_a, binning_b):
-    keys = ['focal_length', 'cx_min', 'cx_max', 'cy_min', 'cy_max',
-    'number_cx_bins', 'number_cy_bins', 'obj_min', 'obj_max', 'number_obj_bins']
+    keys = [
+        'focal_length',
+        'cx_min',
+        'cx_max',
+        'cy_min',
+        'cy_max',
+        'number_cx_bins',
+        'number_cy_bins',
+        'obj_min',
+        'obj_max',
+        'number_obj_bins']
     for key in keys:
         if binning_a[key] != binning_b[key]:
             return False
@@ -167,8 +177,8 @@ def reconstructed_volume_intensity_as_cube(
     reconstructed_volume_intensity,
     binning
 ):
-    return reconstructed_volume_intensity.reshape(
-        (   binning['number_sen_x_bins'],
+    return reconstructed_volume_intensity.reshape((
+            binning['number_sen_x_bins'],
             binning['number_sen_y_bins'],
             binning['number_sen_z_bins']),
         order='C')
@@ -188,7 +198,8 @@ def one_more_iteration(reconstruction):
 
     projected_image_ray_I = psf.T.dot(reconstructed_voxel_I)
     image_ray_overlap = image_ray_cross_psf > 0.0
-    projected_image_ray_I[image_ray_overlap] /= image_ray_cross_psf[image_ray_overlap]
+    projected_image_ray_I[image_ray_overlap] /= image_ray_cross_psf[
+        image_ray_overlap]
 
     proj_I_voxel = psf.dot(projected_image_ray_I)
 
@@ -198,7 +209,8 @@ def one_more_iteration(reconstruction):
 
     reconstructed_voxel_I[reconstructed_voxel_I < 0.0] = 0.0
 
-    diff = np.abs(reconstructed_voxel_I - r['reconstructed_volume_intensity']).sum()
+    diff = np.abs(
+        reconstructed_voxel_I - r['reconstructed_volume_intensity']).sum()
     print('Intensity difference to previous iteration '+str(diff))
 
     r['reconstructed_volume_intensity'] = reconstructed_voxel_I.copy()
@@ -247,7 +259,7 @@ def init_simulation_truth_from_event(
             ep['valid_acceptence']]
     )
 
-    r['true_volume_intensity'] =  hist[0].flatten()
+    r['true_volume_intensity'] = hist[0].flatten()
     return r
 
 
@@ -317,7 +329,6 @@ def volume_intensity_sensor_frame_to_xyzi_object_frame(
     return xyzi
 
 
-
 def xyzi_2_xyz(
     xyzi,
     maxP=25
@@ -364,7 +375,8 @@ def init_reconstruction_from_event(event, binning):
         pixel_pos_cx=event.light_field.pixel_pos_cx,
         pixel_pos_cy=event.light_field.pixel_pos_cy)
 
-    (air_shower_photon_ids, lixel_ids_of_photons
+    (
+        air_shower_photon_ids, lixel_ids_of_photons
     ) = photon_classification.classify_air_shower_photons_from_trigger_response(
         event, trigger_region_of_interest=roi)
 
