@@ -118,14 +118,14 @@ def binning_is_equal(binning_a, binning_b):
 
 
 def init_reconstruction(
-    event,
+    light_field_geometry,
+    photon_lixel_ids,
     binning,
-    air_shower_photon_ids,
-    lixel_ids_of_photons,
 ):
-    image_rays = image.ImageRays(event.light_field_geometry)
-    intensities = np.zeros(event.light_field_geometry.number_lixel)
-    for lixel_id in lixel_ids_of_photons[air_shower_photon_ids]:
+    image_rays = image.ImageRays(light_field_geometry)
+
+    intensities = np.zeros(light_field_geometry.number_lixel)
+    for lixel_id in photon_lixel_ids:
         intensities[lixel_id] += 1
 
     psf = make_cached_tomographic_system_matrix(
@@ -136,14 +136,12 @@ def init_reconstruction(
         z_bin_edges=binning['sen_z_bin_edges'],)
 
     r = {}
-    r['event'] = event
     r['binning'] = binning
     r['point_spread_function'] = psf
     r['image_ray_supports'] = image_rays.support
     r['image_ray_directions'] = image_rays.direction
     r['image_ray_intensities'] = intensities
-    r['air_shower_photon_ids'] = air_shower_photon_ids
-    r['lixel_ids_of_photons'] = lixel_ids_of_photons
+    r['photon_lixel_ids'] = photon_lixel_ids
 
     r['reconstructed_volume_intensity'] = np.zeros(
         binning['number_bins'], dtype=np.float32)
@@ -267,7 +265,8 @@ def save_imgae_slice_stack(
     reconstruction,
     simulation_truth=None,
     out_dir='./tomography',
-    sqrt_intensity=False
+    sqrt_intensity=False,
+    event_info_repr=None,
 ):
     r = reconstruction
     os.makedirs(out_dir, exist_ok=True)
@@ -286,7 +285,7 @@ def save_imgae_slice_stack(
         intensity_volume=reconstructed_volume_intensity_as_cube(
             r['reconstructed_volume_intensity'],
             r['binning']),
-        event_info_repr=r['event'].__repr__(),
+        event_info_repr=event_info_repr,
         xy_extent=[
             r['binning']['sen_x_bin_edges'].min(),
             r['binning']['sen_x_bin_edges'].max(),

@@ -115,11 +115,12 @@ def test_image_domain():
     binning = pl.tomography.image_domain.image_domain_tomography.init_binning_for_depth_of_field(
         focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length)
 
+    photon_arrival_times, photon_lixel_ids = event.photon_arrival_times_and_lixel_ids()
+
     rec = pl.tomography.image_domain.image_domain_tomography.init_reconstruction(
-        event=event,
-        binning=binning,
-        air_shower_photon_ids=air_shower_photon_ids,
-        lixel_ids_of_photons=lixel_ids_of_photons,)
+        light_field_geometry=event.light_field_geometry,
+        photon_lixel_ids=photon_lixel_ids,
+        binning=binning,)
 
     for i in range(10):
         rec = pl.tomography.image_domain.image_domain_tomography.one_more_iteration(rec)
