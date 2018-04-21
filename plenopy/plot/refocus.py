@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-from tqdm import tqdm
 import os
 import tempfile
 import shutil
@@ -17,18 +16,19 @@ from .. import sequence
 
 def refocus_images(
     light_field_geometry,
+    photon_lixel_ids,
     object_distances,
-    tims_slice_start,
-    time_slice_end
 ):
     image_rays = ImageRays(light_field_geometry)
     images = []
     for object_distance in object_distances:
-        lisel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
+        lixel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
             object_distance)
 
-        raw_img_sequence = light_field.pixel_sequence_refocus(lisel2pixel)
-        raw_img = raw_img_sequence[tims_slice_start:time_slice_end].sum(axis=0)
+        raw_img = np.zeros(light_field_geometry.number_pixel, dtype=np.int64)
+
+        for ph in range(len(photon_lixel_ids)):
+            raw_img[lixel2pixel[photon_lixel_ids[ph]]] += 1
 
         img = Image(
             raw_img,
@@ -76,11 +76,16 @@ def save_side_by_side(
         b_margin)
     fig = plt.figure(figsize=(fig_w, fig_h), dpi=dpi)
 
+    (photon_arrival_times, photon_lixel_ids
+        ) = event.photon_arrival_times_and_lixel_ids()
+
+    photon_arrival_times += event.light_field_geometry.time_delay_image_mean[
+        photon_lixel_ids]
+
     images = refocus_images(
-        light_field=event.light_field,
-        object_distances=object_distances,
-        tims_slice_start=tims_slice_range[0],
-        time_slice_end=tims_slice_range[1],)
+        light_field_geometry=event.light_field_geometry,
+        photon_lixel_ids=photon_lixel_ids,
+        object_distances=object_distances,)
 
     intensities = [i.intensity for i in images]
 
@@ -181,18 +186,16 @@ def save_refocus_stack(
         np.log10(obj_dist_max),
         steps,)
 
-    light_field_sequence = event.light_field_sequence_for_isochor_image()
+    (photon_arrival_times, photon_lixel_ids
+        ) = event.photon_arrival_times_and_lixel_ids()
 
-    pix_img_seq = event.light_field.pixel_sequence()
-    time_max = sequence.time_slice_with_max_intensity(pix_img_seq)
-    time_start = np.max([time_max-time_slices_window_radius, 0])
-    time_end = np.min([time_max+time_slices_window_radius, pix_img_seq.shape[0]-1])
+    photon_arrival_times += event.light_field_geometry.time_delay_image_mean[
+        photon_lixel_ids]
 
     images = refocus_images(
-        light_field=event.light_field,
-        object_distances=object_distances,
-        tims_slice_start=time_start,
-        time_slice_end=time_end,)
+        light_field_geometry=event.light_field_geometry,
+        photon_lixel_ids=photon_lixel_ids,
+        object_distances=object_distances,)
 
     intensities = [i.intensity for i in images]
 
@@ -209,7 +212,7 @@ def save_refocus_stack(
     ax_ruler = plt.subplot(gs[0])
     ax_image = plt.subplot(gs[1])
 
-    for i in tqdm(range(len(images))):
+    for i in range(len(images)):
         plt.suptitle(event.simulation_truth.event.short_event_info())
 
         add2ax_object_distance_ruler(
