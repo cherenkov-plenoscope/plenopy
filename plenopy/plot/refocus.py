@@ -1,17 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-import os
+from os.path import join
 import tempfile
 import shutil
 from .ruler import add2ax_object_distance_ruler
 from .FigureSize import FigureSize
 from .images2video import images2video
 from .. import image
-from ..image import Image
-from ..image import ImageRays
 from .image import add_pixel_image_to_ax
-from .. import sequence
 
 
 def refocus_images(
@@ -19,7 +16,7 @@ def refocus_images(
     photon_lixel_ids,
     object_distances,
 ):
-    image_rays = ImageRays(light_field_geometry)
+    image_rays = image.ImageRays(light_field_geometry)
     images = []
     for object_distance in object_distances:
         lixel2pixel = image_rays.pixel_ids_of_lixels_in_object_distance(
@@ -30,7 +27,7 @@ def refocus_images(
         for ph in range(len(photon_lixel_ids)):
             raw_img[lixel2pixel[photon_lixel_ids[ph]]] += 1
 
-        img = Image(
+        img = image.Image(
             raw_img,
             light_field_geometry.pixel_pos_cx,
             light_field_geometry.pixel_pos_cy)
@@ -214,7 +211,7 @@ def save_refocus_stack(
         add_pixel_image_to_ax(images[i], ax_image, vmin=vmin, vmax=vmax)
 
         plt.savefig(
-            os.path.join(output_path, image_prefix+str(i).zfill(6)+'.jpg'),
+            join(output_path, image_prefix+str(i).zfill(6)+'.jpg'),
             dpi=fig_size.dpi)
         ax_ruler.clear()
         ax_image.clear()
@@ -224,6 +221,7 @@ def save_refocus_stack(
 def save_refocus_video(
     light_field_geometry,
     photon_lixel_ids,
+    output_path,
     title=None,
     obj_dist_min=2e3,
     obj_dist_max=27e3,
@@ -248,29 +246,29 @@ def save_refocus_video(
         i = 0
         for o in range(5):
             shutil.copy(
-                os.path.join(tmp, image_prefix+str(0).zfill(6)+'.jpg'),
-                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
+                join(tmp, image_prefix+str(0).zfill(6)+'.jpg'),
+                join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps):
             shutil.copy(
-                os.path.join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
+                join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
+                join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(5):
             shutil.copy(
-                os.path.join(tmp, image_prefix+str(steps-1).zfill(6)+'.jpg'),
-                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
+                join(tmp, image_prefix+str(steps-1).zfill(6)+'.jpg'),
+                join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
-                os.path.join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
+                join(tmp, image_prefix+str(o).zfill(6)+'.jpg'),
+                join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
         images2video(
-            image_path=os.path.join(tmp, 'video_%06d.jpg'),
+            image_path=join(tmp, 'video_%06d.jpg'),
             output_path=output_path,
             frames_per_second=fps)
