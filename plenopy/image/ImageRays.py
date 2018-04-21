@@ -27,7 +27,30 @@ class ImageRays(object):
         cy = lfg.cy_mean
         self._f = lfg.expected_focal_length_of_imaging_system
         bs = lfg.sensor_plane2imaging_system.sensor_plane_distance
-        # 3d intersection with image sensor plane
+
+        # Image-ray intersection with image sensor plane
+        # ----------------------------------------------
+        #
+        #                   optical-axis
+        #             \    |
+        #              \ __|__   sensor-plane
+        #               \  | /\
+        #                \ |/ \
+        #                 \|   \
+        #        :        /|   \
+        #        :       / |\   \
+        #  \ ....:      /  | \  \
+        #   \ cx :     /   |  \  \
+        #    \   :    /    |   \ \
+        #     \  :   /     |    \ \
+        #      \ :  /      |     \\
+        #       \: /       |      \\
+        #        \/        |       \
+        #       ------------------------  ---> x aperture-plane
+        #
+        #  Positive cx incoming-directions are reflected onto negative x
+        #  positions on the sensor-plane and vice-versa.
+
         sensor_plane_intersections = np.array([
             -bs*np.tan(cx),
             -bs*np.tan(cy),
