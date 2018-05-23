@@ -199,7 +199,15 @@ def cx_cy_hist2d(lss, ax):
     ax.set_ylabel('cy/deg')
 
 
-def colored_lixels(lss, I, ax, cmap='viridis', vmin=None, vmax=None):
+def colored_lixels(
+    lss,
+    I,
+    ax,
+    cmap='viridis',
+    vmin=None,
+    vmax=None,
+    edgecolors='none'
+):
     I = I.flatten()
     valid = ~np.isnan(I)
     valid_I = I[valid]
@@ -213,7 +221,7 @@ def colored_lixels(lss, I, ax, cmap='viridis', vmin=None, vmax=None):
         valid_polygons,
         array=valid_I,
         cmap=cmap,
-        edgecolors='none',
+        edgecolors=edgecolors,
     )
     if vmin is None:
         vmin = valid_I.min()
