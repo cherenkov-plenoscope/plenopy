@@ -270,6 +270,7 @@ def create_lixel_summation(
     light_field_geometry,
     image_rays,
     object_distance,
+    number_nearest_neighbors=7,
 ):
     """
     Find which lixel belongs to which patch of pixels for a given
@@ -286,7 +287,6 @@ def create_lixel_summation(
                             contains a list of the ids of the lixels which
                             belong to the corresponding patch.
     """
-    number_nearest_neighbors = 7
     epsilon = (
         2.2*light_field_geometry.
         sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
