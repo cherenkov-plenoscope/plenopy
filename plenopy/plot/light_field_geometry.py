@@ -81,13 +81,13 @@ def cy_mean_hist(lss, ax):
 def x_mean_hist(lss, ax):
     x_mean = lss.x_mean[lss.efficiency > 0.0]
     symmetric_hist(x_mean, ax)
-    ax.set_xlabel('principal apertur mean ' + 'x' + '/m')
+    ax.set_xlabel('support-position mean ' + 'x' + '/m')
 
 
 def y_mean_hist(lss, ax):
     y_mean = lss.y_mean[lss.efficiency > 0.0]
     symmetric_hist(y_mean, ax)
-    ax.set_xlabel('principal apertur mean ' + 'y' + '/m')
+    ax.set_xlabel('support-position mean ' + 'y' + '/m')
 
 
 def cx_std_hist(lss, ax):
@@ -109,13 +109,13 @@ def cy_std_hist(lss, ax):
 def x_std_hist(lss, ax):
     x_std = lss.x_std[lss.efficiency > 0.0]
     symmetric_hist(x_std, ax)
-    ax.set_xlabel('principal apertur stddev ' + 'x' + '/m')
+    ax.set_xlabel('support-position stddev ' + 'x' + '/m')
 
 
 def y_std_hist(lss, ax):
     y_std = lss.y_std[lss.efficiency > 0.0]
     symmetric_hist(y_std, ax)
-    ax.set_xlabel('principal apertur stddev ' + 'y' + '/m')
+    ax.set_xlabel('support-position stddev ' + 'y' + '/m')
 
 
 def time_mean_hist(lss, ax):
@@ -183,8 +183,8 @@ def x_y_hist2d(lss, ax):
     y_pos = lss.y_mean[valid]
 
     hist_2d(x_pos, y_pos, ax, aspect='equal')
-    ax.set_xlabel('principal aperture x/m')
-    ax.set_ylabel('principal aperture y/m')
+    ax.set_xlabel('support-position x/m')
+    ax.set_ylabel('support-position y/m')
 
 
 def cx_cy_hist2d(lss, ax):
@@ -374,7 +374,7 @@ class PlotLightFieldGeometry(object):
         coll = colored_lixels(self.lfg, I, ax)
         ax.set_ylabel('sensor plane y/m')
         ax.set_xlabel('sensor plane x/m')
-        fig.colorbar(coll, label='principal aperture ' + name + '/' + unit)
+        fig.colorbar(coll, label='support-position ' + name + '/' + unit)
         self.__save_fig(fig, 'overview_' + name + '.png')
         # zoom center
         outer_radius = 1.0 / np.sqrt(2.0) * np.hypot(
