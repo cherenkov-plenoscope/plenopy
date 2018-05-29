@@ -121,14 +121,14 @@ def y_std_hist(lss, ax):
 def time_mean_hist(lss, ax):
     time_delay_mean = lss.time_delay_mean[lss.efficiency > 0.0]
     symmetric_hist(time_delay_mean, ax)
-    ax.set_xlabel('relative arrival time mean t/s')
+    ax.set_xlabel('relative-arrival-time-delay mean t/s')
 
 
 def time_std_hist(lss, ax):
     time_delay_std = lss.time_delay_std[lss.efficiency > 0.0]
     time_delay_std = time_delay_std[~np.isnan(time_delay_std)]
     symmetric_hist(time_delay_std, ax)
-    ax.set_xlabel('relative arrival time stddev t/s')
+    ax.set_xlabel('relative-arrival-time-delay stddev t/s')
 
 
 def efficieny_hist(lss, ax):
