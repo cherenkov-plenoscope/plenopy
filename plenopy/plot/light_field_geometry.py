@@ -68,14 +68,14 @@ def cx_mean_hist(lss, ax):
     cx_mean = lss.cx_mean[lss.efficiency > 0.0]
     cx_mean = np.rad2deg(cx_mean)
     symmetric_hist(cx_mean, ax)
-    ax.set_xlabel('incoming direction mean c' + 'x' + '/deg')
+    ax.set_xlabel('incident-direction mean c' + 'x' + '/deg')
 
 
 def cy_mean_hist(lss, ax):
     cy_mean = lss.cy_mean[lss.efficiency > 0.0]
     cy_mean = np.rad2deg(cy_mean)
     symmetric_hist(cy_mean, ax)
-    ax.set_xlabel('incoming direction mean c' + 'y' + '/deg')
+    ax.set_xlabel('incident-direction mean c' + 'y' + '/deg')
 
 
 def x_mean_hist(lss, ax):
@@ -95,7 +95,7 @@ def cx_std_hist(lss, ax):
     cx_std = cx_std[~np.isnan(cx_std)]
     cx_std = np.rad2deg(cx_std)
     symmetric_hist(cx_std, ax)
-    ax.set_xlabel('incoming direction stddev c' + 'x' + '/deg')
+    ax.set_xlabel('incident-direction stddev c' + 'x' + '/deg')
 
 
 def cy_std_hist(lss, ax):
@@ -103,7 +103,7 @@ def cy_std_hist(lss, ax):
     cy_std = cy_std[~np.isnan(cy_std)]
     cy_std = np.rad2deg(cy_std)
     symmetric_hist(cy_std, ax)
-    ax.set_xlabel('incoming direction stddev c' + 'y' + '/deg')
+    ax.set_xlabel('incident-direction stddev c' + 'y' + '/deg')
 
 
 def x_std_hist(lss, ax):
