@@ -18,6 +18,10 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
     figure_size             The output figure size and resolution.
                             [optional]
     """
+    plt.rc('text', usetex=True)
+    plt.rc('text.latex', preamble=r'\usepackage{amsmath}') # for \text{}
+    plt.rc('font', family='serif')
+
     plotter = PlotLightFieldGeometry(
         light_field_geometry=light_field_geometry,
         out_dir=out_dir,
@@ -69,26 +73,26 @@ def cx_mean_hist(lss, ax):
     cx_mean = lss.cx_mean[lss.efficiency > 0.0]
     cx_mean = np.rad2deg(cx_mean)
     symmetric_hist(cx_mean, ax)
-    ax.set_xlabel('$c_{x_{mean}}$/deg')
+    ax.set_xlabel(r'$\overline{c_x}$/$^\circ$')
 
 
 def cy_mean_hist(lss, ax):
     cy_mean = lss.cy_mean[lss.efficiency > 0.0]
     cy_mean = np.rad2deg(cy_mean)
     symmetric_hist(cy_mean, ax)
-    ax.set_xlabel('$c_{y_{mean}}$/deg')
+    ax.set_xlabel(r'$\overline{c_y}$/$^\circ$')
 
 
 def x_mean_hist(lss, ax):
     x_mean = lss.x_mean[lss.efficiency > 0.0]
     symmetric_hist(x_mean, ax)
-    ax.set_xlabel('$x_{mean}$/m')
+    ax.set_xlabel(r'$\overline{x}$/m')
 
 
 def y_mean_hist(lss, ax):
     y_mean = lss.y_mean[lss.efficiency > 0.0]
     symmetric_hist(y_mean, ax)
-    ax.set_xlabel('$y_{mean}$/m')
+    ax.set_xlabel(r'$\overline{y}$/m')
 
 
 def cx_std_hist(lss, ax):
@@ -96,7 +100,7 @@ def cx_std_hist(lss, ax):
     cx_std = cx_std[~np.isnan(cx_std)]
     cx_std = np.rad2deg(cx_std)
     symmetric_hist(cx_std, ax)
-    ax.set_xlabel('$c_{x_{std}}$/deg')
+    ax.set_xlabel(r'$\sigma_{c_x}$/$^\circ$')
 
 
 def cy_std_hist(lss, ax):
@@ -104,45 +108,45 @@ def cy_std_hist(lss, ax):
     cy_std = cy_std[~np.isnan(cy_std)]
     cy_std = np.rad2deg(cy_std)
     symmetric_hist(cy_std, ax)
-    ax.set_xlabel('$c_{y_{std}}$/deg')
+    ax.set_xlabel(r'$\sigma_{c_y}$/$^\circ$')
 
 
 def x_std_hist(lss, ax):
     x_std = lss.x_std[lss.efficiency > 0.0]
     symmetric_hist(x_std, ax)
-    ax.set_xlabel('$x_{std}$/m')
+    ax.set_xlabel(r'$\sigma_{x}$/m')
 
 
 def y_std_hist(lss, ax):
     y_std = lss.y_std[lss.efficiency > 0.0]
     symmetric_hist(y_std, ax)
-    ax.set_xlabel('$y_{std}$/m')
+    ax.set_xlabel(r'$\sigma_{y}$/m')
 
 
 def time_mean_hist(lss, ax):
     time_delay_mean = lss.time_delay_mean[lss.efficiency > 0.0]
     symmetric_hist(time_delay_mean, ax)
-    ax.set_xlabel('$t_{mean}$/s')
+    ax.set_xlabel(r'$\overline{t}_\text{pap}$/s')
 
 
 def time_std_hist(lss, ax):
     time_delay_std = lss.time_delay_std[lss.efficiency > 0.0]
     time_delay_std = time_delay_std[~np.isnan(time_delay_std)]
     symmetric_hist(time_delay_std, ax)
-    ax.set_xlabel('$t_{std}$/s')
+    ax.set_xlabel(r'${\sigma_t}_\text{pap}$/s')
 
 
 def efficieny_hist(lss, ax):
     eff = lss.efficiency
     symmetric_hist(eff, ax)
-    ax.set_xlabel('$\eta_{mean}$/1')
+    ax.set_xlabel(r'$\overline{\eta}$/1')
 
 
 def efficieny_relative_error_hist(lss, ax):
     rel_error = lss.efficiency_std[lss.efficiency >
                                    0.0] / lss.efficiency[lss.efficiency > 0.0]
     symmetric_hist(rel_error, ax)
-    ax.set_xlabel('$\eta_{std}$/1')
+    ax.set_xlabel(r'$\sigma_\eta$/1')
 
 
 def hist_2d(x, y, ax, aspect='auto', norm=None):
@@ -175,8 +179,8 @@ def c_vs_c_std(lss, ax):
         c_std[valid],
         ax,
         norm=colors.PowerNorm(gamma=1/2))
-    ax.set_xlabel('$\sqrt{c_{x_{mean}}^2 + c_{y_{mean}}^2}$/deg')
-    ax.set_ylabel('$\sqrt{c_{x_{std}}^2 + c_{y_{std}}^2}$/deg')
+    ax.set_xlabel(r'$\sqrt{\overline{c_x}^2 + \overline{c_y}^2}$/$^\circ$')
+    ax.set_ylabel(r'$\sqrt{\sigma_{c_x}^2 + \sigma_{c_y}^2}$/$^\circ$')
 
 
 def x_y_hist2d(lss, ax):
@@ -192,8 +196,8 @@ def x_y_hist2d(lss, ax):
         ax,
         aspect='equal',
         norm=colors.PowerNorm(gamma=1/2))
-    ax.set_xlabel('$x_{mean}$/m')
-    ax.set_ylabel('$y_{mean}$/m')
+    ax.set_xlabel(r'$\overline{x}$/m')
+    ax.set_ylabel(r'$\overline{y}$/m')
 
 
 def cx_cy_hist2d(lss, ax):
@@ -209,8 +213,8 @@ def cx_cy_hist2d(lss, ax):
         ax,
         aspect='equal',
         norm=colors.PowerNorm(gamma=1/2))
-    ax.set_xlabel('$c_{x_{mean}}$/deg')
-    ax.set_ylabel('$c_{y_{mean}}$/deg')
+    ax.set_xlabel(r'$\overline{c_x}$/$^\circ$')
+    ax.set_ylabel(r'$\overline{c_y}$/$^\circ$')
 
 
 def colored_lixels(
@@ -392,8 +396,8 @@ class PlotLightFieldGeometry(object):
     ):
         fig, ax = self.fig_ax()
         coll = colored_lixels(self.lfg, I, ax)
-        ax.set_ylabel('sensor-plane $y$/m')
-        ax.set_xlabel('sensor-plane $x$/m')
+        ax.set_ylabel(r'sensor-plane $y$/m')
+        ax.set_xlabel(r'sensor-plane $x$/m')
         fig.colorbar(coll, label=name + '/' + unit)
         self.__save_fig(fig, 'overview_' + simple_name + '.jpg')
         # zoom center
@@ -450,59 +454,59 @@ class PlotLightFieldGeometry(object):
             'target': self.save_sensor_plane_overview,
             'args': [
                 self.lfg.time_delay_mean,
-                '$t_{mean}$ for principal-aperture-plane',
+                r'$\overline{t}_\text{pap}$',
                 's',
                 't_mean_aperture']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [
                 self.lfg.time_delay_image_mean,
-                '$t_{mean}$ for image-plane',
+                r'$\overline{t}_\text{img}$',
                 's',
                 't_mean_image']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.efficiency, '$\eta_{mean}$', '1', 'eta_mean']})
+            'args': [self.lfg.efficiency, r'$\overline{\eta}$', '1', 'eta_mean']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.x_mean, '$x_{mean}$', 'm', 'x_mean']})
+            'args': [self.lfg.x_mean, r'$\overline{x}$', 'm', 'x_mean']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.x_std, '$x_{std}$', 'm', 'x_std']})
+            'args': [self.lfg.x_std, r'$\sigma_x$', 'm', 'x_std']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.y_mean, '$y_{mean}$', 'm', 'y_mean']})
+            'args': [self.lfg.y_mean, r'$\overline{y}$', 'm', 'y_mean']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.y_std, '$y_{std}$', 'm', 'y_std']})
+            'args': [self.lfg.y_std, r'$\sigma_y$', 'm', 'y_std']})
 
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [
                 np.rad2deg(self.lfg.cx_mean),
-                '$c_{x_{mean}}$',
-                'deg',
+                r'$\overline{c_x}$',
+                r'$^\circ$',
                 'cx_mean']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [
                 np.rad2deg(self.lfg.cx_std),
-                '$c_{x_{std}}$',
-                'deg',
+                r'$\sigma_{c_x}$',
+                r'$^\circ$',
                 'cx_std']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [
                 np.rad2deg(self.lfg.cy_mean),
-                '$c_{y_{mean}}$',
-                'deg',
+                r'$\overline{c_y}$',
+                r'$^\circ$',
                 'cy_mean']})
         jobs.append({
             'target': self.save_sensor_plane_overview,
             'args': [
                 np.rad2deg(self.lfg.cy_std),
-                '$c_{y_{std}}$',
-                'deg',
+                r'$\sigma_{c_y}$',
+                r'$^\circ$',
                 'cy_std']})
 
         for job in jobs:
