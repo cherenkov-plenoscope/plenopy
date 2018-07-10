@@ -21,7 +21,7 @@ class Run(object):
     path                    The path of this run.
     """
 
-    def __init__(self, path):
+    def __init__(self, path, light_field_geometry=None):
         """
         Parameters
         ----------
@@ -30,11 +30,13 @@ class Run(object):
         self.path = os.path.abspath(path)
         if not os.path.isdir(self.path):
             raise NotADirectoryError(self.path)
-        self._path_input = os.path.join(self.path, 'input')
-        self._path_input_plenoscope = os.path.join(
-            self._path_input, 'plenoscope')
-        self.light_field_geometry = LightFieldGeometry(
-            self._path_input_plenoscope)
+
+        if light_field_geometry is None:
+            self.light_field_geometry = LightFieldGeometry(
+                os.path.join(
+                    self.path, 'input', 'plenoscope'))
+        else:
+            self.light_field_geometry = light_field_geometry
         self.event_numbers = self._event_numbers_in_run()
         self.number_events = self.event_numbers.shape[0]
 
