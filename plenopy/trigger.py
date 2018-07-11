@@ -5,8 +5,8 @@ from scipy.ndimage import convolve1d
 import array
 from scipy.sparse import coo_matrix
 import json
-#from .import plot
-#from .image import Image
+# from .import plot
+# from .image import Image
 
 
 """
