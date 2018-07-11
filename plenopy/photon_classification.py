@@ -2,6 +2,7 @@ from sklearn.cluster import DBSCAN
 import numpy as np
 import array
 from .photon_stream.cython_reader import stream2_cx_cy_arrivaltime_point_cloud
+from .photon_stream.cython_reader import arrival_slices_and_lixel_ids
 from .image.ImageRays import ImageRays
 from . import trigger
 
@@ -61,7 +62,6 @@ def classify_air_shower_photons(
         photon_ids_tc = photon_ids_t[mask_cx_cy_roi]
         lixel_ids_tc = lixel_ids_t[mask_cx_cy_roi]
         cxcyt_tc = cxcyt_t[mask_cx_cy_roi]
-
 
         photon_labels = cluster_air_shower_photons_based_on_density(
             cx_cy_arrival_time_point_cloud=cxcyt_tc,
@@ -147,3 +147,84 @@ def classify_air_shower_photons_from_trigger_response(
         deg_over_s=deg_over_s,
         epsilon_cx_cy_radius=epsilon_cx_cy_radius,
         min_number_photons=min_number_photons)
+
+
+def center_for_region_of_interest(event):
+    trigger_response = trigger.read_trigger_response_of_event(event)
+    return trigger.region_of_interest_from_trigger_response(
+        trigger_response=trigger_response,
+        time_slice_duration=event.raw_sensor_response.time_slice_duration,
+        pixel_pos_cx=event.light_field_geometry.pixel_pos_cx,
+        pixel_pos_cy=event.light_field_geometry.pixel_pos_cy)
+
+
+class RawPhotons():
+    def __init__(
+        self,
+        photon_ids,
+        arrival_slices,
+        lixel_ids,
+        light_field_geometry,
+        t_pap,
+        t_img,
+    ):
+        self.photon_ids = photon_ids
+        self.arrival_slices = arrival_slices
+        self.lixel_ids = lixel_ids
+        self.t_pap = t_pap
+        self.t_img = t_img
+        self._light_field_geometry = light_field_geometry
+        self._image_rays = ImageRays(self._light_field_geometry)
+
+    @classmethod
+    def from_event(cls, event):
+        arrival_slices, lixel_ids = arrival_slices_and_lixel_ids(
+            event.raw_sensor_response)
+        return cls(
+            photon_ids=np.arange(arrival_slices.shape[0], dtype=np.int),
+            arrival_slices=arrival_slices,
+            lixel_ids=lixel_ids,
+            light_field_geometry=event.light_field_geometry,
+            t_pap= (
+                arrival_slices.astype(np.float)*
+                event.raw_sensor_response.time_slice_duration -
+                event.light_field_geometry.time_delay_mean[lixel_ids]),
+            t_img= (
+                arrival_slices.astype(np.float)*
+                event.raw_sensor_response.time_slice_duration +
+                event.light_field_geometry.time_delay_image_mean[lixel_ids])
+            )
+
+    def cx_cy_in_object_distance(self, object_distance):
+        cx, cy = self._image_rays.cx_cy_in_object_distance(object_distance)
+        return cx[self.lixel_ids], cy[self.lixel_ids]
+
+    @property
+    def x(self):
+        return self._light_field_geometry.x_mean[self.lixel_ids]
+
+    @property
+    def y(self):
+        return self._light_field_geometry.y_mean[self.lixel_ids]
+
+    @property
+    def cx(self):
+        return self._light_field_geometry.cx_mean[self.lixel_ids]
+
+    @property
+    def cy(self):
+        return self._light_field_geometry.cy_mean[self.lixel_ids]
+
+    def __repr__(self):
+        out = 'RawPhotons(' + str(len(self.photon_ids)) +' photons)'
+        return out
+
+    def cut(self, mask):
+        return RawPhotons(
+            photon_ids=self.photon_ids[mask],
+            arrival_slices=self.arrival_slices[mask],
+            lixel_ids=self.lixel_ids[mask],
+            light_field_geometry=self._light_field_geometry,
+            t_pap=self.t_pap[mask],
+            t_img=self.t_img[mask])
+
