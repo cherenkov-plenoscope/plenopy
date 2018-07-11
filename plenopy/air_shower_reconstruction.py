@@ -13,7 +13,10 @@ def plot_plane(a, b, c, d):
     return xx, yy, (-d - a * xx - b * yy) / c
 
 
-run = pl.Run('/home/sebastian/Desktop/past_trigger')
+run = pl.Run(
+    '/home/sebastian/Desktop/phd/starter_kit/run/irf/gamma/past_trigger',
+    light_field_geometry=pl.LightFieldGeometry(
+        '/home/sebastian/Desktop/phd/starter_kit/run/light_field_calibration'))
 
 imrays = pl.image.ImageRays(run.light_field_geometry)
 
@@ -33,7 +36,7 @@ for event in run:
     energy = event.simulation_truth.event.corsika_event_header.total_energy_GeV
     energies.append(energy)
 
-    trigger_response = pl.tomography.image_domain.image_domain_tomography.read_trigger_response(event)
+    trigger_response = pl.trigger.read_trigger_response_of_event(event)
     roi = pl.trigger.region_of_interest_from_trigger_response(
         trigger_response=trigger_response,
         time_slice_duration=event.raw_sensor_response.time_slice_duration,
