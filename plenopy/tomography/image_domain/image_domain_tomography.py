@@ -14,13 +14,6 @@ import os
 from skimage.measure import LineModelND, ransac
 
 
-def read_trigger_response(event):
-    path = os.path.join(event._path, 'refocus_sum_trigger.json')
-    with open(path, 'rt') as fin:
-        t = json.loads(fin.read())
-    return t
-
-
 def linspace_edges_centers(start, stop, num):
     bin_edges = np.linspace(start, stop, num+1)
     width = stop - start
@@ -366,7 +359,7 @@ def fit_trajectory_to_point_cloud(
 
 
 def init_reconstruction_from_event(event, binning):
-    trigger_response = read_trigger_response(event)
+    trigger_response = trigger.read_trigger_response_of_event(event)
 
     roi = trigger.region_of_interest_from_trigger_response(
         trigger_response=trigger_response,

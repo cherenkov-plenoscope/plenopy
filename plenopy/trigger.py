@@ -4,6 +4,7 @@ import scipy.spatial.distance
 from scipy.ndimage import convolve1d
 import array
 from scipy.sparse import coo_matrix
+import json
 #from .import plot
 #from .image import Image
 
@@ -445,3 +446,14 @@ def region_of_interest_from_trigger_response(
         'cx_center_roi': pixel_pos_cx[trigger_response[m]['patches'][0]],
         'cy_center_roi': pixel_pos_cy[trigger_response[m]['patches'][0]],
         'object_distance': trigger_response[m]['object_distance']}
+
+
+def read_trigger_response(path):
+    with open(path, 'rt') as fin:
+        t = json.loads(fin.read())
+    return t
+
+
+def read_trigger_response_of_event(event):
+    path = os.path.join(event._path, 'refocus_sum_trigger.json')
+    return read_trigger_response(path)
