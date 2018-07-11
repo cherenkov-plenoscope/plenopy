@@ -15,7 +15,7 @@ from skimage.measure import LineModelND, ransac
 
 
 def read_trigger_response(event):
-    path = os.path.join(event._path, 'refocus_sum_trigger.jsonl')
+    path = os.path.join(event._path, 'refocus_sum_trigger.json')
     with open(path, 'rt') as fin:
         t = json.loads(fin.read())
     return t
