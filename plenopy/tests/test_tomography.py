@@ -107,10 +107,11 @@ def test_image_domain():
         pixel_pos_cx=run.light_field_geometry.pixel_pos_cx,
         pixel_pos_cy=run.light_field_geometry.pixel_pos_cy,)
 
-    (air_shower_photon_ids, lixel_ids_of_photons
-        ) = pl.photon_classification.classify_air_shower_photons_from_trigger_response(
-            event=event,
-            trigger_region_of_interest=roi)
+    photons = pl.classify.RawPhotons.from_event(event)
+
+    cherenkov_photons = pl.classify.classify_cherenkov_photons_in_roi_in_image(
+        photons=photons,
+        roi=roi)
 
     binning = pl.tomography.image_domain.image_domain_tomography.init_binning_for_depth_of_field(
         focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length)
