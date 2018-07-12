@@ -109,7 +109,7 @@ def test_image_domain():
 
     photons = pl.classify.RawPhotons.from_event(event)
 
-    cherenkov_photons = pl.classify.classify_cherenkov_photons_in_roi_in_image(
+    cherenkov_photons = pl.classify.cherenkov_photons_in_roi_in_image(
         photons=photons,
         roi=roi)
 

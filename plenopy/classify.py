@@ -149,7 +149,7 @@ def benchmark(
         'number_true_negatives': is_nsb[photon_ids_nsb].sum()}
 
 
-def classify_cherenkov_photons_in_roi_in_image(
+def cherenkov_photons_in_roi_in_image(
     roi,
     photons,
     time_radius_roi=5e-9,
