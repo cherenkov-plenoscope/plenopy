@@ -64,7 +64,7 @@ class RawPhotons():
             light_field_geometry=event.light_field_geometry,
             t_pap= (
                 arrival_slices.astype(np.float)*
-                event.raw_sensor_response.time_slice_duration -
+                event.raw_sensor_response.time_slice_duration +
                 event.light_field_geometry.time_delay_mean[lixel_ids]),
             t_img= (
                 arrival_slices.astype(np.float)*
@@ -157,6 +157,8 @@ def cherenkov_photons_in_roi_in_image(
     epsilon_cx_cy_radius=np.deg2rad(0.075),
     min_number_photons=20,
     deg_over_s=0.375e9,
+    number_refocuses=5,
+    object_distance_radius=2.5e3
 ):
     start_time = roi['time_center_roi'] - time_radius_roi
     end_time = roi['time_center_roi'] + time_radius_roi
@@ -170,13 +172,22 @@ def cherenkov_photons_in_roi_in_image(
     roi_mask_c = ph_c_distance_square <= c_radius_square
     roi_mask = roi_mask_time & roi_mask_c
     photons_in_roi = photons.cut(roi_mask)
-    photon_labels = cluster_air_shower_photons_based_on_density(
-        cx_cy_arrival_time_point_cloud=np.c_[
-            photons_in_roi.cx_cy_in_object_distance(roi['object_distance'])[0],
-            photons_in_roi.cx_cy_in_object_distance(roi['object_distance'])[1],
-            photons_in_roi.t_img],
-        epsilon_cx_cy_radius=epsilon_cx_cy_radius,
-        min_number_photons=min_number_photons,
-        deg_over_s=deg_over_s)
-    cherenkov_mask = photon_labels >= 0
+
+    object_distances = np.linspace(
+        roi['object_distance'] - object_distance_radius,
+        roi['object_distance'] + object_distance_radius,
+        number_refocuses)
+    cherenkov_mask = np.zeros(
+        photons_in_roi.photon_ids.shape[0], dtype=np.bool)
+    for object_distance in object_distances:
+        photon_labels = cluster_air_shower_photons_based_on_density(
+            cx_cy_arrival_time_point_cloud=np.c_[
+                photons_in_roi.cx_cy_in_object_distance(object_distance)[0],
+                photons_in_roi.cx_cy_in_object_distance(object_distance)[1],
+                photons_in_roi.t_img],
+            epsilon_cx_cy_radius=epsilon_cx_cy_radius,
+            min_number_photons=min_number_photons,
+            deg_over_s=deg_over_s)
+        refocus_mask = photon_labels >= 0
+        cherenkov_mask = np.logical_or(cherenkov_mask, refocus_mask)
     return photons_in_roi.cut(cherenkov_mask)
