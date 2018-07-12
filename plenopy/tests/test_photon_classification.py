@@ -11,7 +11,7 @@ def test_benchmark_of_perfect_detector():
 
     photon_ids_cherenkov = np.arange(number_cherenkov_photons)
 
-    result = pl.photon_classification.benchmark(
+    result = pl.classify.benchmark(
         pulse_origins=pulse_origins,
         photon_ids_cherenkov=photon_ids_cherenkov)
 
@@ -43,7 +43,7 @@ def test_benchmark_of_normal_detector():
         int(number_cherenkov_photons*1.5),
         dtype=np.int)
 
-    result = pl.photon_classification.benchmark(
+    result = pl.classify.benchmark(
         pulse_origins=pulse_origins,
         photon_ids_cherenkov=photon_ids_cherenkov)
 

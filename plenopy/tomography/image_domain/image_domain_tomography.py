@@ -4,7 +4,7 @@ from .transform import image_distance_2_object_distance as b2g
 from .transform import xyz2cxcyb
 from ..narrow_angle.deconvolution import make_cached_tomographic_system_matrix
 from ..narrow_angle.deconvolution import update
-from ... import photon_classification
+from ... import classify
 from ... import image
 from ... import trigger
 from ..simulation_truth import emission_positions_of_photon_bunches
@@ -369,7 +369,7 @@ def init_reconstruction_from_event(event, binning):
 
     (
         air_shower_photon_ids, lixel_ids_of_photons
-    ) = photon_classification.classify_air_shower_photons_from_trigger_response(
+    ) = classify.classify_air_shower_photons_from_trigger_response(
         event, trigger_region_of_interest=roi)
 
     return init_reconstruction(
