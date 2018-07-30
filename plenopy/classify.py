@@ -158,7 +158,8 @@ def cherenkov_photons_in_roi_in_image(
     min_number_photons=20,
     deg_over_s=0.375e9,
     number_refocuses=5,
-    object_distance_radius=2.5e3
+    object_distance_radius=2.5e3,
+    object_distances=None
 ):
     start_time = roi['time_center_roi'] - time_radius_roi
     end_time = roi['time_center_roi'] + time_radius_roi
@@ -173,10 +174,11 @@ def cherenkov_photons_in_roi_in_image(
     roi_mask = roi_mask_time & roi_mask_c
     photons_in_roi = photons.cut(roi_mask)
 
-    object_distances = np.linspace(
-        roi['object_distance'] - object_distance_radius,
-        roi['object_distance'] + object_distance_radius,
-        number_refocuses)
+    if object_distances is None:
+        object_distances = np.linspace(
+            roi['object_distance'] - object_distance_radius,
+            roi['object_distance'] + object_distance_radius,
+            number_refocuses)
     cherenkov_mask = np.zeros(
         photons_in_roi.photon_ids.shape[0], dtype=np.bool)
     for object_distance in object_distances:
