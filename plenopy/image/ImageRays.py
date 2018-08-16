@@ -26,7 +26,6 @@ class ImageRays(object):
         cx = lfg.cx_mean
         cy = lfg.cy_mean
         self._f = lfg.expected_focal_length_of_imaging_system
-        bs = lfg.sensor_plane2imaging_system.sensor_plane_distance
 
         # Image-ray intersection with image sensor plane
         # ----------------------------------------------
@@ -52,9 +51,9 @@ class ImageRays(object):
         #  positions on the sensor-plane and vice-versa.
 
         sensor_plane_intersections = np.array([
-            -bs*np.tan(cx),
-            -bs*np.tan(cy),
-            bs*np.ones(lfg.number_lixel)]).T
+            -self._f*np.tan(cx),
+            -self._f*np.tan(cy),
+            self._f*np.ones(lfg.number_lixel)]).T
         self.support = np.array([
             x,
             y,
