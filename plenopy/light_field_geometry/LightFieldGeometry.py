@@ -227,8 +227,10 @@ class LightFieldGeometry(object):
         t_mean = d_mean/speed_of_light
         t_std = d_std/speed_of_light
 
+        valid = np.invert(np.isnan(t_mean))
+
         self.time_delay_image_mean = -self.time_delay_mean + t_mean
-        self.time_delay_image_mean -= np.min(self.time_delay_image_mean)
+        self.time_delay_image_mean -= np.min(self.time_delay_image_mean[valid])
         self.time_delay_image_std = np.sqrt(
             self.time_delay_std**2 + t_std**2)
 
