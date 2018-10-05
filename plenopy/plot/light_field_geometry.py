@@ -224,7 +224,8 @@ def colored_lixels(
     cmap='Greys',
     vmin=None,
     vmax=None,
-    edgecolors='none'
+    edgecolors='none',
+    linewidths=None
 ):
     I = I.flatten()
     valid = ~np.isnan(I)
@@ -240,6 +241,7 @@ def colored_lixels(
         array=valid_I,
         cmap=cmap,
         edgecolors=edgecolors,
+        linewidths=linewidths,
     )
     if vmin is None:
         vmin = valid_I.min()
