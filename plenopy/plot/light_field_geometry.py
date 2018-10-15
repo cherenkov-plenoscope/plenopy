@@ -389,127 +389,233 @@ class PlotLightFieldGeometry(object):
         self.__save_fig(fig, 'cx_cy_mean_hist2d.jpg')
         plt.close(fig)
 
+
     def save_sensor_plane_overview(
         self,
         I,
         name,
         unit,
-        simple_name
+        simple_name,
+        indicate_zoom_region_center=True,
+        indicate_zoom_region_pos_x=True,
+        indicate_zoom_region_pos_y=True,
     ):
         fig, ax = self.fig_ax()
         coll = colored_lixels(self.lfg, I, ax)
         ax.set_ylabel(r'sensor-plane $y$/m')
         ax.set_xlabel(r'sensor-plane $x$/m')
         fig.colorbar(coll, label=name + '/' + unit)
-        self.__save_fig(fig, 'overview_' + simple_name + '.jpg')
-        # zoom center
+        #self.__save_fig(fig, 'overview_' + simple_name + '.jpg')
         outer_radius = 1.0 / np.sqrt(2.0) * np.hypot(
             self.lfg.lixel_positions_x.max(),
-            self.lfg.lixel_positions_y.max()
-        )
+            self.lfg.lixel_positions_y.max())
         zoom_radius = 1.0 / 10.0 * outer_radius
-        ax.set_ylim([-zoom_radius, zoom_radius])
-        ax.set_xlim([-zoom_radius, zoom_radius])
+
+        # zoom center
+        zoom_center_x = [-zoom_radius, zoom_radius]
+        zoom_center_y = [-zoom_radius, zoom_radius]
+        ax.set_ylim(zoom_center_y)
+        ax.set_xlim(zoom_center_x)
         self.__save_fig(fig, 'overview_' + simple_name + '_zoom_center.jpg')
+
         # zoom pos x
-        ax.set_ylim([-zoom_radius, zoom_radius])
-        ax.set_xlim([
+        zoom_posx_x = [
             0.95 * outer_radius - zoom_radius,
-            0.95 * outer_radius + zoom_radius])
+            0.95 * outer_radius + zoom_radius]
+        zoom_posx_y = [-zoom_radius, zoom_radius]
+        ax.set_xlim(zoom_posx_x)
+        ax.set_ylim(zoom_posx_y)
         self.__save_fig(fig, 'overview_' + simple_name + '_zoom_pos_x.jpg')
+
         # zoom pos y
-        ax.set_ylim([
+        zoom_posy_x = [-zoom_radius, zoom_radius]
+        zoom_posy_y = [
             0.95 * outer_radius - zoom_radius,
-            0.95 * outer_radius + zoom_radius])
-        ax.set_xlim([-zoom_radius, zoom_radius])
+            0.95 * outer_radius + zoom_radius]
+        ax.set_xlim(zoom_posy_x)
+        ax.set_ylim(zoom_posy_y)
         self.__save_fig(fig, 'overview_' + simple_name + '_zoom_pos_y.jpg')
+
+        # full
+        outer_fov_r = 0.95 * outer_radius + zoom_radius
+        if indicate_zoom_region_center:
+            add_box_to_ax(
+                ax,
+                xlim=zoom_center_x,
+                ylim=zoom_center_y,
+                linewidth=1)
+        if indicate_zoom_region_pos_x:
+            add_box_to_ax(
+                ax,
+                xlim=zoom_posx_x,
+                ylim=zoom_posx_y,
+                linewidth=1)
+        if indicate_zoom_region_pos_y:
+            add_box_to_ax(
+                ax,
+                xlim=zoom_posy_x,
+                ylim=zoom_posy_y,
+                linewidth=1)
+        ax.set_ylim(1.01*np.array([-outer_fov_r, outer_fov_r]))
+        ax.set_xlim(1.01*np.array([-outer_fov_r, outer_fov_r]))
+        self.__save_fig(fig, 'overview_' + simple_name + '.jpg')
         plt.close(fig)
+
 
     def save(self):
         os.makedirs(self.out_dir, exist_ok=True)
 
-        jobs = []
-        jobs.append({'target': self.save_cx_mean, 'args': []})
-        jobs.append({'target': self.save_cy_mean, 'args': []})
+        self.save_cx_mean()
+        self.save_cy_mean()
+        self.save_cx_stddev()
+        self.save_cy_stddev()
 
-        jobs.append({'target': self.save_x_mean, 'args': []})
-        jobs.append({'target': self.save_y_mean, 'args': []})
+        self.save_x_mean()
+        self.save_y_mean()
+        self.save_x_stddev()
+        self.save_y_stddev()
 
-        jobs.append({'target': self.save_cx_stddev, 'args': []})
-        jobs.append({'target': self.save_cy_stddev, 'args': []})
+        self.save_time_mean()
+        self.save_time_stddev()
 
-        jobs.append({'target': self.save_x_stddev, 'args': []})
-        jobs.append({'target': self.save_y_stddev, 'args': []})
+        self.save_efficiency()
+        self.save_efficiency_relative_error()
 
-        jobs.append({'target': self.save_time_mean, 'args': []})
-        jobs.append({'target': self.save_time_stddev, 'args': []})
+        self.save_c_mean_vs_c_std()
+        self.save_x_y_hist2d()
+        self.save_cx_cy_hist2d()
 
-        jobs.append({'target': self.save_efficiency, 'args': []})
-        jobs.append(
-            {'target': self.save_efficiency_relative_error, 'args': []})
+        self.save_sensor_plane_overview(
+            I=self.lfg.time_delay_mean,
+            name=r'$\overline{t}_\text{pap}$',
+            unit='s',
+            simple_name='t_mean_aperture',
+            indicate_zoom_region_center=True,
+            indicate_zoom_region_pos_x=True,
+            indicate_zoom_region_pos_y=True)
 
-        jobs.append({'target': self.save_c_mean_vs_c_std, 'args': []})
-        jobs.append({'target': self.save_x_y_hist2d, 'args': []})
-        jobs.append({'target': self.save_cx_cy_hist2d, 'args': []})
+        self.save_sensor_plane_overview(
+            I=self.lfg.time_delay_image_mean,
+            name=r'$\overline{t}_\text{img}$',
+            unit='s',
+            simple_name='t_mean_image',
+            indicate_zoom_region_center=True,
+            indicate_zoom_region_pos_x=True,
+            indicate_zoom_region_pos_y=True)
 
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                self.lfg.time_delay_mean,
-                r'$\overline{t}_\text{pap}$',
-                's',
-                't_mean_aperture']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                self.lfg.time_delay_image_mean,
-                r'$\overline{t}_\text{img}$',
-                's',
-                't_mean_image']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.efficiency, r'$\overline{\eta}$', '1', 'eta_mean']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.x_mean, r'$\overline{x}$', 'm', 'x_mean']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.x_std, r'$\sigma_x$', 'm', 'x_std']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.y_mean, r'$\overline{y}$', 'm', 'y_mean']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [self.lfg.y_std, r'$\sigma_y$', 'm', 'y_std']})
+        self.save_sensor_plane_overview(
+            I=self.lfg.efficiency,
+            name=r'$\overline{\eta}$',
+            unit='1',
+            simple_name='eta_mean',
+            indicate_zoom_region_center=True,
+            indicate_zoom_region_pos_x=True,
+            indicate_zoom_region_pos_y=True)
 
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                np.rad2deg(self.lfg.cx_mean),
-                r'$\overline{c_x}$',
-                r'$^\circ$',
-                'cx_mean']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                np.rad2deg(self.lfg.cx_std),
-                r'$\sigma_{c_x}$',
-                r'$^\circ$',
-                'cx_std']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                np.rad2deg(self.lfg.cy_mean),
-                r'$\overline{c_y}$',
-                r'$^\circ$',
-                'cy_mean']})
-        jobs.append({
-            'target': self.save_sensor_plane_overview,
-            'args': [
-                np.rad2deg(self.lfg.cy_std),
-                r'$\sigma_{c_y}$',
-                r'$^\circ$',
-                'cy_std']})
+        self.save_sensor_plane_overview(
+            I=self.lfg.x_mean,
+            name=r'$\overline{x}$',
+            unit='m',
+            simple_name='x_mean',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=True,
+            indicate_zoom_region_pos_y=False)
 
-        for job in jobs:
-            job['target'](*job['args'])
+        self.save_sensor_plane_overview(
+            I=self.lfg.x_std,
+            name=r'$\sigma_x$',
+            unit='m',
+            simple_name='x_std',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=self.lfg.y_mean,
+            name=r'$\overline{y}$',
+            unit='m',
+            simple_name='y_mean',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=True,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=self.lfg.y_std,
+            name=r'$\sigma_y$',
+            unit='m',
+            simple_name='y_std',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=np.rad2deg(self.lfg.cx_mean),
+            name=r'$\overline{c_x}$',
+            unit=r'$^\circ$',
+            simple_name='cx_mean',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=np.rad2deg(self.lfg.cx_std),
+            name=r'$\sigma_{c_x}$',
+            unit=r'$^\circ$',
+            simple_name='cx_std',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=np.rad2deg(self.lfg.cy_mean),
+            name=r'$\overline{c_y}$',
+            unit=r'$^\circ$',
+            simple_name='cy_mean',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+        self.save_sensor_plane_overview(
+            I=np.rad2deg(self.lfg.cy_std),
+            name=r'$\sigma_{c_y}$',
+            unit=r'$^\circ$',
+            simple_name='cy_std',
+            indicate_zoom_region_center=False,
+            indicate_zoom_region_pos_x=False,
+            indicate_zoom_region_pos_y=False)
+
+
+def add_box_to_ax(
+    ax,
+    xlim,
+    ylim,
+    color='k',
+    linewidth=None):
+    #  __
+    # |  |
+    ax.plot(
+        [xlim[0], xlim[1]],
+        [ylim[0], ylim[0]],
+        color=color,
+        linewidth=linewidth)
+    #  __
+    # |__
+    ax.plot(
+        [xlim[1], xlim[1]],
+        [ylim[0], ylim[1]],
+        color=color,
+        linewidth=linewidth)
+    #
+    # |__|
+    ax.plot(
+        [xlim[0], xlim[1]],
+        [ylim[1], ylim[1]],
+        color=color,
+        linewidth=linewidth)
+    #  __
+    #  __|
+    ax.plot(
+        [xlim[0], xlim[0]],
+        [ylim[0], ylim[1]],
+        color=color,
+        linewidth=linewidth)
