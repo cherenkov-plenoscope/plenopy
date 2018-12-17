@@ -57,7 +57,7 @@ def save_principal_aperture_arrival_stack(
     add2ax(
         light_field_geometry=light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
-        photon_arrival_times=photon_arrival_times,
+        photon_arrival_times=photon_arrival_times - time_start,
         ax=ax,
         alpha=alpha,
         size=size)
@@ -71,11 +71,14 @@ def save_principal_aperture_arrival_stack(
         facecolor='none',
         linewidth=1.)
     ax.add_patch(p)
-    art3d.pathpatch_2d_to_3d(p, z=0, zdir="z")
+    art3d.pathpatch_2d_to_3d(
+        p,
+        z=0,
+        zdir="z")
 
     ax.set_xlim(-aperture_radius, aperture_radius)
     ax.set_ylim(-aperture_radius, aperture_radius)
-    ax.set_zlim(time_start*SPEED_OF_LIGHT, time_stop*SPEED_OF_LIGHT)
+    ax.set_zlim(0, (time_stop - time_start)*SPEED_OF_LIGHT)
     ax.set_xlabel('x/m')
     ax.set_ylabel('y/m')
     ax.set_zlabel('z/m')
