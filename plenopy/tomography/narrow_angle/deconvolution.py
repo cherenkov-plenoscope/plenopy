@@ -3,9 +3,9 @@ import numpy as np
 from joblib import Memory
 import os
 
-cachedir = '/tmp/plenopy'
-os.makedirs(cachedir, exist_ok=True)
-memory = Memory(cachedir=cachedir, verbose=0)
+cachedir_location = '/tmp/plenopy'
+os.makedirs(cachedir_location, exist_ok=True)
+memory = Memory(location=cachedir_location, verbose=0)
 
 
 def update(
