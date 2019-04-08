@@ -34,26 +34,26 @@ class RawLightFieldSensorResponse(object):
         with open(path, 'rb') as f:
             # header
             # ------
-            self.time_slice_duration = np.fromstring(
+            self.time_slice_duration = np.frombuffer(
                 f.read(4),
                 dtype=np.float32,
                 count=1)[0]
-            self.number_lixel = np.fromstring(
+            self.number_lixel = np.frombuffer(
                 f.read(4),
                 dtype=np.uint32,
                 count=1)[0]
-            self.number_time_slices = np.fromstring(
+            self.number_time_slices = np.frombuffer(
                 f.read(4),
                 dtype=np.uint32,
                 count=1)[0]
-            self.number_symbols = np.fromstring(
+            self.number_symbols = np.frombuffer(
                 f.read(4),
                 dtype=np.uint32,
                 count=1)[0]
 
             # raw photon-stream
             # -----------------
-            self.photon_stream = np.fromstring(
+            self.photon_stream = np.frombuffer(
                 f.read(self.number_symbols),
                 dtype=np.uint8)
 
