@@ -2,11 +2,11 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-Read, plot, and investigate the recorded events of the Atmospheric Cherenkov Plenoscope (ACP). Plenopy reads the ACP events written by the ACP simulation mctracer.
+Read, plot, and investigate the recorded events of the Atmospheric Cherenkov Plenoscope (ACP). Plenopy reads the ACP events written by the Cherenkov-plenoscope-simulation in [merlict](https://github.com/cherenkov-plenoscope/merlict_development_kit).
 
-## install 
+## install
 ```bash
-pip install git+https://github.com/TheBigLebowSky/plenopy/
+pip install git+https://github.com/cherenkov-plenoscope/plenopy/
 ```
 
 

@@ -1,5 +1,5 @@
 """
-The magic-numbers of the mctracer plenoscope-simulation to describe the
+The magic-numbers of the merlict plenoscope-simulation to describe the
 origin of pulses in the raw-light-field-sensor-response.
 
 - Positive integers represent the index of the photon from the input file,

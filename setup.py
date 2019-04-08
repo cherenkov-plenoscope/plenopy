@@ -21,7 +21,7 @@ setup(
     name='plenopy',
     version='0.1.1',
     description='View and work on plenoscope events',
-    url='',
+    url='https://github.com/cherenkov-plenoscope/plenopy.git',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
     author_email='sebmuell@phys.ethz.ch',
     license='GPL v3',

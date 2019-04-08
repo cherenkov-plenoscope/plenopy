@@ -20,7 +20,7 @@ class PhotonBunches(object):
 
     probability_to_reach_observation_level          In CORSIKA this is the
                                                     photon bunch weight.
-                                                    However in the mctracer
+                                                    However in the merlict
                                                     there are only single
                                                     photons, so this weight is
                                                     supposed to be less equal

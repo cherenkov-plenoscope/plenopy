@@ -116,7 +116,7 @@ def benchmark(
     pulse_origins           Array 1D. The origins of the pulses in the raw
                             response of the light-field-sensor. Positive
                             integers encode the ids of the photon from the
-                            input file used in the mctracer photon-propagator.
+                            input file used in the merlict photon-propagator.
                             The input files are usually Cherenkov-photons from
                             the KIT-CORSIKA air-shower-simulation.
                             Negative integers encode night-sky-background and
