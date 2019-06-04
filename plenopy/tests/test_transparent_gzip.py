@@ -20,8 +20,12 @@ def test_transparent_gzip():
         tmp_run_path = os.path.join(tmp, 'run.acp')
         shutil.copytree(run_path, tmp_run_path)
 
-        pl.tools.acp_format.compress_event_in_place(
-            os.path.join(tmp_run_path, '1'))
+        event_numbers = (
+            pl.tools.acp_format.all_folders_with_digit_names_in_path(
+                tmp_run_path))
+        for event_number in event_numbers:
+            pl.tools.acp_format.compress_event_in_place(
+                os.path.join(tmp_run_path, '{:d}'.format(event_number)))
 
         assert pl.tools.acp_format.is_gzipped(
             os.path.join(
