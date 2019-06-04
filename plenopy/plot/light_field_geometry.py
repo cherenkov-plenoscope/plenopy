@@ -19,7 +19,7 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
                             [optional]
     """
     plt.rc('text', usetex=True)
-    plt.rc('text.latex', preamble=r'\usepackage{amsmath}') # for \text{}
+    plt.rc('text.latex', preamble=r'\usepackage{amsmath}') # for \mathrm{}
     plt.rc('font', family='serif')
 
     plotter = PlotLightFieldGeometry(
@@ -126,14 +126,14 @@ def y_std_hist(lss, ax):
 def time_mean_hist(lss, ax):
     time_delay_mean = lss.time_delay_mean[lss.efficiency > 0.0]
     symmetric_hist(time_delay_mean, ax)
-    ax.set_xlabel(r'$\overline{t}_\text{pap}$/s')
+    ax.set_xlabel(r'$\overline{t}_\mathrm{pap}$/s')
 
 
 def time_std_hist(lss, ax):
     time_delay_std = lss.time_delay_std[lss.efficiency > 0.0]
     time_delay_std = time_delay_std[~np.isnan(time_delay_std)]
     symmetric_hist(time_delay_std, ax)
-    ax.set_xlabel(r'${\sigma_t}_\text{pap}$/s')
+    ax.set_xlabel(r'${\sigma_t}_\mathrm{pap}$/s')
 
 
 def efficieny_hist(lss, ax):
@@ -487,7 +487,7 @@ class PlotLightFieldGeometry(object):
 
         self.save_sensor_plane_overview(
             I=self.lfg.time_delay_mean,
-            name=r'$\overline{t}_\text{pap}$',
+            name=r'$\overline{t}_\mathrm{pap}$',
             unit='s',
             simple_name='t_mean_aperture',
             indicate_zoom_region_center=True,
@@ -496,7 +496,7 @@ class PlotLightFieldGeometry(object):
 
         self.save_sensor_plane_overview(
             I=self.lfg.time_delay_image_mean,
-            name=r'$\overline{t}_\text{img}$',
+            name=r'$\overline{t}_\mathrm{img}$',
             unit='s',
             simple_name='t_mean_image',
             indicate_zoom_region_center=True,
