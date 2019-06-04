@@ -19,7 +19,7 @@ def all_folders_with_digit_names_in_path(path):
     for fi in files_in_run_folder:
         if os.path.isdir(fi) and os.path.basename(fi).isdigit():
             events.append(int(os.path.basename(fi)))
-    events = np.array(events)
+    events = np.array(events, dtype=np.int64)
     events.sort()
     return events
 
