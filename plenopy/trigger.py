@@ -10,7 +10,7 @@ import os
 # from .image import Image
 
 
-"""
+r"""
                           Light-Field-Trigger
              A refocused and patch-wise sum-trigger for the
                     Atmospheric Cherenkov Plenoscope

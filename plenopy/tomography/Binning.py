@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Binning(object):
-    """
+    r"""
     Binning of the 3D atmospheric detector volume
 
     The binned volume is defined in the frame of the principal aperture plane,

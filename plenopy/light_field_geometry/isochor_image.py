@@ -1,4 +1,4 @@
-"""
+r"""
 Isochorus-imaging
 
 On the ideal imaging-system an isochorus fron of light coming from
