@@ -1,6 +1,6 @@
 import numpy as np
 from . import mctracer_pulse_origins as po
-
+from .. tools.acp_format import gz_transparent_open
 
 class Detector(object):
     """
@@ -14,7 +14,8 @@ class Detector(object):
         path        The input path to the additional detector
                     pulse origin binary file.
         """
-        self.pulse_origins = np.fromfile(path, dtype=np.int32)
+        with gz_transparent_open(path, 'rb') as f:
+            self.pulse_origins = np.frombuffer(f.read(), dtype=np.int32)
 
     def number_air_shower_pulses(self):
         return (self.pulse_origins >= 0).sum()

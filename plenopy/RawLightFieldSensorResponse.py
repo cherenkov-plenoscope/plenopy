@@ -1,5 +1,6 @@
 import numpy as np
 from array import array
+from .tools.acp_format import gz_transparent_open
 
 
 class RawLightFieldSensorResponse(object):
@@ -30,8 +31,9 @@ class RawLightFieldSensorResponse(object):
         path        path to raw light field response in photon-stream (phs)
                     format.
         """
+
         self.NEXT_READOUT_CHANNEL_MARKER = 255
-        with open(path, 'rb') as f:
+        with gz_transparent_open(path, 'rb') as f:
             # header
             # ------
             self.time_slice_duration = np.frombuffer(
