@@ -155,7 +155,7 @@ def cherenkov_photons_in_roi_in_image(
     time_radius_roi=5e-9,
     c_radius=np.deg2rad(0.3),
     epsilon_cx_cy_radius=np.deg2rad(0.075),
-    min_number_photons=20,
+    min_number_photons=17,
     deg_over_s=0.375e9,
     number_refocuses=5,
     object_distance_radius=2.5e3,
@@ -193,3 +193,58 @@ def cherenkov_photons_in_roi_in_image(
         refocus_mask = photon_labels >= 0
         cherenkov_mask = np.logical_or(cherenkov_mask, refocus_mask)
     return photons_in_roi.cut(cherenkov_mask)
+
+
+import scipy
+
+
+def cherenkov_photons_in_image(
+    photons,
+    light_field_geometry,
+    object_distances=np.geomspace(2.5e3, 25e3, 5),
+    pixel_seed_threshold=99 + 6*10,
+    min_num_neighbors=2
+):
+    FOV_RADIUS = 0.5*light_field_geometry.\
+        sensor_plane2imaging_system.max_FoV_diameter
+    PIXEL_FOV_DIAMETER = light_field_geometry.\
+        sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
+
+    neighborhood = np.array([
+        [1,1,1],
+        [1,1,1],
+        [1,1,1]])
+
+    c_bin_edges = np.arange(-FOV_RADIUS, FOV_RADIUS, PIXEL_FOV_DIAMETER)
+    num_pixel_diagonal = c_bin_edges.shape[0] - 1
+    num_photons = photons.cx.shape[0]
+
+    mask = np.zeros(num_photons, dtype=np.bool)
+    for object_distance in object_distances:
+        cx, cy = photons.cx_cy_in_object_distance(object_distance)
+        cx_pixel_idx = np.digitize(cx, bins=c_bin_edges)
+        cy_pixel_idx = np.digitize(cy, bins=c_bin_edges)
+        image = np.histogram2d(cx, cy, bins=[c_bin_edges, c_bin_edges])[0]
+        seeds = image > pixel_seed_threshold
+        neighbors_above_seed_threshold = (
+            scipy.signal.convolve2d(
+                seeds,
+                neighborhood,
+                mode='same') > min_num_neighbors)
+        all_pixel_ids = np.arange(num_pixel_diagonal**2)
+        pixel_ids_above_threshold = all_pixel_ids[
+            neighbors_above_seed_threshold.flatten()]
+
+        cx_pixel_idx_above_threshold =\
+            pixel_ids_above_threshold//num_pixel_diagonal
+        cy_pixel_idx_above_threshold =\
+            np.mod(pixel_ids_above_threshold, num_pixel_diagonal)
+
+        for i in range(cx_pixel_idx_above_threshold.shape[0]):
+            cxi = cx_pixel_idx_above_threshold[i]
+            cyi = cy_pixel_idx_above_threshold[i]
+            match = (cx_pixel_idx == cxi)*(cy_pixel_idx == cyi)
+            mask = np.logical_or(mask, match)
+
+    cherenkov_photons = photons.cut(mask)
+    return cherenkov_photons
