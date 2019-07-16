@@ -140,111 +140,81 @@ def benchmark(
 
     return {
         # is Cherenkov AND classified as Cherenkov
+        # correctly identified
         'number_true_positives': is_cherenkov[photon_ids_cherenkov].sum(),
         # is Cherenkov AND classified as NSB
-        'number_false_positives': is_cherenkov[photon_ids_nsb].sum(),
+        # incorrectly rejected
+        'number_false_negatives': is_cherenkov[photon_ids_nsb].sum(),
         # is NSB AND classified as Cherenkov
-        'number_false_negatives': is_nsb[photon_ids_cherenkov].sum(),
+        # incorrectly identified
+        'number_false_positives': is_nsb[photon_ids_cherenkov].sum(),
         # is NSB AND classified as NSB
+        # correctly rejected
         'number_true_negatives': is_nsb[photon_ids_nsb].sum()}
 
 
 def cherenkov_photons_in_roi_in_image(
     roi,
     photons,
-    time_radius_roi=5e-9,
-    c_radius=np.deg2rad(0.3),
-    epsilon_cx_cy_radius=np.deg2rad(0.075),
-    min_number_photons=17,
-    deg_over_s=0.375e9,
-    number_refocuses=5,
-    object_distance_radius=2.5e3,
-    object_distances=None
+    roi_time_offset_start=-10e-9,
+    roi_time_offset_stop=10e-9,
+    roi_cx_cy_radius=np.deg2rad(2.),
+    roi_object_distance_offsets=np.linspace(4e3, -2e3, 4),
+    dbscan_epsilon_cx_cy_radius=np.deg2rad(0.075),
+    dbscan_min_number_photons=17,
+    dbscan_deg_over_s=0.375e9
 ):
-    start_time = roi['time_center_roi'] - time_radius_roi
-    end_time = roi['time_center_roi'] + time_radius_roi
-    roi_mask_time = (
-        (photons.t_img >= start_time) & (photons.t_img < end_time))
-    ph_cx, ph_cy = photons.cx_cy_in_object_distance(roi['object_distance'])
-    ph_c_distance_square = (
-        (roi['cx_center_roi'] - ph_cx)**2 +
-        (roi['cy_center_roi'] - ph_cy)**2)
-    c_radius_square = c_radius**2
-    roi_mask_c = ph_c_distance_square <= c_radius_square
-    roi_mask = roi_mask_time & roi_mask_c
-    photons_in_roi = photons.cut(roi_mask)
+    """
+    Classify Cherenkov and night-sky-background-photons based on density in
+    refocused image-sequences.
+    For more performance, only photons within a certain region-of-interest
+    (roi) are taken into account.
 
-    if object_distances is None:
-        object_distances = np.linspace(
-            roi['object_distance'] - object_distance_radius,
-            roi['object_distance'] + object_distance_radius,
-            number_refocuses)
-    cherenkov_mask = np.zeros(
-        photons_in_roi.photon_ids.shape[0], dtype=np.bool)
+    Parameters
+    ----------
+    roi: dictionary, region-of-interest
+        Can be taken from the trigger.
+        - time_center_roi
+        - cx_center_roi
+        - cy_center_roi
+        - object_distance
+    photns: RawPhotons, all the photons recorded by the plenoscope.
+
+
+    Radii for roi are chosen based on 0.25GeV to > 380GeV airshowers recorded
+    with the 71m Portal Cherenkov-plenoscope. The defaults will give good
+    results over all energies. Smaller radii will speed up the classification,
+    but will also result in less performance for energies > 100GeV where often
+    low surface-brightness is found over large areas.
+    """
+    start_time = roi['time_center_roi'] + roi_time_offset_start
+    stop_time = roi['time_center_roi'] + roi_time_offset_stop
+    roi_mask_time = (photons.t_img >= start_time)&(photons.t_img < stop_time)
+
+    cx_roi = roi['cx_center_roi']
+    cy_roi = roi['cy_center_roi']
+    roi_cx_cy_radius_square = roi_cx_cy_radius**2
+    cxs, cys = photons.cx_cy_in_object_distance(roi['object_distance'])
+    cx_cy_square = (cx_roi - cxs)**2 + (cy_roi - cys)**2
+    roi_mask_cx_cy = cx_cy_square <= roi_cx_cy_radius_square
+
+    roi_mask = roi_mask_cx_cy&roi_mask_time
+    photons_roi = photons.cut(roi_mask)
+    num_photons_roi = photons_roi.t_img.shape[0]
+    refocus_masks = []
+    object_distances = roi['object_distance'] + roi_object_distance_offsets
     for object_distance in object_distances:
+        assert object_distance > 0.
+        cxs, cys = photons_roi.cx_cy_in_object_distance(object_distance)
         photon_labels = cluster_air_shower_photons_based_on_density(
             cx_cy_arrival_time_point_cloud=np.c_[
-                photons_in_roi.cx_cy_in_object_distance(object_distance)[0],
-                photons_in_roi.cx_cy_in_object_distance(object_distance)[1],
-                photons_in_roi.t_img],
-            epsilon_cx_cy_radius=epsilon_cx_cy_radius,
-            min_number_photons=min_number_photons,
-            deg_over_s=deg_over_s)
-        refocus_mask = photon_labels >= 0
-        cherenkov_mask = np.logical_or(cherenkov_mask, refocus_mask)
-    return photons_in_roi.cut(cherenkov_mask)
-
-
-import scipy
-
-
-def cherenkov_photons_in_image(
-    photons,
-    light_field_geometry,
-    object_distances=np.geomspace(2.5e3, 25e3, 5),
-    pixel_seed_threshold=99 + 6*10,
-    min_num_neighbors=2
-):
-    FOV_RADIUS = 0.5*light_field_geometry.\
-        sensor_plane2imaging_system.max_FoV_diameter
-    PIXEL_FOV_DIAMETER = light_field_geometry.\
-        sensor_plane2imaging_system.pixel_FoV_hex_flat2flat
-
-    neighborhood = np.array([
-        [1,1,1],
-        [1,1,1],
-        [1,1,1]])
-
-    c_bin_edges = np.arange(-FOV_RADIUS, FOV_RADIUS, PIXEL_FOV_DIAMETER)
-    num_pixel_diagonal = c_bin_edges.shape[0] - 1
-    num_photons = photons.cx.shape[0]
-
-    mask = np.zeros(num_photons, dtype=np.bool)
-    for object_distance in object_distances:
-        cx, cy = photons.cx_cy_in_object_distance(object_distance)
-        cx_pixel_idx = np.digitize(cx, bins=c_bin_edges)
-        cy_pixel_idx = np.digitize(cy, bins=c_bin_edges)
-        image = np.histogram2d(cx, cy, bins=[c_bin_edges, c_bin_edges])[0]
-        seeds = image > pixel_seed_threshold
-        neighbors_above_seed_threshold = (
-            scipy.signal.convolve2d(
-                seeds,
-                neighborhood,
-                mode='same') > min_num_neighbors)
-        all_pixel_ids = np.arange(num_pixel_diagonal**2)
-        pixel_ids_above_threshold = all_pixel_ids[
-            neighbors_above_seed_threshold.flatten()]
-
-        cx_pixel_idx_above_threshold =\
-            pixel_ids_above_threshold//num_pixel_diagonal
-        cy_pixel_idx_above_threshold =\
-            np.mod(pixel_ids_above_threshold, num_pixel_diagonal)
-
-        for i in range(cx_pixel_idx_above_threshold.shape[0]):
-            cxi = cx_pixel_idx_above_threshold[i]
-            cyi = cy_pixel_idx_above_threshold[i]
-            match = (cx_pixel_idx == cxi)*(cy_pixel_idx == cyi)
-            mask = np.logical_or(mask, match)
-
-    cherenkov_photons = photons.cut(mask)
-    return cherenkov_photons
+                cxs,
+                cys,
+                photons_roi.t_img],
+            epsilon_cx_cy_radius=dbscan_epsilon_cx_cy_radius,
+            min_number_photons=dbscan_min_number_photons,
+            deg_over_s=dbscan_deg_over_s)
+        refocus_masks.append(photon_labels >= 0)
+    refocus_masks = np.array(refocus_masks)
+    cherenkov_mask = np.sum(refocus_masks, axis=0) > 0
+    return photons_roi.cut(cherenkov_mask)
