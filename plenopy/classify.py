@@ -100,8 +100,9 @@ class RawPhotons():
         return len(self.photon_ids)
 
     def __repr__(self):
-        out = 'RawPhotons(' + str(len(self.photon_ids)) +' photons)'
-        return out
+        return '{:s}({:d} photons)'.format(
+            self.__class__.__name__,
+            self.number)
 
     def cut(self, mask):
         return RawPhotons(
