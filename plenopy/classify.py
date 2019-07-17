@@ -5,6 +5,9 @@ from .photon_stream.cython_reader import stream2_cx_cy_arrivaltime_point_cloud
 from .photon_stream.cython_reader import arrival_slices_and_lixel_ids
 from .image.ImageRays import ImageRays
 from . import trigger
+import os
+import gzip
+import json
 
 
 def cluster_air_shower_photons_based_on_density(
@@ -217,4 +220,53 @@ def cherenkov_photons_in_roi_in_image(
         refocus_masks.append(photon_labels >= 0)
     refocus_masks = np.array(refocus_masks)
     cherenkov_mask = np.sum(refocus_masks, axis=0) > 0
-    return photons_roi.cut(cherenkov_mask)
+
+    settings = {
+        'roi': {
+            'time_center_roi': float(roi['time_center_roi']),
+            'cx_center_roi': float(roi['cx_center_roi']),
+            'cy_center_roi': float(roi['cy_center_roi']),
+            'object_distance': float(roi['object_distance'])},
+        'roi_time_offset_start': float(roi_time_offset_start),
+        'roi_time_offset_stop': float(roi_time_offset_stop),
+        'roi_cx_cy_radius': float(roi_cx_cy_radius),
+        'roi_object_distance_offsets': list(roi_object_distance_offsets),
+        'dbscan_epsilon_cx_cy_radius': float(dbscan_epsilon_cx_cy_radius),
+        'dbscan_min_number_photons': int(dbscan_min_number_photons),
+        'dbscan_deg_over_s': float(dbscan_deg_over_s),}
+
+    return photons_roi.cut(cherenkov_mask), settings
+
+
+def write_dense_photon_ids_to_event(event_path, photon_ids, settings):
+    """
+    Parameters
+    ----------
+    event_path, string
+        Path to write photon_ids to.
+
+    photon_ids, array uint
+
+    settings, dictionary
+        Returned by cherenkov_photons_in_roi_in_image().
+    """
+    assert os.path.exists(event_path)
+    assert np.sum(photon_ids < 0) == 0
+    assert np.sum(photon_ids >= 2**32) == 0
+    photon_ids_uint32 = photon_ids.astype(dtype=np.uint32)
+
+    filename = 'dense_photon_ids'
+
+    settings_path = os.path.join(event_path, filename+".settings.json")
+    with open(settings_path, 'wt') as fout:
+        fout.write(json.dumps(settings, indent=4))
+
+    photon_ids_path = os.path.join(event_path, filename+".uint32.gz")
+    with gzip.open(photon_ids_path, 'wb') as fout:
+        fout.write(photon_ids_uint32.tobytes())
+
+
+def read_dense_photon_ids(path):
+    with gzip.open(path, 'rb') as fin:
+        dense_photon_ids = np.frombuffer(fin.read(), dtype=np.uint32)
+    return dense_photon_ids

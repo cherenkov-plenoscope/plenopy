@@ -6,6 +6,7 @@ from ..photon_stream import cython_reader as phs
 from ..tools import header273float32 as hr
 from .. import corsika
 from .. import simulation_truth
+from .. import classify
 
 
 class Event(object):
@@ -48,6 +49,7 @@ class Event(object):
         if self.type == 'SIMULATION':
             self._read_simulation_truth()
         self.number = int(op.basename(self._path))
+        self._read_dense_photons()
 
     def _read_event_header(self):
         header_path = op.join(self._path, 'event_header.bin')
@@ -80,6 +82,18 @@ class Event(object):
                 event=simulation_truth_event,
                 air_shower_photon_bunches=air_shower_photon_bunches,
                 detector=simulation_truth_detector)
+
+    def _read_dense_photons(self):
+        path = op.join(self._path, 'dense_photon_ids.uint32.gz')
+        if op.exists(path):
+            self.dense_photon_ids = classify.read_dense_photon_ids(path)
+            photons = classify.RawPhotons.from_event(self)
+            mask = np.zeros(photons.x.shape[0], dtype=np.bool)
+            mask[self.dense_photon_ids] = True
+            self.cherenkov_photons = photons.cut(mask)
+        else:
+            self.dense_photon_ids = None
+            self.cherenkov_photons = None
 
     def _light_field_sequence(self, time_delays_to_be_subtracted):
         raw = self.raw_sensor_response
