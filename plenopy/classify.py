@@ -95,6 +95,10 @@ class RawPhotons():
     def cy(self):
         return self._light_field_geometry.cy_mean[self.lixel_ids]
 
+    @property
+    def number(self):
+        return len(self.photon_ids)
+
     def __repr__(self):
         out = 'RawPhotons(' + str(len(self.photon_ids)) +' photons)'
         return out
