@@ -268,6 +268,121 @@ def apply_refocus_sum_trigger(
     return results
 
 
+def apply_refocus_sum_trigger_binary_search(
+    event,
+    trigger_preparation,
+    min_number_neighbors=3,
+    integration_time_in_slices=5,
+):
+    """
+    Estimates the lowest patch_threshold that would still have triggered.
+    This is called for each event in a run. The number of neighboring
+    trigger-patches of pixels which are above the patch_threshold is counted
+    for each recorded time-slice.
+
+    Parameters
+    ----------
+
+    event                       The recorded event of the plenoscope.
+
+    trigger_preparation         The configuration of the trigger-wiring.
+
+    integration_time_in_slices  The length of the sliding integration-window of
+                                the trigger. A.k.a coincidence-window.
+
+    min_number_neighbors        The minimum number of neighboring
+                                patches which have to be above the
+                                threshold.
+
+    Returns
+    -------                     A list of dicts is returned. One dict for each
+                                object-distance of the refocus-sum-trigger.
+
+    patch_threshold             The lowest threshold for the patches which
+                                still triggers.
+
+    object_distance             The object-distance the trigger focused on.
+
+    integration_time_in_slices  As in the input.
+
+    patch_median                The median amplitude of all trigger-patches in
+                                the sequence along time.
+
+    patch_max                   The max amplitude of all trigger-patches in the
+                                the sequence along time.
+
+    max_number_neighbors        The maximum number of neighboring
+                                trigger-patches which are above the
+                                patch-threshold.
+
+    argmax_coincident_patches   The time-slice in the sequence along time which
+                                needs the lowest trigger-threshold.
+    """
+    def pivot(threshold_lower, threshold_upper):
+        return np.floor(.5*(threshold_lower + threshold_upper))
+
+    tp = trigger_preparation
+    results = []
+    for obj, object_distance in enumerate(tp['object_distances']):
+        image_sequence = sum_trigger_image_sequence(
+            light_field_sequence=event.light_field_sequence_for_isochor_image(),
+            lixel_summation=tp['lixel_summations'][obj],
+            integration_time_in_slices=integration_time_in_slices)
+
+        threshold_upper = np.max(image_sequence)
+        threshold_lower = 0
+        threshold = pivot(threshold_lower, threshold_upper)
+        iteration = 0
+        while True:
+            patches_max_neighbors = []
+            patches_argmax_neighbors = []
+
+            patch_mask_sequence = image_sequence >= threshold
+            for time_slice, patch_mask in enumerate(patch_mask_sequence):
+                am, m = argmax_number_of_active_neighboring_patches_and_active_itself(
+                    patch_mask=patch_mask,
+                    neighborhood_of_pixel=tp['neighborhood_of_pixel'])
+
+                patches_max_neighbors.append(m)
+                patches_argmax_neighbors.append(am)
+
+            time_slice_with_most_active_neighboring_patches = np.argmax(
+                patches_max_neighbors)
+
+            number_neighbors = patches_max_neighbors[
+                time_slice_with_most_active_neighboring_patches]
+
+            if threshold == threshold_lower:
+                break
+
+            if number_neighbors >= min_number_neighbors:
+                threshold_lower = threshold
+                threshold = pivot(threshold_lower, threshold_upper)
+
+            if number_neighbors < min_number_neighbors:
+                threshold_upper = threshold
+                threshold = pivot(threshold_lower, threshold_upper)
+
+            iteration += 1
+
+        results.append({
+            'exposure_time_in_slices': int(image_sequence.shape[0]),
+            'object_distance': float(object_distance),
+            'integration_time_in_slices': int(integration_time_in_slices),
+            'patch_threshold': int(threshold),
+            'patch_median': int(np.median(image_sequence)),
+            'patch_max': int(np.max(image_sequence)),
+            'max_number_neighbors': int(number_neighbors),
+            'time_slice_with_most_active_neighboring_patches':
+                int(time_slice_with_most_active_neighboring_patches),
+            'number_iterations': iteration,
+            'min_number_neighbors': int(min_number_neighbors),
+            'patches': list(patches_argmax_neighbors[
+                time_slice_with_most_active_neighboring_patches]),
+        })
+    return results
+
+
 def create_lixel_summation(
     light_field_geometry,
     image_rays,
