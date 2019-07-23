@@ -17,7 +17,7 @@ def test_trigger_iteration():
     trigger_response_linear = []
     trigger_response_binary = []
     for n, event in enumerate(run):
-        trigger_response = pl.trigger.apply_refocus_sum_trigger(
+        trigger_response = pl.trigger.__apply_refocus_sum_trigger(
             event=event,
             trigger_preparation=trigger_preparation,
             min_number_neighbors=3,
@@ -25,7 +25,7 @@ def test_trigger_iteration():
             max_iterations=10000,)
         trigger_response_linear.append(trigger_response)
 
-        trigger_response = pl.trigger.apply_refocus_sum_trigger_binary_search(
+        trigger_response = pl.trigger.apply_refocus_sum_trigger(
             event=event,
             trigger_preparation=trigger_preparation,
             min_number_neighbors=3,

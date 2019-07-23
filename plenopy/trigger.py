@@ -142,7 +142,7 @@ def prepare_refocus_sum_trigger(
             'neighborhood_of_pixel': neighborhood_of_pixel}
 
 
-def apply_refocus_sum_trigger(
+def __apply_refocus_sum_trigger(
     event,
     trigger_preparation,
     min_number_neighbors=3,
@@ -268,7 +268,7 @@ def apply_refocus_sum_trigger(
     return results
 
 
-def apply_refocus_sum_trigger_binary_search(
+def apply_refocus_sum_trigger(
     event,
     trigger_preparation,
     min_number_neighbors=3,
