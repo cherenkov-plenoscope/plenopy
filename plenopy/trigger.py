@@ -268,6 +268,34 @@ def __apply_refocus_sum_trigger(
     return results
 
 
+def pivot(threshold_lower, threshold_upper):
+    return np.floor(.5*(threshold_lower + threshold_upper))
+
+
+def estimate_number_neighbors(
+    image_sequence,
+    threshold,
+    neighborhood_of_pixel,
+):
+    patches_max_neighbors = []
+    patches_argmax_neighbors = []
+    patch_mask_sequence = image_sequence >= threshold
+    for time_slice, patch_mask in enumerate(patch_mask_sequence):
+        am, m = argmax_number_of_active_neighboring_patches_and_active_itself(
+            patch_mask=patch_mask,
+            neighborhood_of_pixel=neighborhood_of_pixel)
+        patches_max_neighbors.append(m)
+        patches_argmax_neighbors.append(am)
+    time_slice_with_most_active_neighboring_patches = np.argmax(
+        patches_max_neighbors)
+    number_neighbors = patches_max_neighbors[
+        time_slice_with_most_active_neighboring_patches]
+    return (
+        number_neighbors,
+        time_slice_with_most_active_neighboring_patches,
+        patches_argmax_neighbors)
+
+
 def apply_refocus_sum_trigger(
     event,
     trigger_preparation,
@@ -318,9 +346,6 @@ def apply_refocus_sum_trigger(
     argmax_coincident_patches   The time-slice in the sequence along time which
                                 needs the lowest trigger-threshold.
     """
-    def pivot(threshold_lower, threshold_upper):
-        return np.floor(.5*(threshold_lower + threshold_upper))
-
     tp = trigger_preparation
     results = []
     for obj, object_distance in enumerate(tp['object_distances']):
@@ -330,27 +355,30 @@ def apply_refocus_sum_trigger(
             integration_time_in_slices=integration_time_in_slices)
 
         threshold_upper = np.max(image_sequence)
-        threshold_lower = 0
+        threshold_lower = threshold_upper
+
+        number_neighbors = 0
+        while number_neighbors < min_number_neighbors:
+            threshold_lower = np.floor(0.95*threshold_lower)
+            (   number_neighbors,
+                time_slice_with_most_active_neighboring_patches,
+                patches_argmax_neighbors
+            ) = estimate_number_neighbors(
+                image_sequence=image_sequence,
+                threshold=threshold_lower,
+                neighborhood_of_pixel=tp['neighborhood_of_pixel'])
+
+
         threshold = pivot(threshold_lower, threshold_upper)
         iteration = 0
         while True:
-            patches_max_neighbors = []
-            patches_argmax_neighbors = []
-
-            patch_mask_sequence = image_sequence >= threshold
-            for time_slice, patch_mask in enumerate(patch_mask_sequence):
-                am, m = argmax_number_of_active_neighboring_patches_and_active_itself(
-                    patch_mask=patch_mask,
-                    neighborhood_of_pixel=tp['neighborhood_of_pixel'])
-
-                patches_max_neighbors.append(m)
-                patches_argmax_neighbors.append(am)
-
-            time_slice_with_most_active_neighboring_patches = np.argmax(
-                patches_max_neighbors)
-
-            number_neighbors = patches_max_neighbors[
-                time_slice_with_most_active_neighboring_patches]
+            (   number_neighbors,
+                time_slice_with_most_active_neighboring_patches,
+                patches_argmax_neighbors
+            ) = estimate_number_neighbors(
+                image_sequence=image_sequence,
+                threshold=threshold,
+                neighborhood_of_pixel=tp['neighborhood_of_pixel'])
 
             if threshold == threshold_lower:
                 break
