@@ -13,3 +13,4 @@ from . import trigger_study
 from . import trigger
 from . import classify
 from . import sequence
+from . import features
