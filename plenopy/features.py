@@ -20,23 +20,17 @@ def islands_greater_equal_threshold(intensities, neighborhood, threshold):
     while len(to_do) > 0:
         i = next(iter(to_do))
         to_do.remove(i)
-        # make island
         island = [i]
         i_neighbors = set(neighborhood[i])
         candidates = to_do.intersection(i_neighbors)
         while len(candidates) > 0:
             c = next(iter(candidates))
-            #print('c', c)
             if c in abv_thr:
-                #print('c > thr')
                 island.append(c)
                 candidates.remove(c)
                 to_do.remove(c)
                 c_neighbors = set(neighborhood[c])
-                #print('c_neighbors', c_neighbors)
                 c_neighbors_to_do = to_do.intersection(c_neighbors)
-                #print('c_neighbors_to_do', c_neighbors_to_do)
                 candidates = candidates.union(c_neighbors_to_do)
-                #print('candidates', candidates)
         islands.append(island)
     return islands
