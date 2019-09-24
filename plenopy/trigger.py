@@ -275,9 +275,9 @@ def apply_refocus_sum_trigger(
             'patch_median': int(np.median(image_sequence)),
             'patch_max': int(np.max(image_sequence)),
             'max_number_neighbors': int(number_neighbors),
-            'time_slice_with_most_active_neighboring_patches':
-                int(time_slice_with_most_active_neighboring_patches),
-            'number_iterations': iteration,
+            'time_slice_with_most_active_neighboring_patches': int(
+                time_slice_with_most_active_neighboring_patches),
+            'number_iterations': bool(iteration),
             'min_number_neighbors': int(min_number_neighbors),
             'patches': list(patches_argmax_neighbors[
                 time_slice_with_most_active_neighboring_patches]),
