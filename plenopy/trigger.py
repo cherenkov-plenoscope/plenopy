@@ -279,8 +279,8 @@ def apply_refocus_sum_trigger(
                 time_slice_with_most_active_neighboring_patches),
             'number_iterations': bool(iteration),
             'min_number_neighbors': int(min_number_neighbors),
-            'patches': list(patches_argmax_neighbors[
-                time_slice_with_most_active_neighboring_patches]),
+            'patches': [int(pp) for pp in patches_argmax_neighbors[
+                time_slice_with_most_active_neighboring_patches]],
         })
     return results
 
