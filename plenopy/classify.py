@@ -149,16 +149,16 @@ def benchmark(
     return {
         # is Cherenkov AND classified as Cherenkov
         # correctly identified
-        'number_true_positives': is_cherenkov[photon_ids_cherenkov].sum(),
+        'num_true_positives': int(is_cherenkov[photon_ids_cherenkov].sum()),
         # is Cherenkov AND classified as NSB
         # incorrectly rejected
-        'number_false_negatives': is_cherenkov[photon_ids_nsb].sum(),
+        'num_false_negatives': int(is_cherenkov[photon_ids_nsb].sum()),
         # is NSB AND classified as Cherenkov
         # incorrectly identified
-        'number_false_positives': is_nsb[photon_ids_cherenkov].sum(),
+        'num_false_positives': int(is_nsb[photon_ids_cherenkov].sum()),
         # is NSB AND classified as NSB
         # correctly rejected
-        'number_true_negatives': is_nsb[photon_ids_nsb].sum()}
+        'num_true_negatives': int(is_nsb[photon_ids_nsb].sum())}
 
 
 def cherenkov_photons_in_roi_in_image(
