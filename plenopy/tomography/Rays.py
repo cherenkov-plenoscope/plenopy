@@ -67,30 +67,6 @@ class Rays(object):
         else:
             return pos3D[..., 0:2]
 
-    def intersections_with_xy_plane(self, object_distance):
-        """
-        Returns the x,y,z intersections of the lixel rays with the x,y plane
-        at z=object_distance.
-
-        Parameters
-        ----------
-        object_distance     The distance to the principal aperture plane.
-                            scalar or 1D array.
-
-        Returns
-        --------
-
-        intersections a 2D array (M, N, 3)
-            M: number of rays
-            N: number of object distances
-        """
-        object_distance = np.atleast_3d(object_distance)
-        scale_factors = object_distance / self.direction[:, 2]
-        pos3D = self.support[:, None, :] - (
-            scale_factors * self.direction.T[:, None, :]).T
-        pos3D[..., 2] *= -1
-        return pos3D
-
     def __repr__(self):
         out = self.__class__.__name__
         out += '('
