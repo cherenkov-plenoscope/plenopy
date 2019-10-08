@@ -16,18 +16,18 @@ def test_benchmark_of_perfect_detector():
         photon_ids_cherenkov=photon_ids_cherenkov)
 
     assert (
-        result['number_true_positives'] == number_cherenkov_photons)
+        result['num_true_positives'] == number_cherenkov_photons)
     assert (
-        result['number_true_negatives'] ==
+        result['num_true_negatives'] ==
         number_all_photons - number_cherenkov_photons)
-    assert result['number_false_negatives'] == 0
-    assert result['number_false_positives'] == 0
+    assert result['num_false_negatives'] == 0
+    assert result['num_false_positives'] == 0
     assert (
             number_all_photons -
-            result['number_true_negatives'] -
-            result['number_true_positives'] -
-            result['number_false_positives'] -
-            result['number_false_negatives']
+            result['num_true_negatives'] -
+            result['num_true_positives'] -
+            result['num_false_positives'] -
+            result['num_false_negatives']
         ) == 0
 
 
@@ -48,16 +48,16 @@ def test_benchmark_of_normal_detector():
         photon_ids_cherenkov=photon_ids_cherenkov)
 
     assert (
-        result['number_true_positives'] == number_cherenkov_photons/2)
+        result['num_true_positives'] == number_cherenkov_photons/2)
     assert (
-        result['number_true_negatives'] ==
+        result['num_true_negatives'] ==
         number_all_photons - number_cherenkov_photons*1.5)
-    assert result['number_false_negatives'] == number_cherenkov_photons/2
-    assert result['number_false_positives'] == number_cherenkov_photons/2
+    assert result['num_false_negatives'] == number_cherenkov_photons/2
+    assert result['num_false_positives'] == number_cherenkov_photons/2
     assert (
             number_all_photons -
-            result['number_true_negatives'] -
-            result['number_true_positives'] -
-            result['number_false_positives'] -
-            result['number_false_negatives']
+            result['num_true_negatives'] -
+            result['num_true_positives'] -
+            result['num_false_positives'] -
+            result['num_false_negatives']
         ) == 0
