@@ -2,8 +2,6 @@ import numpy as np
 from .transform import object_distance_2_image_distance as g2b
 from .transform import image_distance_2_object_distance as b2g
 from .transform import xyz2cxcyb
-from ..narrow_angle.deconvolution import make_cached_tomographic_system_matrix
-from ..narrow_angle.deconvolution import update
 from ... import classify
 from ... import image
 from ... import trigger
@@ -12,6 +10,29 @@ from ...plot import slices
 import json
 import os
 from skimage.measure import LineModelND, ransac
+from joblib import Memory
+import os
+
+cachedir_location = '/tmp/plenopy'
+os.makedirs(cachedir_location, exist_ok=True)
+memory = Memory(location=cachedir_location, verbose=0)
+
+
+@memory.cache
+def make_cached_tomographic_system_matrix(
+    supports,
+    directions,
+    x_bin_edges,
+    y_bin_edges,
+    z_bin_edges
+):
+    return ray_and_voxel.system_matrix(
+        supports=supports,
+        directions=directions,
+        x_bin_edges=x_bin_edges,
+        y_bin_edges=y_bin_edges,
+        z_bin_edges=z_bin_edges,
+    )
 
 
 def linspace_edges_centers(start, stop, num):
