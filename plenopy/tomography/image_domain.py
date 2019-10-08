@@ -5,15 +5,15 @@ import os
 from skimage.measure import LineModelND, ransac
 from joblib import Memory
 
-from ...thin_lens import object_distance_2_image_distance as g2b
-from ...thin_lens import image_distance_2_object_distance as b2g
-from ...thin_lens import xyz2cxcyb
+from ..thin_lens import object_distance_2_image_distance as g2b
+from ..thin_lens import image_distance_2_object_distance as b2g
+from ..thin_lens import xyz2cxcyb
 
-from ... import classify
-from ... import image
-from ... import trigger
-from ..simulation_truth import emission_positions_of_photon_bunches
-from ...plot import slices
+from .. import classify
+from .. import image
+from .. import trigger
+from .simulation_truth import emission_positions_of_photon_bunches
+from ..plot import slices
 
 
 cachedir_location = os.path.join('tmp', 'plenopy')
