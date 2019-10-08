@@ -5,7 +5,7 @@ import pkg_resources
 
 
 def test_default_image_domain_binning():
-    b = pl.tomography.image_domain.image_domain_tomography.init_binning_for_depth_of_field(
+    b = pl.tomography.image_domain.init_binning_for_depth_of_field(
         focal_length=1.0,
         cx_min=np.deg2rad(-3.5),
         cx_max=np.deg2rad(+3.5),
