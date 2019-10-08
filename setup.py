@@ -34,7 +34,6 @@ setup(
         'plenopy.tomography',
         'plenopy.tomography.filtered_back_projection',
         'plenopy.tomography.image_domain',
-        'plenopy.tomography.ray_and_voxel',
         'plenopy.tomography.narrow_angle',
         'plenopy.photon_stream',
         'plenopy.plot',
