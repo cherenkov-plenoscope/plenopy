@@ -19,7 +19,7 @@ extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
 
 setup(
     name='plenopy',
-    version='0.1.1',
+    version='0.1.2',
     description='View and work on plenoscope events',
     url='https://github.com/cherenkov-plenoscope/plenopy.git',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
