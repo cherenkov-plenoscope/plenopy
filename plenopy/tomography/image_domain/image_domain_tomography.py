@@ -5,9 +5,9 @@ import os
 from skimage.measure import LineModelND, ransac
 from joblib import Memory
 
-from .transform import object_distance_2_image_distance as g2b
-from .transform import image_distance_2_object_distance as b2g
-from .transform import xyz2cxcyb
+from ...thin_lens import object_distance_2_image_distance as g2b
+from ...thin_lens import image_distance_2_object_distance as b2g
+from ...thin_lens import xyz2cxcyb
 
 from ... import classify
 from ... import image
