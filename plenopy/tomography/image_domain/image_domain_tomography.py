@@ -1,17 +1,20 @@
 import numpy as np
+import ray_voxel_overlap
+import json
+import os
+from skimage.measure import LineModelND, ransac
+from joblib import Memory
+
 from .transform import object_distance_2_image_distance as g2b
 from .transform import image_distance_2_object_distance as b2g
 from .transform import xyz2cxcyb
+
 from ... import classify
 from ... import image
 from ... import trigger
 from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
-import json
-import os
-from skimage.measure import LineModelND, ransac
-from joblib import Memory
-import os
+
 
 cachedir_location = '/tmp/plenopy'
 os.makedirs(cachedir_location, exist_ok=True)
@@ -26,7 +29,7 @@ def make_cached_tomographic_system_matrix(
     y_bin_edges,
     z_bin_edges
 ):
-    return ray_and_voxel.system_matrix(
+    return ray_voxel_overlap.estimate_system_matrix(
         supports=supports,
         directions=directions,
         x_bin_edges=x_bin_edges,

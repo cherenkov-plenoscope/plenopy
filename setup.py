@@ -42,6 +42,7 @@ setup(
     install_requires=[
         'numpy',            # in anaconda
         'joblib',
+        'ray_voxel_overlap',
     ],
     entry_points={'console_scripts': []},
     zip_safe=False,
