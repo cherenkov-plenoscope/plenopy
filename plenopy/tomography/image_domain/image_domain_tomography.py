@@ -16,7 +16,7 @@ from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
 
 
-cachedir_location = '/tmp/plenopy'
+cachedir_location = os.path.join('tmp', 'plenopy')
 os.makedirs(cachedir_location, exist_ok=True)
 memory = Memory(location=cachedir_location, verbose=0)
 
