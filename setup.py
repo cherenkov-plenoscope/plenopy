@@ -1,8 +1,9 @@
 import setuptools
-
 import numpy
 import os
 
+with open("README.md", "r") as f:
+    long_description = f.read()
 
 def package_files(directory):
     paths = []
@@ -20,6 +21,8 @@ setuptools.setup(
     name='plenopy',
     version='0.1.2',
     description='View and work on plenoscope events',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/cherenkov-plenoscope/plenopy.git',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
     author_email='sebmuell@phys.ethz.ch',
