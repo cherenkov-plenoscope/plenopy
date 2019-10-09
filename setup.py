@@ -1,5 +1,4 @@
-from setuptools import setup
-from distutils.extension import Extension
+import setuptools
 from Cython.Distutils import build_ext
 
 import numpy
@@ -18,7 +17,7 @@ setup_py_path = os.path.realpath(__file__)
 setup_py_dir = os.path.dirname(setup_py_path)
 extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
 
-setup(
+setuptools.setup(
     name='plenopy',
     version='0.1.2',
     description='View and work on plenoscope events',
@@ -48,7 +47,7 @@ setup(
     zip_safe=False,
     cmdclass={'build_ext': build_ext},
     ext_modules=[
-        Extension(
+        setuptools.Extension(
             "plenopy.photon_stream.cython_reader",
             sources=[
                 "plenopy/photon_stream/cython_reader.pyx",
