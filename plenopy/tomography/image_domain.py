@@ -1,17 +1,41 @@
 import numpy as np
-from .transform import object_distance_2_image_distance as g2b
-from .transform import image_distance_2_object_distance as b2g
-from .transform import xyz2cxcyb
-from ..narrow_angle.deconvolution import make_cached_tomographic_system_matrix
-from ..narrow_angle.deconvolution import update
-from ... import classify
-from ... import image
-from ... import trigger
-from ..simulation_truth import emission_positions_of_photon_bunches
-from ...plot import slices
+import ray_voxel_overlap
 import json
 import os
 from skimage.measure import LineModelND, ransac
+from joblib import Memory
+
+from ..thin_lens import object_distance_2_image_distance as g2b
+from ..thin_lens import image_distance_2_object_distance as b2g
+from ..thin_lens import xyz2cxcyb
+
+from .. import classify
+from .. import image
+from .. import trigger
+from .simulation_truth import emission_positions_of_photon_bunches
+from ..plot import slices
+
+
+cachedir_location = os.path.join('/', 'tmp', 'plenopy')
+os.makedirs(cachedir_location, exist_ok=True)
+memory = Memory(location=cachedir_location, verbose=0)
+
+
+@memory.cache
+def make_cached_tomographic_system_matrix(
+    supports,
+    directions,
+    x_bin_edges,
+    y_bin_edges,
+    z_bin_edges
+):
+    return ray_voxel_overlap.estimate_system_matrix(
+        supports=supports,
+        directions=directions,
+        x_bin_edges=x_bin_edges,
+        y_bin_edges=y_bin_edges,
+        z_bin_edges=z_bin_edges,
+    )
 
 
 def linspace_edges_centers(start, stop, num):
@@ -222,7 +246,8 @@ def init_simulation_truth_from_event(
 
     ep = emission_positions_of_photon_bunches(
         aspb,
-        limited_aperture_radius=s2i.expected_imaging_system_max_aperture_radius,
+        limited_aperture_radius=s2i.
+        expected_imaging_system_max_aperture_radius,
         limited_fov_radius=0.5*s2i.max_FoV_diameter,
         observation_level=crh.observation_level(),)
 
@@ -328,8 +353,8 @@ def xyzi_2_xyz(
     maxI = np.max(xyzi[:, 3])
     xyz = []
     for p in xyzi:
-        I = int(np.round(maxP*(p[3]/maxI)))
-        for i in range(I):
+        intensity = int(np.round(maxP*(p[3]/maxI)))
+        for i in range(intensity):
             xyz.append(np.array([p[0], p[1], p[2]]))
     xyz = np.array(xyz)
     return xyz
@@ -377,3 +402,23 @@ def init_reconstruction_from_event(event, binning):
         binning=binning,
         air_shower_photon_ids=air_shower_photon_ids,
         lixel_ids_of_photons=lixel_ids_of_photons)
+
+
+def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
+    '''
+    For plotting using the xyzI representation.
+    Returns a 2D matrix (Nx4) of N overlaps of a ray with xoxels. Each row is
+    [x,y,z positions and overlapping distance].
+    '''
+    x_bin_centers = (x_bin_edges[0:-1] + x_bin_edges[1:])/2
+    y_bin_centers = (y_bin_edges[0:-1] + y_bin_edges[1:])/2
+    z_bin_centers = (z_bin_edges[0:-1] + z_bin_edges[1:])/2
+    xyzI = np.zeros(shape=(len(overlap['overlap']), 4))
+    for i in range(len(overlap['overlap'])):
+        xyzI[i] = np.array([
+            x_bin_centers[overlap['x'][i]],
+            y_bin_centers[overlap['y'][i]],
+            z_bin_centers[overlap['z'][i]],
+            overlap['overlap'][i],
+        ])
+    return xyzI

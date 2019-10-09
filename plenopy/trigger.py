@@ -224,7 +224,8 @@ def apply_refocus_sum_trigger(
     results = []
     for obj, object_distance in enumerate(tp['object_distances']):
         image_sequence = sum_trigger_image_sequence(
-            light_field_sequence=event.light_field_sequence_for_isochor_image(),
+            light_field_sequence=event.
+            light_field_sequence_for_isochor_image(),
             lixel_summation=tp['lixel_summations'][obj],
             integration_time_in_slices=integration_time_in_slices)
 
@@ -234,7 +235,8 @@ def apply_refocus_sum_trigger(
         number_neighbors = 0
         while number_neighbors < min_number_neighbors:
             threshold_lower = np.floor(0.95*threshold_lower)
-            (   number_neighbors,
+            (
+                number_neighbors,
                 time_slice_with_most_active_neighboring_patches,
                 patches_argmax_neighbors
             ) = estimate_number_neighbors(
@@ -242,11 +244,11 @@ def apply_refocus_sum_trigger(
                 threshold=threshold_lower,
                 neighborhood_of_pixel=tp['neighborhood_of_pixel'])
 
-
         threshold = pivot(threshold_lower, threshold_upper)
         iteration = 0
         while True:
-            (   number_neighbors,
+            (
+                number_neighbors,
                 time_slice_with_most_active_neighboring_patches,
                 patches_argmax_neighbors
             ) = estimate_number_neighbors(

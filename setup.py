@@ -13,13 +13,14 @@ def package_files(directory):
             paths.append(os.path.join('..', path, filename))
     return paths
 
+
 setup_py_path = os.path.realpath(__file__)
 setup_py_dir = os.path.dirname(setup_py_path)
 extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
 
 setup(
     name='plenopy',
-    version='0.1.1',
+    version='0.1.2',
     description='View and work on plenoscope events',
     url='https://github.com/cherenkov-plenoscope/plenopy.git',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
@@ -32,10 +33,6 @@ setup(
         'plenopy.image',
         'plenopy.light_field_geometry',
         'plenopy.tomography',
-        'plenopy.tomography.filtered_back_projection',
-        'plenopy.tomography.image_domain',
-        'plenopy.tomography.ray_and_voxel',
-        'plenopy.tomography.narrow_angle',
         'plenopy.photon_stream',
         'plenopy.plot',
         'plenopy.simulation_truth',
@@ -45,21 +42,12 @@ setup(
     install_requires=[
         'numpy',            # in anaconda
         'joblib',
+        'ray_voxel_overlap',
     ],
     entry_points={'console_scripts': []},
     zip_safe=False,
     cmdclass={'build_ext': build_ext},
     ext_modules=[
-        Extension(
-            "plenopy.tomography.ray_and_voxel.cython_overlap",
-            sources=[
-                "plenopy/tomography/ray_and_voxel/_cython_overlap.pyx",
-                "plenopy/tomography/ray_and_voxel/_c_overlap.cpp",
-            ],
-            include_dirs=[numpy.get_include(), "plenopy"],
-            language="c++",
-            extra_compile_args=['-std=c++0x']
-        ),
         Extension(
             "plenopy.photon_stream.cython_reader",
             sources=[
