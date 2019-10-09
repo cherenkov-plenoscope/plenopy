@@ -246,7 +246,8 @@ def init_simulation_truth_from_event(
 
     ep = emission_positions_of_photon_bunches(
         aspb,
-        limited_aperture_radius=s2i.expected_imaging_system_max_aperture_radius,
+        limited_aperture_radius=s2i.
+        expected_imaging_system_max_aperture_radius,
         limited_fov_radius=0.5*s2i.max_FoV_diameter,
         observation_level=crh.observation_level(),)
 
@@ -352,8 +353,8 @@ def xyzi_2_xyz(
     maxI = np.max(xyzi[:, 3])
     xyz = []
     for p in xyzi:
-        I = int(np.round(maxP*(p[3]/maxI)))
-        for i in range(I):
+        intensity = int(np.round(maxP*(p[3]/maxI)))
+        for i in range(intensity):
             xyz.append(np.array([p[0], p[1], p[2]]))
     xyz = np.array(xyz)
     return xyz

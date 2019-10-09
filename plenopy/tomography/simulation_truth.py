@@ -13,15 +13,15 @@ def histogram_photon_bunches(
     ---------
     photon_bunches      The CORSIKA photon bunch
 
-    binning             The 3D binning of the atmospheric detector volume
+    binning             The 3D binning of the atmospheric detector-volume
 
-    observation_level   The observation level associated with the photon bunch
+    observation_level   The observation-level associated with the photon-bunch
 
     return
     ------
     hist            A 3D histogram according to the specified binnings, where
-                    the voxel intensity encodes the number count of photon
-                    production positions in this voxel.
+                    the voxel-intensity encodes the number count of photon-
+                    production-positions in this voxel.
     """
     ep = emission_positions_of_photon_bunches(
         photon_bunches=photon_bunches,
@@ -37,7 +37,8 @@ def histogram_photon_bunches(
             binning.xy_bin_edges,
             binning.z_bin_edges
         ),
-        weights=photon_bunches.probability_to_reach_observation_level[ep['valid_acceptence']]
+        weights=photon_bunches.probability_to_reach_observation_level[
+            ep['valid_acceptence']]
     )
 
     return hist[0]
@@ -52,15 +53,15 @@ def emission_positions_of_photon_bunches(
     """
     parameter
     ---------
-    photon_bunches          The CORSIKA photon bunches.
+    photon_bunches          The CORSIKA-photon-bunches.
 
-    observation_level       The observation level associated with the photon
+    observation_level       The observation-level associated with the photon-
                             bunch.
 
     return
     ------
-    emission_positions      An array of emission positions for each photon bunch
-                            in the cartesian frame of the plenoscope.
+    emission_positions      An array of emission-positions for each photon-
+                            bunch in the cartesian frame of the plenoscope.
     """
     supports = np.array([
         photon_bunches.x,
@@ -80,7 +81,7 @@ def emission_positions_of_photon_bunches(
             photon_bunches.emission_height
         ]).T
 
-    # transform to plenoscope frame
+    # transform to plenoscope-frame
     emission_positions[:, 2] = emission_positions[:, 2] - observation_level
 
     valid_aperture = np.ones(supports.shape[0], dtype=np.bool)
