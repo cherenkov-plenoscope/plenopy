@@ -25,7 +25,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/cherenkov-plenoscope/plenopy.git',
     author='Sebastian Achim Mueller, Max L. Ahnen, Dominik Neise',
-    author_email='sebmuell@phys.ethz.ch',
+    author_email='sebastian-achim.mueller@mpi-hd.mpg.de',
     license='GPL v3',
     packages=[
         'plenopy',
