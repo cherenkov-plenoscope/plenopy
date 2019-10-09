@@ -52,8 +52,8 @@ setuptools.setup(
         setuptools.Extension(
             "plenopy.photon_stream.cython_reader",
             sources=[
-                "plenopy/photon_stream/cython_reader.pyx",
-                "plenopy/photon_stream/reader.c"
+                os.path.join("plenopy", "photon_stream", "cython_reader.pyx"),
+                os.path.join("plenopy", "photon_stream", "reader.c")
             ],
             include_dirs=[numpy.get_include(), "plenopy"],
             language="c",
