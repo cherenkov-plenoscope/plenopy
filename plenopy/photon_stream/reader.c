@@ -1,6 +1,5 @@
 #include <math.h>
 
-extern "C"{
 
     void c_stream2sequence(
         unsigned char* photon_stream,
@@ -84,4 +83,3 @@ extern "C"{
         }
         return;
     }
-}

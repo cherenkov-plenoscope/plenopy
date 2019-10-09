@@ -48,17 +48,15 @@ setuptools.setup(
     ],
     entry_points={'console_scripts': []},
     zip_safe=False,
-    cmdclass={'build_ext': build_ext},
     ext_modules=[
         setuptools.Extension(
             "plenopy.photon_stream.cython_reader",
             sources=[
                 "plenopy/photon_stream/cython_reader.pyx",
-                "plenopy/photon_stream/reader.cpp"
+                "plenopy/photon_stream/reader.c"
             ],
             include_dirs=[numpy.get_include(), "plenopy"],
-            language="c++",
-            extra_compile_args=['-std=c++0x']
+            language="c",
         ),
     ],
 )
