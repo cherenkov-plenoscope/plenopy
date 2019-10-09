@@ -39,6 +39,8 @@ setuptools.setup(
     ],
     package_data={'plenopy': extra_files},
     install_requires=[
+        'setuptools>=18.0',
+        'cython',
         'numpy',            # in anaconda
         'joblib',
         'ray_voxel_overlap',
