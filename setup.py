@@ -13,6 +13,7 @@ def package_files(directory):
             paths.append(os.path.join('..', path, filename))
     return paths
 
+
 setup_py_path = os.path.realpath(__file__)
 setup_py_dir = os.path.dirname(setup_py_path)
 extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
