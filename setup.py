@@ -47,7 +47,6 @@ setuptools.setup(
         'joblib',
         'ray_voxel_overlap',
     ],
-    entry_points={'console_scripts': []},
     zip_safe=False,
     ext_modules=[
         setuptools.Extension(
