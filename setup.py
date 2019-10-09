@@ -2,8 +2,6 @@ import setuptools
 import numpy
 import os
 
-with open("README.md", "r") as f:
-    long_description = f.read()
 
 def package_files(directory):
     paths = []
@@ -12,6 +10,9 @@ def package_files(directory):
             paths.append(os.path.join('..', path, filename))
     return paths
 
+
+with open("README.md", "r") as f:
+    long_description = f.read()
 
 setup_py_path = os.path.realpath(__file__)
 setup_py_dir = os.path.dirname(setup_py_path)
