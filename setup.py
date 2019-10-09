@@ -19,7 +19,7 @@ extra_files = package_files(os.path.join(setup_py_dir, 'plenopy', 'tests'))
 
 setuptools.setup(
     name='plenopy',
-    version='0.1.2',
+    version='0.1.3',
     description='View and work on plenoscope events',
     long_description=long_description,
     long_description_content_type='text/markdown',
