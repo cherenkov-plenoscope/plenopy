@@ -43,7 +43,6 @@ setuptools.setup(
     install_requires=[
         'setuptools>=18.0',
         'cython',
-        'numpy',            # in anaconda
         'joblib',
         'ray_voxel_overlap',
     ],
