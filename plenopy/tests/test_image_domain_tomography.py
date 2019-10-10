@@ -2,6 +2,8 @@ import pytest
 import numpy as np
 import plenopy as pl
 import pkg_resources
+import tempfile
+import os
 
 
 def test_default_image_domain_binning():
@@ -43,3 +45,25 @@ def test_default_image_domain_binning():
     assert len(b['obj_bin_edges']) == 32 + 1
 
     assert b['number_bins'] == 96 * 96 * 32
+
+
+def test_write_read_binning():
+    b_1 = pl.tomography.image_domain.init_binning_for_depth_of_field(
+        focal_length=1.0,
+        cx_min=np.deg2rad(-3.5),
+        cx_max=np.deg2rad(+3.5),
+        number_cx_bins=96,
+        cy_min=np.deg2rad(-3.5),
+        cy_max=np.deg2rad(3.5),
+        number_cy_bins=96,
+        obj_min=5e3,
+        obj_max=25e3,
+        number_obj_bins=32)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "my_binning.json")
+        pl.tomography.image_domain.write_binning(b_1, path)
+        b_2 = pl.tomography.image_domain.read_binning(path)
+
+    for key in pl.tomography.image_domain.__KEY_CTOR_BINNING:
+        assert b_1[key] == b_2[key]

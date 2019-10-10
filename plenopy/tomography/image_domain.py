@@ -116,6 +116,35 @@ def init_binning_for_depth_of_field(
     return b
 
 
+__KEY_CTOR_BINNING = {
+    "focal_length": float,
+    "cx_min": float,
+    "cx_max": float,
+    "number_cx_bins": int,
+    "cy_min": float,
+    "cy_max": float,
+    "number_cy_bins": int,
+    "obj_min": float,
+    "obj_max": float,
+    "number_obj_bins": int}
+
+
+def write_binning(binning, path):
+    binning_ctor_dict = {}
+    for key in __KEY_CTOR_BINNING:
+        _dtype = __KEY_CTOR_BINNING[key]
+        binning_ctor_dict[key] = _dtype(binning[key])
+    with open(path, "wt") as f:
+        f.write(json.dumps(binning_ctor_dict, indent=4))
+
+
+def read_binning(path):
+    with open(path, "rt") as f:
+        binning_ctor_dict = json.loads(f.read())
+        print(binning_ctor_dict)
+    return init_binning_for_depth_of_field(**binning_ctor_dict)
+
+
 def binning_is_equal(binning_a, binning_b):
     keys = [
         'focal_length',
