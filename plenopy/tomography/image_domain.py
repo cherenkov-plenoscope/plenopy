@@ -3,7 +3,7 @@ import ray_voxel_overlap
 import json
 import os
 from skimage.measure import LineModelND, ransac
-from joblib import Memory
+from . import system_matrix
 
 from ..thin_lens import object_distance_2_image_distance as g2b
 from ..thin_lens import image_distance_2_object_distance as b2g
@@ -14,28 +14,6 @@ from .. import image
 from .. import trigger
 from .simulation_truth import emission_positions_of_photon_bunches
 from ..plot import slices
-
-
-cachedir_location = os.path.join('/', 'tmp', 'plenopy')
-os.makedirs(cachedir_location, exist_ok=True)
-memory = Memory(location=cachedir_location, verbose=0)
-
-
-@memory.cache
-def make_cached_tomographic_system_matrix(
-    supports,
-    directions,
-    x_bin_edges,
-    y_bin_edges,
-    z_bin_edges
-):
-    return ray_voxel_overlap.estimate_system_matrix(
-        supports=supports,
-        directions=directions,
-        x_bin_edges=x_bin_edges,
-        y_bin_edges=y_bin_edges,
-        z_bin_edges=z_bin_edges,
-    )
 
 
 def linspace_edges_centers(start, stop, num):
@@ -141,7 +119,6 @@ def write_binning(binning, path):
 def read_binning(path):
     with open(path, "rt") as f:
         binning_ctor_dict = json.loads(f.read())
-        print(binning_ctor_dict)
     return init_binning_for_depth_of_field(**binning_ctor_dict)
 
 
@@ -167,6 +144,7 @@ def init_reconstruction(
     light_field_geometry,
     photon_lixel_ids,
     binning,
+    sparse_system_matrix,
 ):
     image_rays = image.ImageRays(light_field_geometry)
 
@@ -174,12 +152,10 @@ def init_reconstruction(
     for lixel_id in photon_lixel_ids:
         intensities[lixel_id] += 1
 
-    psf = make_cached_tomographic_system_matrix(
-        supports=image_rays.support,
-        directions=image_rays.direction,
-        x_bin_edges=binning['sen_x_bin_edges'],
-        y_bin_edges=binning['sen_y_bin_edges'],
-        z_bin_edges=binning['sen_z_bin_edges'],)
+    psf = system_matrix.__make_matrix(
+        sparse_system_matrix=sparse_system_matrix,
+        light_field_geometry=light_field_geometry,
+        binning=binning)
 
     r = {}
     r['binning'] = binning
