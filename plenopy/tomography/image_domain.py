@@ -256,12 +256,12 @@ def init_simulation_truth_from_event(
         limited_fov_radius=0.5*s2i.max_FoV_diameter,
         observation_level=crh.observation_level(),)
 
-    true_emission_positions = ep['emission_positions'][ep['valid_acceptence']]
+    r['emission_positions'] = ep['emission_positions'][ep['valid_acceptence']]
 
     true_emission_positions_image_domain = xyz2cxcyb(
-        true_emission_positions[:, 0],
-        true_emission_positions[:, 1],
-        true_emission_positions[:, 2],
+        r['emission_positions'][:, 0],
+        r['emission_positions'][:, 1],
+        r['emission_positions'][:, 2],
         binning['focal_length']).T
     tepid = true_emission_positions_image_domain
 
@@ -269,8 +269,10 @@ def init_simulation_truth_from_event(
     tepid[:, 0] = -binning['focal_length']*np.tan(tepid[:, 0])
     tepid[:, 1] = -binning['focal_length']*np.tan(tepid[:, 1])
 
+    r['emission_positions_image_domain'] = tepid
+
     hist = np.histogramdd(
-        tepid,
+        r['emission_positions_image_domain'],
         bins=(
             binning['sen_x_bin_edges'],
             binning['sen_y_bin_edges'],
