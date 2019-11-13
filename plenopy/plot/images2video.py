@@ -22,7 +22,7 @@ def images2video(image_path, output_path, frames_per_second=25):
 
     with open(stdout_path, 'w') as stdout, open(stderr_path, 'w') as stderr:
         rc = subprocess.call([
-                'avconv',
+                'ffmpeg',
                 '-y',  # force overwriting of existing output file
                 '-framerate', str(int(frames_per_second)),
                 '-f', 'image2',
