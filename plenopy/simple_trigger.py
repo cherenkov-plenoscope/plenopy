@@ -97,7 +97,7 @@ def project_light_firld_sequence_onto_image_sequence(
     phs_lixel = 0
     for phs_i in range(num_phs_symbols):
         phs_symbol = raw_photon_stream[phs_i]
-        print(phs_lixel)
+
         if phs_symbol == raw_photon_stream_next_channel_marker:
             phs_lixel += 1
         else:
