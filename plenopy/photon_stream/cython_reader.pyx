@@ -149,3 +149,74 @@ def arrival_slices_and_lixel_ids(
         &lixel_ids[0])
 
     return arrival_slices, lixel_ids
+
+
+cdef extern void c_photon_stream_to_image_sequence(
+    unsigned char* photon_stream,
+    unsigned int photon_stream_length,
+    unsigned char photon_stream_next_channel_marker,
+    float time_slice_duration,
+    float *time_delay_image_mean,
+
+    unsigned int *projection_links,
+    unsigned int *projection_starts,
+    unsigned int *projection_lengths,
+
+    unsigned int number_lixel,
+    unsigned int number_pixel,
+    unsigned int number_time_slices,
+
+    unsigned int *image_sequence)
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def photon_stream_to_image_sequence(
+    np.ndarray[unsigned char, ndim=1, mode="c"] photon_stream not None,
+    unsigned char photon_stream_next_channel_marker,
+    float time_slice_duration,
+    np.ndarray[float, ndim=1, mode="c"] time_delay_image_mean not None,
+
+    np.ndarray[unsigned int, ndim=1, mode="c"] projection_links not None,
+    np.ndarray[unsigned int, ndim=1, mode="c"] projection_starts not None,
+    np.ndarray[unsigned int, ndim=1, mode="c"] projection_lengths not None,
+
+    unsigned int number_lixel,
+    unsigned int number_pixel,
+    unsigned int number_time_slices,
+):
+    cdef unsigned int photon_stream_length
+    photon_stream_length = photon_stream.shape[0]
+
+    assert time_slice_duration >= 0.0
+    assert number_lixel == projection_starts.shape[0]
+    assert number_lixel == projection_lengths.shape[0]
+    assert number_lixel == time_delay_image_mean.shape[0]
+
+    cdef np.ndarray[unsigned int, mode = "c"] image_sequence = np.ascontiguousarray(
+        np.zeros(
+            number_pixel*number_time_slices,
+            dtype=np.uint32
+        ),
+        dtype=np.uint32
+    )
+
+    c_photon_stream_to_image_sequence(
+        &photon_stream[0],
+        photon_stream_length,
+        photon_stream_next_channel_marker,
+        time_slice_duration,
+        &time_delay_image_mean[0],
+
+        &projection_links[0],
+        &projection_starts[0],
+        &projection_lengths[0],
+
+        number_lixel,
+        number_pixel,
+        number_time_slices,
+
+        &image_sequence[0],
+    )
+
+    return image_sequence.reshape((number_time_slices, number_pixel))

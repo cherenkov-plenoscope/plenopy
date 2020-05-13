@@ -70,49 +70,7 @@ def list_of_lists_to_arrays(list_of_lists):
             l += 1
         lengths.append(l)
     return {
-        "starts": np.array(starts),
-        "lengths": np.array(lengths),
-        "links": np.array(stream),
+        "starts": np.array(starts, dtype=np.uint32),
+        "lengths": np.array(lengths, dtype=np.uint32),
+        "links": np.array(stream, dtype=np.uint32),
     }
-
-
-def project_light_firld_sequence_onto_image_sequence(
-    raw_photon_stream,
-    raw_photon_stream_next_channel_marker,
-    projection_links,
-    projection_starts,
-    projection_lengths,
-    number_pixel,
-    number_time_slices,
-    time_slice_duration,
-    lixel_time_delays
-):
-    out_image_sequence = np.zeros(
-        shape=(number_time_slices, number_pixel),
-        dtype=np.uint16
-    )
-
-    num_phs_symbols = raw_photon_stream.shape[0]
-
-    phs_lixel = 0
-    for phs_i in range(num_phs_symbols):
-        phs_symbol = raw_photon_stream[phs_i]
-
-        if phs_symbol == raw_photon_stream_next_channel_marker:
-            phs_lixel += 1
-        else:
-            raw_arrival_time_slice = phs_symbol
-
-            arrival_time = raw_arrival_time_slice*time_slice_duration
-            arrival_time -= lixel_time_delays[phs_lixel]
-
-            arrival_slice = int(np.round(arrival_time/time_slice_duration))
-
-            if arrival_slice < number_time_slices and arrival_slice >= 0:
-
-                for p in range(projection_lengths[phs_lixel]):
-                    pp = projection_starts[phs_lixel] + p
-                    pixel = projection_links[pp]
-                    out_image_sequence[arrival_slice, pixel] += 1
-
-    return out_image_sequence
