@@ -82,7 +82,6 @@ def project_light_firld_sequence_onto_image_sequence(
     projection_links,
     projection_starts,
     projection_lengths,
-    number_lixel,
     number_pixel,
     number_time_slices,
     time_slice_duration,
