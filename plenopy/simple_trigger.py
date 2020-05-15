@@ -1,28 +1,56 @@
 import numpy as np
 from .image import ImageRays
+from .photon_stream.cython_reader import photon_stream_to_image_sequence
+from . import tools
+from scipy.ndimage import convolve1d as scipy_ndimage_convolve1d
 import scipy.spatial
 import array
 import json
 import os
 
 
-def make_hexagonal_grid(
-    outer_radius,
-    spacing,
-    inner_radius=0.0
+def estimate_trigger_image_sequences(
+    raw_sensor_response,
+    light_field_geometry,
+    trigger_geometry,
+    integration_time_in_slices=10,
 ):
-    hex_a = np.array([np.sqrt(3)/2, 0.5])*spacing
-    hex_b = np.array([0, 1])*spacing
+    tg = trigger_geometry
+    lfg = light_field_geometry
 
-    grid = []
-    sample_radius = 2.0*np.floor(outer_radius/spacing);
-    for a in np.arange(-sample_radius, sample_radius+1):
-        for b in np.arange(-sample_radius, sample_radius+1):
-            cell_ab = hex_a*a + hex_b*b
-            cell_norm = np.linalg.norm(cell_ab)
-            if cell_norm <= outer_radius and cell_norm >= inner_radius:
-                grid.append(cell_ab);
-    return np.array(grid)
+    assert tg['number_lixel'] == lfg.number_lixel
+
+    time_integration_kernel = np.ones(
+        integration_time_in_slices,
+        dtype=np.uint16
+    )
+
+    foci_sequences = []
+    for focus in range(tg['number_foci']):
+
+        trigger_image_sequence = photon_stream_to_image_sequence(
+            photon_stream=raw_sensor_response.photon_stream,
+            photon_stream_next_channel_marker=raw_sensor_response.NEXT_READOUT_CHANNEL_MARKER,
+            time_slice_duration=raw_sensor_response.time_slice_duration,
+            time_delay_image_mean=lfg.time_delay_image_mean,
+            projection_links=tg['foci'][focus]['links'],
+            projection_starts=tg['foci'][focus]['starts'],
+            projection_lengths=tg['foci'][focus]['lengths'],
+            number_lixel=lfg.number_lixel,
+            number_pixel=tg['image']['number_pixel'],
+            number_time_slices=raw_sensor_response.number_time_slices,
+        )
+
+        trigger_image_sequence_integrated = scipy_ndimage_convolve1d(
+            input=trigger_image_sequence,
+            weights=time_integration_kernel,
+            axis=0,
+            mode='constant',
+            cval=0
+        )
+        foci_sequences.append(trigger_image_sequence_integrated)
+
+    return foci_sequences
 
 
 def generate_trigger_image_from_physical_layout(light_field_geometry):
@@ -55,7 +83,7 @@ def generate_trigger_image(
     assert image_outer_radius_rad > 0.
     assert pixel_spacing_rad > 0.
     assert pixel_radius_rad > 0.
-    grid_cx_cy = make_hexagonal_grid(
+    grid_cx_cy = tools.hexagonal_grid.make_hexagonal_grid(
         outer_radius=image_outer_radius_rad,
         spacing=pixel_spacing_rad,
         inner_radius=0.0
