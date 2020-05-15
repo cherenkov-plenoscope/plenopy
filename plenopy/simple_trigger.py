@@ -8,6 +8,8 @@ import array
 import json
 import os
 
+TIME_AXIS = 0
+PIXEL_AXIS = 1
 
 def estimate_trigger_image_sequences(
     raw_sensor_response,
@@ -25,7 +27,7 @@ def estimate_trigger_image_sequences(
         dtype=np.uint16
     )
 
-    foci_sequences = []
+    foci_trigger_image_sequences = []
     for focus in range(tg['number_foci']):
 
         trigger_image_sequence = photon_stream_to_image_sequence(
@@ -48,9 +50,36 @@ def estimate_trigger_image_sequences(
             mode='constant',
             cval=0
         )
-        foci_sequences.append(trigger_image_sequence_integrated)
+        foci_trigger_image_sequences.append(trigger_image_sequence_integrated)
 
-    return foci_sequences
+    return foci_trigger_image_sequences
+
+
+def estimate_responses_from_trigger_image_sequences(
+    foci_trigger_image_sequences
+):
+    out = []
+    for focus in range(len(foci_trigger_image_sequences)):
+        out.append(
+            find_max_response_in_image_sequence(
+                image_sequence=foci_trigger_image_sequences[focus])
+        )
+    return out
+
+
+def find_max_response_in_image_sequence(image_sequence):
+    max_responses_across_pixels = np.max(
+        image_sequence,
+        axis=PIXEL_AXIS
+    )
+    time_slice = np.argmax(max_responses_across_pixels)
+    response_pe = max_responses_across_pixels[time_slice]
+    pixel = np.argmax(image_sequence[time_slice, :])
+    return {
+        "response_pe": int(response_pe),
+        "time_slice": int(time_slice),
+        "pixel": int(pixel),
+    }
 
 
 def generate_trigger_image_from_physical_layout(light_field_geometry):
@@ -285,3 +314,24 @@ def list_of_lists_to_arrays(list_of_lists):
         "lengths": np.array(lengths, dtype=np.uint32),
         "links": np.array(stream, dtype=np.uint32),
     }
+
+
+def region_of_interest_from_trigger_response(
+    trigger_response,
+    trigger_geometry,
+    time_slice_duration,
+):
+    tg = trigger_geometry
+    foci_responses = [_focus['response_pe'] for _focus in trigger_response]
+    focus = np.argmax(foci_responses)
+
+    time_slice = trigger_response[focus]['time_slice']
+    pixel =  trigger_response[focus]['pixel']
+
+    return {
+        'time_center_roi': time_slice*time_slice_duration,
+        'cx_center_roi': tg['image']['pixel_cx_rad'][pixel],
+        'cy_center_roi': tg['image']['pixel_cy_rad'][pixel],
+        'object_distance': tg['foci'][focus]['object_distance_m']
+    }
+
