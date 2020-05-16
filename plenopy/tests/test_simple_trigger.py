@@ -38,7 +38,6 @@ def test_list_of_list_to_array():
             assert lol[ii][jj] == lol_back[ii][jj]
 
 
-
 def test_invert_projection():
     number_lixel = 4
     number_pixel = 6
@@ -93,8 +92,11 @@ def test_max_response_unique_maximum():
             assert image_sequence.shape[0] == number_time_slices
             assert image_sequence.shape[1] == number_pixel
 
-            mres = pl.simple_trigger.estimate._find_max_response_in_image_sequence(
-                image_sequence=image_sequence
+            mres = (
+                pl.simple_trigger.estimate.
+                _find_max_response_in_image_sequence(
+                    image_sequence=image_sequence
+                )
             )
 
             assert mres['response_pe'] == 10
@@ -141,7 +143,9 @@ def test_io():
     focus['object_distance_m'] = np.float32(2e3)
     tg['foci'].append(focus)
 
-    pl.simple_trigger.io.assert_trigger_geometry_consistent(trigger_geometry=tg)
+    pl.simple_trigger.io.assert_trigger_geometry_consistent(
+        trigger_geometry=tg
+    )
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy_trigger") as tmp:
         pl.simple_trigger.io.write_trigger_geometry_to_path(
