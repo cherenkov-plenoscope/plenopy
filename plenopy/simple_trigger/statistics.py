@@ -3,12 +3,6 @@ from .prepare import arrays_to_list_of_lists
 from .prepare import invert_projection_matrix
 
 
-def _discrete_histogram(x):
-    bin_edges = np.arange(np.min(x), np.max(x)+1)
-    hist = np.histogram(x, bin_edges)[0]
-    return hist, bin_edges
-
-
 def gather_summation_statistics(trigger_geometry):
     tg = trigger_geometry
 
