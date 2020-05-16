@@ -45,13 +45,8 @@ def write_figures_to_directory(
     )
 
     os.makedirs(out_dir, exist_ok=True)
-
     stats = trigger_summation_statistics
 
-    '''
-    with open(os.path.join(out_dir, "statistics.json"), "wt") as fout:
-        fout.write(json.dumps(stats))
-    '''
     for focus in range(trigger_geometry['number_foci']):
 
         fig, ax = _make_fig_ax(figsize)
@@ -70,7 +65,11 @@ def write_figures_to_directory(
         ax.set_xlabel('cx/deg')
         ax.set_ylabel('cy/deg')
         fig.savefig(
-            os.path.join(out_dir, 'focus_{:06d}_lixel_in_pixel_overview.jpg'.format(focus)))
+            os.path.join(
+                out_dir,
+                'focus_{:06d}_lixel_in_pixel_overview.jpg'.format(focus)
+            )
+        )
         plt.close('all')
 
 
@@ -88,7 +87,11 @@ def write_figures_to_directory(
         ax.semilogy()
         ax.grid(color='k', linestyle='-', linewidth=0.66, alpha=0.1)
         fig.savefig(
-            os.path.join(out_dir, 'focus_{:06d}_lixel_in_pixel_histogram.jpg'.format(focus)))
+            os.path.join(
+                out_dir,
+                'focus_{:06d}_lixel_in_pixel_histogram.jpg'.format(focus)
+            )
+        )
         plt.close('all')
 
 
@@ -106,26 +109,9 @@ def write_figures_to_directory(
         ax.semilogy()
         ax.grid(color='k', linestyle='-', linewidth=0.66, alpha=0.1)
         fig.savefig(
-            os.path.join(out_dir, 'focus_{:06d}_pixel_in_lixel_histogram.jpg'.format(focus)))
+            os.path.join(
+                out_dir,
+                'focus_{:06d}_pixel_in_lixel_histogram.jpg'.format(focus)
+            )
+        )
         plt.close('all')
-
-
-    '''
-        hist_lixel_in_pixel = _discrete_histogram(number_lixel_in_pixel)
-
-        stat["lixel_in_pixel_frequency"] = hist_lixel_in_pixel[0]
-        stat["lixel_in_pixel_bin_edges"] = hist_lixel_in_pixel[1]
-
-        stat["mean_number_lixel_in_pixel"] = np.mean(number_lixel_in_pixel)
-        stat["std_number_lixel_in_pixel"] = np.std(number_lixel_in_pixel)
-
-
-
-        hist_pixel_in_lixel = _discrete_histogram(number_pixel_in_lixel)
-
-        stat["pixel_in_lixel_frequency"] = hist_pixel_in_lixel[0]
-        stat["pixel_in_lixel_bin_edges"] = hist_pixel_in_lixel[1]
-
-        stat["mean_number_pixel_in_lixel"] = np.mean(number_pixel_in_lixel)
-        stat["std_number_pixel_in_lixel"] = np.std(number_pixel_in_lixel)
-    '''
