@@ -11,7 +11,7 @@ def region_of_interest_from_trigger_response(
     focus = np.argmax(foci_responses)
 
     time_slice = trigger_response[focus]['time_slice']
-    pixel =  trigger_response[focus]['pixel']
+    pixel = trigger_response[focus]['pixel']
 
     return {
         'time_center_roi': time_slice*time_slice_duration,
@@ -19,4 +19,3 @@ def region_of_interest_from_trigger_response(
         'cy_center_roi': tg['image']['pixel_cy_rad'][pixel],
         'object_distance': tg['foci'][focus]['object_distance_m']
     }
-

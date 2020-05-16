@@ -32,8 +32,8 @@ def gather_summation_statistics(trigger_geometry):
         )
 
         stat = {}
-        stat['number_lixel_in_pixel'] = [len(pixel) for pixel in pixel_to_lixel]
-        stat['number_pixel_in_lixel'] = [len(lixel) for lixel in lixel_to_pixel]
+        stat['number_lixel_in_pixel'] = [len(pix) for pix in pixel_to_lixel]
+        stat['number_pixel_in_lixel'] = [len(lix) for lix in lixel_to_pixel]
 
         stats['foci'].append(stat)
     return stats

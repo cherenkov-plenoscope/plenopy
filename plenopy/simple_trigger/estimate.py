@@ -24,7 +24,8 @@ def estimate_trigger_image_sequences(
 
         trigger_image_sequence = photon_stream_to_image_sequence(
             photon_stream=raw_sensor_response.photon_stream,
-            photon_stream_next_channel_marker=raw_sensor_response.NEXT_READOUT_CHANNEL_MARKER,
+            photon_stream_next_channel_marker=(
+                raw_sensor_response.NEXT_READOUT_CHANNEL_MARKER),
             time_slice_duration=raw_sensor_response.time_slice_duration,
             time_delay_image_mean=lfg.time_delay_image_mean,
             projection_links=tg['foci'][focus]['links'],

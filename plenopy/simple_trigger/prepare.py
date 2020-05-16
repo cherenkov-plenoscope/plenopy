@@ -127,12 +127,12 @@ def list_of_lists_to_arrays(list_of_lists):
     i = 0
     for _list in list_of_lists:
         starts.append(i)
-        l = 0
+        length = 0
         for symbol in _list:
             stream.append(symbol)
             i += 1
-            l += 1
-        lengths.append(l)
+            length += 1
+        lengths.append(length)
     return {
         "starts": np.array(starts, dtype=np.uint32),
         "lengths": np.array(lengths, dtype=np.uint32),
