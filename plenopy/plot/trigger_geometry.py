@@ -72,7 +72,6 @@ def write_figures_to_directory(
         )
         plt.close('all')
 
-
         fig, ax = _make_fig_ax(figsize)
         num_lip = stats['foci'][focus]['number_lixel_in_pixel']
         bin_edges = np.arange(np.min(num_lip), np.max(num_lip)+1)
@@ -93,7 +92,6 @@ def write_figures_to_directory(
             )
         )
         plt.close('all')
-
 
         fig, ax = _make_fig_ax(figsize)
         num_pil = stats['foci'][focus]['number_pixel_in_lixel']
