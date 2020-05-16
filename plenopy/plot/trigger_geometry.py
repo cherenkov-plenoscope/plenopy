@@ -1,0 +1,131 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+import json
+
+from . import image
+from .FigureSize import FigureSize
+from .. import simple_trigger
+
+
+def _make_fig_ax(figsize):
+    fig = plt.figure(
+        figsize=(figsize.width, figsize.hight),
+        dpi=figsize.dpi
+    )
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    return fig, ax
+
+
+def add2ax_histogram(ax, counts, bin_edges, style='k-'):
+    number_bins = len(counts)
+    assert len(bin_edges) == number_bins + 1
+    for i in range(number_bins):
+        x_start = bin_edges[i]
+        x_end = bin_edges[i+1]
+        ax.plot([x_start, x_end], [counts[i], counts[i]], style)
+
+
+def write_figures_to_directory(
+    trigger_geometry,
+    trigger_summation_statistics,
+    out_dir,
+    relative_width=16,
+    relative_hight=9,
+    pixel_rows=1080,
+    dpi=200,
+):
+    figsize = FigureSize(
+        relative_width=relative_width,
+        relative_hight=relative_hight,
+        pixel_rows=pixel_rows,
+        dpi=dpi
+    )
+
+    os.makedirs(out_dir, exist_ok=True)
+
+    stats = trigger_summation_statistics
+
+    '''
+    with open(os.path.join(out_dir, "statistics.json"), "wt") as fout:
+        fout.write(json.dumps(stats))
+    '''
+    for focus in range(trigger_geometry['number_foci']):
+
+        fig, ax = _make_fig_ax(figsize)
+        image.add2ax(
+            ax=ax,
+            I=np.array(stats['foci'][focus]['number_lixel_in_pixel']),
+            px=np.rad2deg(trigger_geometry['image']['pixel_cx_rad']),
+            py=np.rad2deg(trigger_geometry['image']['pixel_cy_rad']),
+            colormap='viridis',
+            hexrotation=30,
+            vmin=None,
+            vmax=None,
+            colorbar=True
+        )
+        fig.suptitle('number lixel in pixel')
+        ax.set_xlabel('cx/deg')
+        ax.set_ylabel('cy/deg')
+        fig.savefig(
+            os.path.join(out_dir, 'focus_{:06d}_lixel_in_pixel_overview.jpg'.format(focus)))
+        plt.close('all')
+
+
+        fig, ax = _make_fig_ax(figsize)
+        num_lip = stats['foci'][focus]['number_lixel_in_pixel']
+        bin_edges = np.arange(np.min(num_lip), np.max(num_lip)+1)
+        add2ax_histogram(
+            ax=ax,
+            counts=np.histogram(num_lip, bins=bin_edges)[0],
+            bin_edges=bin_edges,
+            style='k-'
+        )
+        ax.set_xlabel('number lixel in pixel')
+        ax.set_ylabel('number pixel')
+        ax.semilogy()
+        ax.grid(color='k', linestyle='-', linewidth=0.66, alpha=0.1)
+        fig.savefig(
+            os.path.join(out_dir, 'focus_{:06d}_lixel_in_pixel_histogram.jpg'.format(focus)))
+        plt.close('all')
+
+
+        fig, ax = _make_fig_ax(figsize)
+        num_pil = stats['foci'][focus]['number_pixel_in_lixel']
+        bin_edges = np.arange(np.min(num_pil), np.max(num_pil)+1)
+        add2ax_histogram(
+            ax=ax,
+            counts=np.histogram(num_pil, bins=bin_edges)[0],
+            bin_edges=bin_edges,
+            style='k-'
+        )
+        ax.set_xlabel('number pixel in lixel')
+        ax.set_ylabel('number lixel')
+        ax.semilogy()
+        ax.grid(color='k', linestyle='-', linewidth=0.66, alpha=0.1)
+        fig.savefig(
+            os.path.join(out_dir, 'focus_{:06d}_pixel_in_lixel_histogram.jpg'.format(focus)))
+        plt.close('all')
+
+
+    '''
+        hist_lixel_in_pixel = _discrete_histogram(number_lixel_in_pixel)
+
+        stat["lixel_in_pixel_frequency"] = hist_lixel_in_pixel[0]
+        stat["lixel_in_pixel_bin_edges"] = hist_lixel_in_pixel[1]
+
+        stat["mean_number_lixel_in_pixel"] = np.mean(number_lixel_in_pixel)
+        stat["std_number_lixel_in_pixel"] = np.std(number_lixel_in_pixel)
+
+
+
+        hist_pixel_in_lixel = _discrete_histogram(number_pixel_in_lixel)
+
+        stat["pixel_in_lixel_frequency"] = hist_pixel_in_lixel[0]
+        stat["pixel_in_lixel_bin_edges"] = hist_pixel_in_lixel[1]
+
+        stat["mean_number_pixel_in_lixel"] = np.mean(number_pixel_in_lixel)
+        stat["std_number_pixel_in_lixel"] = np.std(number_pixel_in_lixel)
+    '''

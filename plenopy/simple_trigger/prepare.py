@@ -6,32 +6,11 @@ from .. import tools
 from ..image import ImageRays
 
 
-def generate_trigger_image_from_physical_layout(light_field_geometry):
-    r"""
-    A trigger-patch of pixels for pixel 'c':
-                     ___
-                 ___/   \___
-                /   \___/   \
-                \___/ c \___/
-                /   \___/   \
-                \___/   \___/
-                    \___/
-
-    """
-    lfg = light_field_geometry
-    trg_img = {}
-    trg_img["pixel_cx_rad"] = lfg.pixel_pos_cx
-    trg_img["pixel_cy_rad"] = lfg.pixel_pos_cy
-    trg_img["pixel_radius_rad"] = (
-        2.2*lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
-    trg_img["number_pixel"] = lfg.pixel_pos_cy.shape[0]
-    return trg_img
-
-
 def generate_trigger_image(
     image_outer_radius_rad,
     pixel_spacing_rad,
     pixel_radius_rad,
+    max_number_nearest_lixel_in_pixel,
 ):
     assert image_outer_radius_rad > 0.
     assert pixel_spacing_rad > 0.
@@ -45,7 +24,10 @@ def generate_trigger_image(
     trg_img["pixel_cx_rad"] = grid_cx_cy[:, 0]
     trg_img["pixel_cy_rad"] = grid_cx_cy[:, 1]
     trg_img["pixel_radius_rad"] = pixel_radius_rad
-    trg_img["number_pixel"] = grid_cx_cy[:, 0]
+    trg_img["number_pixel"] = grid_cx_cy.shape[0]
+    trg_img["max_number_nearest_lixel_in_pixel"] = (
+        max_number_nearest_lixel_in_pixel
+    )
     return trg_img
 
 
@@ -53,7 +35,6 @@ def prepare_trigger_geometry(
     light_field_geometry,
     trigger_image,
     object_distances=[7.5e3, 15e3, 22.5e3],
-    max_number_nearest_image_pixels=100,
 ):
     tg = {}
     tg['image'] = trigger_image
@@ -63,15 +44,17 @@ def prepare_trigger_geometry(
 
     for object_distance in object_distances:
 
-        projection_lol = estimate_projection_of_light_field_to_image(
+        lixel_to_pixel = estimate_projection_of_light_field_to_image(
             light_field_geometry=light_field_geometry,
             object_distance=object_distance,
             image_pixel_cx_rad=tg['image']['pixel_cx_rad'],
             image_pixel_cy_rad=tg['image']['pixel_cy_rad'],
             image_pixel_radius_rad=tg['image']['pixel_radius_rad'],
-            max_number_nearest_image_pixels=max_number_nearest_image_pixels,
+            max_number_nearest_lixel_in_pixel=tg['image'][
+                'max_number_nearest_lixel_in_pixel'],
         )
-        focus = list_of_lists_to_arrays(list_of_lists=projection_lol)
+
+        focus = list_of_lists_to_arrays(list_of_lists=lixel_to_pixel)
         focus["object_distance_m"] = object_distance
         tg['foci'].append(focus)
     return tg
@@ -83,7 +66,7 @@ def estimate_projection_of_light_field_to_image(
     image_pixel_cx_rad,
     image_pixel_cy_rad,
     image_pixel_radius_rad,
-    max_number_nearest_image_pixels=100,
+    max_number_nearest_lixel_in_pixel=7,
 ):
     '''
     Returns a list over lixels of lists of pixels.
@@ -122,14 +105,14 @@ def estimate_projection_of_light_field_to_image(
     )
     search = trigger_pixel_tree.query(
         x=np.vstack((lixel_cx, lixel_cy)).T,
-        k=max_number_nearest_image_pixels,
+        k=max_number_nearest_lixel_in_pixel,
     )
     projection_lixel_to_pixel = []
     lixel_to_pixel_distances_rad = search[0]
     lixel_to_pixel_ids = search[1]
     for lix in range(light_field_geometry.number_lixel):
         lixel_to_pixel = []
-        for pix in range(max_number_nearest_image_pixels):
+        for pix in range(max_number_nearest_lixel_in_pixel):
             dd = lixel_to_pixel_distances_rad[lix, pix]
             if dd <= image_pixel_radius_rad:
                 lixel_to_pixel.append(lixel_to_pixel_ids[lix, pix])
@@ -155,3 +138,22 @@ def list_of_lists_to_arrays(list_of_lists):
         "lengths": np.array(lengths, dtype=np.uint32),
         "links": np.array(stream, dtype=np.uint32),
     }
+
+
+def arrays_to_list_of_lists(starts, lengths, links):
+    number_lixel = starts.shape[0]
+    lol = [[] for p in range(number_lixel)]
+    for lixel in range(number_lixel):
+        for l in range(lengths[lixel]):
+            idx = starts[lixel] + l
+            lol[lixel].append(links[idx])
+    return lol
+
+
+def invert_projection_matrix(lixel_to_pixel, number_pixel, number_lixel):
+    assert number_lixel == len(lixel_to_pixel)
+    pixel_to_lixel = [[] for p in range(number_pixel)]
+    for lixel in range(number_lixel):
+        for pixel in lixel_to_pixel[lixel]:
+            pixel_to_lixel[pixel].append(lixel)
+    return pixel_to_lixel

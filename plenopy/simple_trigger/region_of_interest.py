@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def region_of_interest_from_trigger_response(

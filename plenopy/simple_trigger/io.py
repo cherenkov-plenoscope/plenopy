@@ -12,6 +12,10 @@ def write_trigger_geometry_to_path(trigger_geometry, path):
     _write(join(path, "number_lixel"), tg['number_lixel'], 'u4')
 
     _write(join(path, "image.number_pixel"), tg['image']['number_pixel'], 'u4')
+    _write(
+        join(path, "image.max_number_nearest_lixel_in_pixel"),
+        tg['image']['max_number_nearest_lixel_in_pixel'],
+        'u4')
     _write(join(path, "image.pixel_cx_rad"), tg['image']['pixel_cx_rad'], 'f4')
     _write(join(path, "image.pixel_cy_rad"), tg['image']['pixel_cy_rad'], 'f4')
     _write(
@@ -40,6 +44,10 @@ def read_trigger_geometry_from_path(path):
     tg['image'] = {}
     tg['image']['number_pixel'] = _read(
         join(path, "image.number_pixel"),
+        'u4'
+    )[0]
+    tg['image']['max_number_nearest_lixel_in_pixel'] = _read(
+        join(path, "image.max_number_nearest_lixel_in_pixel"),
         'u4'
     )[0]
     tg['image']['pixel_cx_rad'] = _read(join(path, "image.pixel_cx_rad"), 'f4')
