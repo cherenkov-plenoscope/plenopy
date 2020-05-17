@@ -15,11 +15,9 @@ def first_stage(
         trigger_geometry=trigger_geometry,
         integration_time_slices=integration_time_slices,
     )
-
     response = estimate_max_responses_from_trigger_image_sequences(
         foci_trigger_image_sequences=foci_trigger_image_sequences
     )
-
     return response
 
 
@@ -34,14 +32,8 @@ def estimate_trigger_image_sequences(
 
     assert tg['number_lixel'] == lfg.number_lixel
 
-    time_integration_kernel = np.ones(
-        integration_time_slices,
-        dtype=np.uint32
-    )
-
     foci_trigger_image_sequences = []
     for focus in range(tg['number_foci']):
-
         trigger_image_sequence = photon_stream_to_image_sequence(
             photon_stream=raw_sensor_response.photon_stream,
             photon_stream_next_channel_marker=(
@@ -55,17 +47,27 @@ def estimate_trigger_image_sequences(
             number_pixel=tg['image']['number_pixel'],
             number_time_slices=raw_sensor_response.number_time_slices,
         )
-
-        trigger_image_sequence_integrated = scipy_ndimage_convolve1d(
-            input=trigger_image_sequence,
-            weights=time_integration_kernel,
-            axis=0,
-            mode='constant',
-            cval=0
+        trigger_image_sequence_integrated = convole_sequence(
+            sequnce=trigger_image_sequence,
+            integration_time_slices=integration_time_slices
         )
         foci_trigger_image_sequences.append(trigger_image_sequence_integrated)
-
     return foci_trigger_image_sequences
+
+
+def convole_sequence(sequnce, integration_time_slices):
+    time_integration_kernel = np.ones(
+        integration_time_slices,
+        dtype=np.uint32
+    )
+    integral = scipy_ndimage_convolve1d(
+        input=sequnce,
+        weights=time_integration_kernel,
+        axis=0,
+        mode='constant',
+        cval=0
+    )
+    return integral
 
 
 def estimate_max_responses_from_trigger_image_sequences(

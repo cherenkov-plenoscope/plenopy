@@ -1,7 +1,6 @@
 import numpy as np
 from collections import namedtuple
 from sklearn.cluster import DBSCAN
-from . import trigger
 from . import tools
 from .event.Event import Event
 from .light_field_geometry import LightFieldGeometry
@@ -9,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def estimate_nearest_neighbors(x, y, epsilon, itself=False):
-    nn = trigger.neighborhood(x, y, epsilon, itself=itself)
+    nn = tools.neighborhood(x, y, epsilon, itself=itself)
     ns = []
     num_points = len(x)
     for i in range(num_points):

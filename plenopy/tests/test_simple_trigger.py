@@ -185,3 +185,48 @@ def test_io():
                 tg['foci'][focus][key],
                 tg_back['foci'][focus][key]
             )
+
+
+def test_sliding_coincidence_window():
+    sequence = np.array([], dtype=np.uint16)
+    rs = pl.simple_trigger.estimate.convole_sequence(
+        sequence,
+        integration_time_slices=5
+    )
+    assert rs.shape == sequence.shape
+
+    np.testing.assert_array_equal(
+        pl.simple_trigger.estimate.convole_sequence(
+            np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
+            integration_time_slices=5
+        ),
+        np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16)
+    )
+    np.testing.assert_array_equal(
+        pl.simple_trigger.estimate.convole_sequence(
+            np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
+            integration_time_slices=1
+        ),
+        np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16)
+    )
+    np.testing.assert_array_equal(
+        pl.simple_trigger.estimate.convole_sequence(
+            np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
+            integration_time_slices=2
+        ),
+        np.array([1, 3, 5, 5, 3, 1, 1, 3, 5, 5, 2], dtype=np.uint16)
+    )
+    np.testing.assert_array_equal(
+        pl.simple_trigger.estimate.convole_sequence(
+            np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
+            integration_time_slices=5
+        ),
+        np.array([0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0], dtype=np.uint16)
+    )
+    np.testing.assert_array_equal(
+        pl.simple_trigger.estimate.convole_sequence(
+            np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], dtype=np.uint16),
+            integration_time_slices=5
+        ),
+        np.array([0, 0, 1, 2, 2, 2, 2, 1, 0, 0, 0], dtype=np.uint16)
+    )
