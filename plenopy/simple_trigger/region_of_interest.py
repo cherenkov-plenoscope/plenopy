@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def region_of_interest_from_trigger_response(
+def from_trigger_response(
     trigger_response,
     trigger_geometry,
     time_slice_duration,
