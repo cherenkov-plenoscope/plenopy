@@ -3,17 +3,17 @@ from ..photon_stream.cython_reader import photon_stream_to_image_sequence
 from scipy.ndimage import convolve1d as scipy_ndimage_convolve1d
 
 
-def estimate_response_first_stage(
+def first_stage(
     raw_sensor_response,
     light_field_geometry,
     trigger_geometry,
-    integration_time_in_slices=10,
+    integration_time_slices,
 ):
     foci_trigger_image_sequences = estimate_trigger_image_sequences(
         raw_sensor_response=raw_sensor_response,
         light_field_geometry=light_field_geometry,
         trigger_geometry=trigger_geometry,
-        integration_time_in_slices=integration_time_in_slices,
+        integration_time_slices=integration_time_slices,
     )
 
     response = estimate_max_responses_from_trigger_image_sequences(
@@ -27,7 +27,7 @@ def estimate_trigger_image_sequences(
     raw_sensor_response,
     light_field_geometry,
     trigger_geometry,
-    integration_time_in_slices=10,
+    integration_time_slices,
 ):
     tg = trigger_geometry
     lfg = light_field_geometry
@@ -35,8 +35,8 @@ def estimate_trigger_image_sequences(
     assert tg['number_lixel'] == lfg.number_lixel
 
     time_integration_kernel = np.ones(
-        integration_time_in_slices,
-        dtype=np.uint16
+        integration_time_slices,
+        dtype=np.uint32
     )
 
     foci_trigger_image_sequences = []
