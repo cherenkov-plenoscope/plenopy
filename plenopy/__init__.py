@@ -9,7 +9,6 @@ from . import simulation_truth
 from . import tomography
 from . import tools
 from . import photon_stream
-from . import trigger
 from . import simple_trigger
 from . import classify
 from . import sequence
