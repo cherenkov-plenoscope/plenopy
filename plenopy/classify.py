@@ -4,7 +4,6 @@ import array
 from .photon_stream.cython_reader import stream2_cx_cy_arrivaltime_point_cloud
 from .photon_stream.cython_reader import arrival_slices_and_lixel_ids
 from .image.ImageRays import ImageRays
-from . import trigger
 import os
 import gzip
 import json
@@ -27,15 +26,6 @@ def cluster_air_shower_photons_based_on_density(
     ).fit(xyt)
 
     return dbscan.labels_
-
-
-def center_for_region_of_interest(event):
-    trigger_response = trigger.read_trigger_response_of_event(event)
-    return trigger.region_of_interest_from_trigger_response(
-        trigger_response=trigger_response,
-        time_slice_duration=event.raw_sensor_response.time_slice_duration,
-        pixel_pos_cx=event.light_field_geometry.pixel_pos_cx,
-        pixel_pos_cy=event.light_field_geometry.pixel_pos_cy)
 
 
 class RawPhotons():
