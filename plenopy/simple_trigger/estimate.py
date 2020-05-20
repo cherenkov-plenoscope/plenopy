@@ -18,7 +18,11 @@ def first_stage(
     response = estimate_max_responses_from_trigger_image_sequences(
         foci_trigger_image_sequences=foci_trigger_image_sequences
     )
-    return response
+    max_response_in_focus_vs_timeslices = np.max(
+        foci_trigger_image_sequences,
+        axis=2
+    )
+    return response, max_response_in_focus_vs_timeslices
 
 
 def estimate_trigger_image_sequences(
