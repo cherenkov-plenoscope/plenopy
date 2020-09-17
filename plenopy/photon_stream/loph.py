@@ -50,7 +50,7 @@ Format
 
 """
 import numpy as np
-
+from . import cython_reader
 
 VERSION = 1
 
@@ -156,3 +156,26 @@ def is_equal(phs_a, phs_b):
     ):
         return False
     return True
+
+
+def raw_sensor_response_to_photon_stream_in_loph_repr(
+    raw_sensor_response,
+    cherenkov_photon_ids
+):
+    raw = raw_sensor_response
+    cer_ids = cherenkov_photon_ids
+    (
+        arrival_slices,
+        lixel_ids,
+    ) = cython_reader.arrival_slices_and_lixel_ids(raw)
+    phs = {}
+    phs["sensor"] = {}
+    phs["sensor"]["number_channels"] = raw.number_lixel
+    phs["sensor"]["number_time_slices"] = raw.number_time_slices
+    phs["sensor"]["time_slice_duration"] = raw.time_slice_duration
+
+    phs["photons"] = {}
+    phs["photons"]["channels"] = lixel_ids[cer_ids]
+    phs["photons"]["arrival_time_slices"] = arrival_slices[cer_ids]
+    assert_valid(phs=phs)
+    return phs
