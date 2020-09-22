@@ -50,6 +50,8 @@ Format
 
 """
 import numpy as np
+import io
+import tarfile
 from . import cython_reader
 
 VERSION = 1
@@ -82,29 +84,31 @@ def write_photon_stream_to_file(phs, fileobj):
     """
     Write photon-stream (phs) in list-of-photons (loph) repr. to fileobj.
     """
+    n = 0
     f = fileobj
     assert_valid(phs=phs)
     number_photons = np.uint64(phs["photons"]["channels"].shape[0])
 
     # HEADER
     # ======
-    f.write(PHS_HEADER_LINE)
-    f.write(REPRESENTATION_LINE)
-    f.write(VERSION_LINE)
+    n += f.write(PHS_HEADER_LINE)
+    n += f.write(REPRESENTATION_LINE)
+    n += f.write(VERSION_LINE)
 
     # SENSOR
     # ======
     sen = phs["sensor"]
-    f.write(sen["number_channels"].tobytes())
-    f.write(sen["number_time_slices"].tobytes())
-    f.write(sen["time_slice_duration"].tobytes())
+    n += f.write(sen["number_channels"].tobytes())
+    n += f.write(sen["number_time_slices"].tobytes())
+    n += f.write(sen["time_slice_duration"].tobytes())
 
     # PHOTONS
     # =======
-    f.write(number_photons.tobytes())
+    n += f.write(number_photons.tobytes())
     for ph in range(number_photons):
-        f.write(phs["photons"]["channels"][ph].tobytes())
-        f.write(phs["photons"]["arrival_time_slices"][ph].tobytes())
+        n += f.write(phs["photons"]["channels"][ph].tobytes())
+        n += f.write(phs["photons"]["arrival_time_slices"][ph].tobytes())
+    return n
 
 
 def read_photon_stream_from_file(fileobj):
@@ -159,15 +163,13 @@ def is_equal(phs_a, phs_b):
 
 
 def raw_sensor_response_to_photon_stream_in_loph_repr(
-    raw_sensor_response,
-    cherenkov_photon_ids
+    raw_sensor_response, cherenkov_photon_ids
 ):
     raw = raw_sensor_response
     cer_ids = cherenkov_photon_ids
-    (
-        arrival_slices,
-        lixel_ids,
-    ) = cython_reader.arrival_slices_and_lixel_ids(raw)
+    (arrival_slices, lixel_ids,) = cython_reader.arrival_slices_and_lixel_ids(
+        raw
+    )
     phs = {}
     phs["sensor"] = {}
     phs["sensor"]["number_channels"] = raw.number_lixel
@@ -179,3 +181,70 @@ def raw_sensor_response_to_photon_stream_in_loph_repr(
     phs["photons"]["arrival_time_slices"] = arrival_slices[cer_ids]
     assert_valid(phs=phs)
     return phs
+
+
+class LopfTarReader:
+    def __init__(self, path, id_num_digits=9):
+        self.path = path
+        self.tar = tarfile.open(path, "r|*")
+        self._id_num_digits = id_num_digits
+        assert self._id_num_digits > 0
+
+    def __next__(self):
+        info_tar = self.tar.next()
+        if info_tar is None:
+            raise StopIteration
+        identity = int(info_tar.name[0 : self._id_num_digits])
+        phs = read_photon_stream_from_file(
+            fileobj=self.tar.extractfile(info_tar)
+        )
+        return identity, phs
+
+    def __iter__(self):
+        return self
+
+    def __exit__(self):
+        self.tar.close()
+
+    def __repr__(self):
+        out = "{:s}(path='{:s}')".format(self.__class__.__name__, self.path)
+        return out
+
+
+class LopfTarWriter:
+    def __init__(self, path, id_num_digits=9):
+        self.path = path
+        self.tar = tarfile.open(path, "w")
+        self._id_num_digits = id_num_digits
+        assert self._id_num_digits > 0
+        self._id_template_str = (
+            "{:0" + str(self._id_num_digits) + "d}.phs.loph"
+        )
+
+    def add(self, identity, phs):
+        with io.BytesIO() as buff:
+            info = tarfile.TarInfo(self._id_template_str.format(identity))
+            info.size = write_photon_stream_to_file(phs=phs, fileobj=buff)
+            buff.seek(0)
+            self.tar.addfile(info, buff)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.tar.close()
+        return True
+
+    def __repr__(self):
+        out = "{:s}(path='{:s}')".format(self.__class__.__name__, self.path)
+        return out
+
+
+def concatenate_tars(in_paths, out_path):
+    with tarfile.open(out_path, "w") as tarout:
+        for part_path in in_paths:
+            with tarfile.open(part_path, "r") as tarin:
+                tarinfo = tarin.next()
+                while tarinfo is not None:
+                    tarout.addfile(tarinfo, tarin.extractfile(tarinfo))
+                    tarinfo = tarin.next()
