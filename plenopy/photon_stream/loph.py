@@ -244,7 +244,14 @@ def concatenate_tars(in_paths, out_path):
     with tarfile.open(out_path, "w") as tarout:
         for part_path in in_paths:
             with tarfile.open(part_path, "r") as tarin:
-                tarinfo = tarin.next()
+                # woraround for https://bugs.python.org/issue29760
+                try:
+                    tarinfo = tarin.next()
+                except OSError as e:
+                    if e.errno == 22:
+                        tarinfo = None
+                    else:
+                        raise e
                 while tarinfo is not None:
                     tarout.addfile(tarinfo, tarin.extractfile(tarinfo))
                     tarinfo = tarin.next()
