@@ -52,6 +52,7 @@ Format
 import numpy as np
 import io
 import tarfile
+import os
 from . import cython_reader
 
 VERSION = 1
@@ -200,11 +201,14 @@ class LopfTarReader:
         )
         return identity, phs
 
+    def __enter__(self):
+        return self
+
     def __iter__(self):
         return self
 
-    def __exit__(self):
-        self.tar.close()
+    def __exit__(self, type, value, traceback):
+        return self.tar.close()
 
     def __repr__(self):
         out = "{:s}(path='{:s}')".format(self.__class__.__name__, self.path)
@@ -255,3 +259,40 @@ def concatenate_tars(in_paths, out_path):
                 while tarinfo is not None:
                     tarout.addfile(tarinfo, tarin.extractfile(tarinfo))
                     tarinfo = tarin.next()
+
+
+def split_into_chunks(loph_path, out_dir, chunk_prefix, num_events_in_chunk):
+    """
+    Helps with parallel computing
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    with LopfTarReader(path=loph_path) as run:
+        chunk_count = 0
+        has_events_left = True
+
+        while has_events_left:
+
+            chunk_path = os.path.join(
+                out_dir,
+                "{:s}_{:09d}.tar".format(chunk_prefix, chunk_count)
+            )
+
+            with LopfTarWriter(path=chunk_path) as chunk:
+                for ii in range(num_events_in_chunk):
+                    try:
+                        event = run.__next__()
+                        identity, phs = event
+                        chunk.add(identity=identity, phs=phs)
+                    except StopIteration as stop:
+                        has_events_left = False
+            chunk_count += 1
+
+def read_filter_write(in_path, out_path, identity_set):
+    """
+    Read in_path, and write event to out_path when idx is in identity_set
+    """
+    with LopfTarReader(in_path) as irun, LopfTarWriter(out_path) as orun:
+        for event in irun:
+            identity, phs = event
+            if identity in identity_set:
+                orun.add(identity=identity, phs=phs)
