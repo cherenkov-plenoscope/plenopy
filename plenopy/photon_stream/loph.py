@@ -274,7 +274,7 @@ def split_into_chunks(loph_path, out_dir, chunk_prefix, num_events_in_chunk):
 
             chunk_path = os.path.join(
                 out_dir,
-                "{:s}_{:09d}.tar".format(chunk_prefix, chunk_count)
+                "{:s}{:09d}.tar".format(chunk_prefix, chunk_count)
             )
 
             with LopfTarWriter(path=chunk_path) as chunk:
