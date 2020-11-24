@@ -14,3 +14,4 @@ from . import classify
 from . import sequence
 from . import features
 from . import thin_lens
+from . import fuzzy
