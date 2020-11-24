@@ -1,7 +1,6 @@
 import numpy as np
 import skimage
-import sklearn
-from sklearn import linear_model
+
 
 EXAMPLE_MODEL_CONFIG = {
     "min_num_photons": 3,
@@ -56,16 +55,20 @@ def estimate_ellipse(cx, cy):
 
 
 def estimate_time_slope(c_main_axis, t):
-    ccax_deg = np.rad2deg(c_main_axis)
     ts_ns = 1e9 * t
-    try:
-        rr = sklearn.linear_model.RANSACRegressor(min_samples=5)
-        rr.fit(X=ccax_deg.reshape([ccax_deg.shape[0], 1]), y=ts_ns)
-        time_slope_ns_per_deg = rr.estimator_.coef_[0]
-    except ValueError:
-        time_slope_ns_per_deg = 0.0
+    ccax_deg = np.rad2deg(c_main_axis)
 
-    return time_slope_ns_per_deg
+    c_main_deg = ccax_deg - np.median(ccax_deg)
+    reltim_ns = ts_ns - np.median(ts_ns)
+
+    num_slopes = 25
+    fits = np.zeros(num_slopes)
+    slopes = np.linspace(-25, 25, num_slopes)
+    for ii in range(num_slopes):
+        predicted_reltim_ns = c_main_deg * slopes[ii]
+        fits[ii] = np.sum((predicted_reltim_ns - reltim_ns) ** 2.0)
+    best_fit = np.argmin(fits)
+    return slopes[best_fit]
 
 
 def estimate_model_from_image_sequence(cx, cy, t):
