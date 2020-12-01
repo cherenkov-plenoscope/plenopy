@@ -169,6 +169,9 @@ analyse fuzzy image
 -------------------
 """
 
+def argmax2d(a):
+    return np.unravel_index(np.argmax(a), a.shape)
+
 
 def argmax_image_cx_cy_deg(image, image_binning):
     ib = image_binning
@@ -176,7 +179,7 @@ def argmax_image_cx_cy_deg(image, image_binning):
         -ib["radius_deg"], ib["radius_deg"], ib["num_bins"] + 1
     )
     _cxcy_bin_centers = 0.5 * (_cxcy_bin_edges[0:-1] + _cxcy_bin_edges[1:])
-    _resp = np.unravel_index(np.argmax(image), image.shape)
+    _resp = argmax2d(image)
     reco_cx_deg = _cxcy_bin_centers[_resp[1]]
     reco_cy_deg = _cxcy_bin_centers[_resp[0]]
     return reco_cx_deg, reco_cy_deg
