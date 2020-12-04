@@ -152,11 +152,11 @@ def draw_line_model(model, model_config, image_binning):
     return rr, cc, aa
 
 
-def make_image_from_model(light_field_model, model_config, image_binning):
+def make_image_from_model(split_light_field_model, model_config, image_binning):
     out = np.zeros(
         shape=(image_binning["num_bins"], image_binning["num_bins"])
     )
-    for model in light_field_model:
+    for model in split_light_field_model:
         rr, cc, aa = draw_line_model(
             model=model, model_config=model_config, image_binning=image_binning
         )
