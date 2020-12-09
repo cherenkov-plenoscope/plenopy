@@ -275,4 +275,7 @@ class SplitLightField:
             if len(self.image_sequences[pax]) > 0:
                 self.image_sequences[pax] = np.array(self.image_sequences[pax])
             else:
-                self.image_sequences[pax] = np.zeros(shape=(0, 3))
+                self.image_sequences[pax] = np.zeros(
+                    shape=(0, 3),
+                    dtype=np.float32
+                )
