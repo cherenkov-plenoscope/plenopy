@@ -4,8 +4,6 @@ import skimage
 
 EXAMPLE_MODEL_CONFIG = {
     "min_num_photons": 3,
-    "min_time_slope_ns_per_deg": 5.0,
-    "max_time_slope_ns_per_deg": 7.0,
 }
 
 EXAMPLE_IMAGE_BINNING = {
@@ -54,23 +52,6 @@ def estimate_ellipse(cx, cy):
     }
 
 
-def estimate_time_slope(c_main_axis, t):
-    ts_ns = 1e9 * t
-    ccax_deg = np.rad2deg(c_main_axis)
-
-    c_main_deg = ccax_deg - np.median(ccax_deg)
-    reltim_ns = ts_ns - np.median(ts_ns)
-
-    num_slopes = 25
-    fits = np.zeros(num_slopes)
-    slopes = np.linspace(-25, 25, num_slopes)
-    for ii in range(num_slopes):
-        predicted_reltim_ns = c_main_deg * slopes[ii]
-        fits[ii] = np.sum((predicted_reltim_ns - reltim_ns) ** 2.0)
-    best_fit = np.argmin(fits)
-    return slopes[best_fit]
-
-
 def estimate_model_from_image_sequence(cx, cy, t):
     assert len(cx) == len(cy)
     assert len(cx) == len(t)
@@ -81,14 +62,6 @@ def estimate_model_from_image_sequence(cx, cy, t):
     c_main_axis = project_onto_main_axis_of_model(
         cx=cx, cy=cy, ellipse_model=model
     )
-    model["time_slope_ns_per_deg"] = estimate_time_slope(
-        c_main_axis=c_main_axis, t=t
-    )
-
-    if model["time_slope_ns_per_deg"] < 0.0:
-        model["azimuth_rad"] += np.pi
-        model["time_slope_ns_per_deg"] *= -1.0
-
     return model
 
 
