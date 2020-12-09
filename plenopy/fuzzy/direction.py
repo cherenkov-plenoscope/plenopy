@@ -57,7 +57,7 @@ def estimate_model_from_image_sequence(cx, cy, t):
     assert len(cx) == len(t)
 
     model = estimate_ellipse(cx=cx, cy=cy)
-    model["num_photons_pe"] = float(len(cx))
+    model["num_photons"] = float(len(cx))
 
     c_main_axis = project_onto_main_axis_of_model(
         cx=cx, cy=cy, ellipse_model=model
@@ -133,7 +133,7 @@ def make_image_from_model(split_light_field_model, image_binning):
         rr, cc, aa = draw_line_model(
             model=model, image_binning=image_binning
         )
-        out[rr, cc] += aa * model["num_photons_pe"]
+        out[rr, cc] += aa * model["num_photons"]
     return out
 
 
