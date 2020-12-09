@@ -7,7 +7,7 @@ EXAMPLE_MODEL_CONFIG = {
 }
 
 EXAMPLE_IMAGE_BINNING = {
-    "radius_deg": 4.25,
+    "radius": np.deg2rad(4.25),
     "num_bins": 128,
 }
 
@@ -94,15 +94,15 @@ def _draw_line(r0, c0, r1, c1, image_shape):
 
 
 def draw_line_model(model, image_binning):
-    radius = np.deg2rad(image_binning["radius_deg"])
-    pix_per_rad = image_binning["num_bins"] / (2.0 * radius)
+    fov_radius = image_binning["radius"]
+    pix_per_rad = image_binning["num_bins"] / (2.0 * fov_radius)
     image_middle_px = image_binning["num_bins"] // 2
 
     cen_x = model["median_cx"]
     cen_y = model["median_cy"]
 
-    off_x = radius * np.sin(model["azimuth"])
-    off_y = radius * np.cos(model["azimuth"])
+    off_x = fov_radius * np.sin(model["azimuth"])
+    off_y = fov_radius * np.cos(model["azimuth"])
     start_x = cen_x + off_x
     start_y = cen_y + off_y
     stop_x = cen_x - off_x
@@ -146,41 +146,33 @@ def argmax2d(a):
     return np.unravel_index(np.argmax(a), a.shape)
 
 
-def argmax_image_cx_cy_deg(image, image_binning):
-    ib = image_binning
-    _cxcy_bin_edges = np.linspace(
-        -ib["radius_deg"], ib["radius_deg"], ib["num_bins"] + 1
-    )
-    _cxcy_bin_centers = 0.5 * (_cxcy_bin_edges[0:-1] + _cxcy_bin_edges[1:])
+def argmax_image_cx_cy(image, image_binning):
     _resp = argmax2d(image)
-    reco_cx_deg = _cxcy_bin_centers[_resp[1]]
-    reco_cy_deg = _cxcy_bin_centers[_resp[0]]
-    return reco_cx_deg, reco_cy_deg
+    reco_cx = image_binning["c_bin_centers"][_resp[1]]
+    reco_cy = image_binning["c_bin_centers"][_resp[0]]
+    return reco_cx, reco_cy
 
 
 def project_image_onto_ring(
     image,
     image_binning,
-    ring_cx_deg,
-    ring_cy_deg,
-    ring_radius_deg,
-    num_steps=360,
+    ring_cx,
+    ring_cy,
+    ring_radius,
+    ring_binning,
 ):
-    pix_per_deg = image_binning["num_bins"] / (
-        2.0 * image_binning["radius_deg"]
-    )
+    pix_per_rad = image_binning["num_bins"] / (2.0 * image_binning["radius"])
     image_middle_px = image_binning["num_bins"] // 2
 
-    ring = np.zeros(num_steps)
-    azimuth_steps = np.linspace(0.0, 2 * np.pi, num_steps, endpoint=False)
-    for ia, az in enumerate(azimuth_steps):
+    ring = np.zeros(ring_binning["num_bins"])
+    for ia, az in enumerate(ring_binning["bin_edges"]):
 
-        for radius_deg in np.linspace(ring_radius_deg / 2, ring_radius_deg, 5):
-            probe_cx_deg = ring_cx_deg + np.cos(az) * radius_deg
-            probe_cy_deg = ring_cy_deg + np.sin(az) * radius_deg
+        for probe_radius in np.linspace(ring_radius / 2, ring_radius, 5):
+            probe_cx = ring_cx + np.cos(az) * probe_radius
+            probe_cy = ring_cy + np.sin(az) * probe_radius
 
-            probe_x_px = int(probe_cx_deg * pix_per_deg + image_middle_px)
-            probe_y_px = int(probe_cy_deg * pix_per_deg + image_middle_px)
+            probe_x_px = int(probe_cx * pix_per_rad + image_middle_px)
+            probe_y_px = int(probe_cy * pix_per_rad + image_middle_px)
             valid_x = np.logical_and(
                 probe_x_px >= 0, probe_x_px < image_binning["num_bins"]
             )
