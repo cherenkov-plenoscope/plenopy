@@ -20,8 +20,8 @@ Estimate model for each image-sequence
 def project_onto_main_axis_of_model(cx, cy, ellipse_model):
     ccx = cx - ellipse_model["median_cx"]
     ccy = cy - ellipse_model["median_cy"]
-    _cos = np.cos(ellipse_model["azimuth_rad"])
-    _sin = np.sin(ellipse_model["azimuth_rad"])
+    _cos = np.cos(ellipse_model["azimuth"])
+    _sin = np.sin(ellipse_model["azimuth"])
     c_main_axis = ccx * _cos - ccy * _sin
     return c_main_axis
 
@@ -46,7 +46,7 @@ def estimate_ellipse(cx, cy):
     return {
         "median_cx": median_cx,
         "median_cy": median_cy,
-        "azimuth_rad": azimuth,
+        "azimuth": azimuth,
         "major_std": major_std,
         "minor_std": minor_std,
     }
@@ -101,8 +101,8 @@ def draw_line_model(model, image_binning):
     cen_x = model["median_cx"]
     cen_y = model["median_cy"]
 
-    off_x = radius * np.sin(model["azimuth_rad"])
-    off_y = radius * np.cos(model["azimuth_rad"])
+    off_x = radius * np.sin(model["azimuth"])
+    off_y = radius * np.cos(model["azimuth"])
     start_x = cen_x + off_x
     start_y = cen_y + off_y
     stop_x = cen_x - off_x
