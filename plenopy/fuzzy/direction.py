@@ -93,7 +93,7 @@ def _draw_line(r0, c0, r1, c1, image_shape):
     return rr[valid], cc[valid], aa[valid]
 
 
-def draw_line_model(model, model_config, image_binning):
+def draw_line_model(model, image_binning):
     radius = np.deg2rad(image_binning["radius_deg"])
     pix_per_rad = image_binning["num_bins"] / (2.0 * radius)
     image_middle_px = image_binning["num_bins"] // 2
@@ -125,13 +125,13 @@ def draw_line_model(model, model_config, image_binning):
     return rr, cc, aa
 
 
-def make_image_from_model(split_light_field_model, model_config, image_binning):
+def make_image_from_model(split_light_field_model, image_binning):
     out = np.zeros(
         shape=(image_binning["num_bins"], image_binning["num_bins"])
     )
     for model in split_light_field_model:
         rr, cc, aa = draw_line_model(
-            model=model, model_config=model_config, image_binning=image_binning
+            model=model, image_binning=image_binning
         )
         out[rr, cc] += aa * model["num_photons_pe"]
     return out
