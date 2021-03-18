@@ -33,7 +33,7 @@ def test_image_domain():
         object_distances=[10e3]
     )
 
-    trigger_response = pl.simple_trigger.estimate.first_stage(
+    trigger_response, _ = pl.simple_trigger.estimate.first_stage(
         raw_sensor_response=event.raw_sensor_response,
         light_field_geometry=run.light_field_geometry,
         trigger_geometry=trigger_geometry,
