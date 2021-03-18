@@ -44,13 +44,14 @@ def __make_jobs(
 
 
 def __run_job(job):
-    np.random.seed(job["random_seed"])
+    prng = np.random.Generator(np.random.MT19937(seed=job["random_seed"]))
 
     results = []
     num_lixel = job["cx_mean"].shape[0]
     for lix in range(num_lixel):
         (image_ray_supports,
             image_ray_directions) = __make_image_ray_bundle(
+            prng=prng,
             cx_mean=job["cx_mean"][lix],
             cx_std=job["cx_std"][lix],
             cy_mean=job["cy_mean"][lix],
@@ -81,6 +82,7 @@ def __run_job(job):
 
 
 def __make_image_ray_bundle(
+    prng,
     cx_mean,
     cx_std,
     cy_mean,
@@ -92,10 +94,10 @@ def __make_image_ray_bundle(
     focal_length,
     num_samples,
 ):
-    cx = np.random.normal(loc=cx_mean, scale=cx_std, size=num_samples)
-    cy = np.random.normal(loc=cy_mean, scale=cy_std, size=num_samples)
-    x = np.random.normal(loc=x_mean, scale=x_std/2, size=num_samples)
-    y = np.random.normal(loc=y_mean, scale=y_std/2, size=num_samples)
+    cx = prng.normal(loc=cx_mean, scale=cx_std, size=num_samples)
+    cy = prng.normal(loc=cy_mean, scale=cy_std, size=num_samples)
+    x = prng.normal(loc=x_mean, scale=x_std/2, size=num_samples)
+    y = prng.normal(loc=y_mean, scale=y_std/2, size=num_samples)
 
     sensor_plane_intersections = np.array([
         -focal_length*np.tan(cx),

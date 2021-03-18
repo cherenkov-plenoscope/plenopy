@@ -5,17 +5,17 @@ import pkg_resources
 
 
 def test_init():
+    prng = np.random.Generator(np.random.MT19937(seed=0))
 
     N = 100
-    np.random.seed(0)
     support = np.zeros(shape=(N, 3))
-    support[:, 0] = np.random.rand(N)
-    support[:, 1] = np.random.rand(N)
+    support[:, 0] = prng.uniform(size=N)
+    support[:, 1] = prng.uniform(size=N)
     support[:, 2] = np.zeros(N)
 
     direction = np.zeros(shape=(N, 3))
-    cx = 0.1*np.random.rand(N)
-    cy = 0.1*np.random.rand(N)
+    cx = 0.1*prng.uniform(size=N)
+    cy = 0.1*prng.uniform(size=N)
     direction[:, 0] = cx
     direction[:, 1] = cy
     direction[:, 2] = np.sqrt(1.0 - cx**2 - cy**2)

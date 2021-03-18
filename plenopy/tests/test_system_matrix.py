@@ -62,7 +62,7 @@ def test_run_job():
         np.testing.assert_approx_equal(
             actual=lixel_total_overlap,
             desired=expected_sen_z_range,
-            significant=2)
+            significant=1.9)
 
     # In production, this for-loop can be processed in parallel
     results = []
