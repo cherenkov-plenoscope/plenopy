@@ -42,6 +42,7 @@ def islands_greater_equal_threshold(intensities, neighborhood, threshold):
 
 
 def estimate_light_front_surface_normal(
+    prng,
     xs,
     ys,
     zs,
@@ -49,6 +50,7 @@ def estimate_light_front_surface_normal(
     min_number_points_for_plane_fit=10,
     max_orthogonal_distance_of_inlier=0.025):
     B, inlier = tools.ransac_3d_plane.fit(
+        prng=prng,
         xyz_point_cloud=np.c_[xs, ys, zs],
         max_number_itarations=max_number_itarations,
         min_number_points_for_plane_fit=min_number_points_for_plane_fit,
@@ -137,6 +139,7 @@ def extract_features(
     cherenkov_photons,
     light_field_geometry,
     light_field_geometry_addon,
+    prng,
     debug=False):
     cp = cherenkov_photons
     lfg = light_field_geometry
@@ -187,6 +190,7 @@ def extract_features(
     #=======================
     if debug: print("light-front")
     light_front_normal = estimate_light_front_surface_normal(
+        prng=prng,
         xs=cp.x,
         ys=cp.y,
         zs=cp.t_pap*3e8)
