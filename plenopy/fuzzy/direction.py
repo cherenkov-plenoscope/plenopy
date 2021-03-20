@@ -1,5 +1,5 @@
 import numpy as np
-import skimage
+from skimage import draw as skimage_draw
 
 
 EXAMPLE_MODEL_CONFIG = {
@@ -86,7 +86,7 @@ Create fuzzy-image from models
 
 
 def _draw_line(r0, c0, r1, c1, image_shape):
-    rr, cc, aa = skimage.draw.line_aa(r0=r0, c0=c0, r1=r1, c1=c1)
+    rr, cc, aa = skimage_draw.line_aa(r0=r0, c0=c0, r1=r1, c1=c1)
     valid_rr = np.logical_and((rr >= 0), (rr < image_shape[0]))
     valid_cc = np.logical_and((cc >= 0), (cc < image_shape[1]))
     valid = np.logical_and(valid_rr, valid_cc)
