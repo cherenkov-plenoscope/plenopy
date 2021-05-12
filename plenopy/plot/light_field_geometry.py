@@ -10,8 +10,7 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
     """
     Parameters
     ----------
-    light_field_geometry    The light_field_geometry of the Atmospheric
-                            Cherenkov Plenoscope (ACP).
+    light_field_geometry    The light_field_geometry of the instrument.
 
     out_dir                 The output directory to save the figures in.
 
@@ -36,6 +35,7 @@ def symmetric_hist(vals, ax, nbins=None):
     bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])
     ax.set_xlim([1.025 * bin_esdges[0], 1.025 * bin_esdges[-1]])
     ax.step(bin_centers, bins, color='k')
+    ax.grid(color="k", linestyle="-", linewidth=0.66, alpha=0.1)
 
 
 def cx_mean_hist(lss, ax):
@@ -229,8 +229,8 @@ class PlotLightFieldGeometry(object):
             self.figure_size = FigureSize(
                 relative_width=16,
                 relative_hight=9,
-                pixel_rows=2*1080,
-                dpi=400)
+                pixel_rows=1080,
+                dpi=300)
         else:
             self.figure_size = figure_size
 
@@ -245,16 +245,16 @@ class PlotLightFieldGeometry(object):
 
     def fig_ax(self):
         fig = plt.figure(
-            figsize=(self.figure_size.width, self.figure_size.hight))
-        ax = fig.gca()
-        self.__style(ax)
+            figsize=(self.figure_size.width, self.figure_size.hight),
+            dpi=self.figure_size.dpi
+        )
+        ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
         return fig, ax
 
     def __save_fig(self, fig, filename):
-        fig.savefig(
-            os.path.join(self.out_dir, filename),
-            bbox_inches='tight',
-            dpi=self.figure_size.dpi)
+        fig.savefig(os.path.join(self.out_dir, filename))
 
     def save_cx_mean(self):
         fig, ax = self.fig_ax()
@@ -374,7 +374,7 @@ class PlotLightFieldGeometry(object):
         ax.set_ylabel(r'sensor-plane $y$/m')
         ax.set_xlabel(r'sensor-plane $x$/m')
         fig.colorbar(coll, label=name + '/' + unit)
-        #self.__save_fig(fig, 'overview_' + simple_name + '.jpg')
+
         outer_radius = 1.0 / np.sqrt(2.0) * np.hypot(
             self.lfg.lixel_positions_x.max(),
             self.lfg.lixel_positions_y.max())
