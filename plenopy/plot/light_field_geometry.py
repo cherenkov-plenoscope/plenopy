@@ -29,37 +29,6 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
     plotter.save()
 
 
-def symmertic_hists(vals_array, ax, bin_edges=None, color_array=None):
-    '''
-    Adds histograms of multiple value arrays to the same plotting axes. If not
-    provided, the bin edges are estimated automatically and applied to all
-    histograms.
-
-    vals_array          An array of arrays to be histogramed
-
-    ax                  Tha axes to add the histograms to
-
-    bin_edges           1D array of the bin edge positions
-
-    color_array         1D array of strings for marker colors
-    '''
-    if bin_edges is None:
-        number_entires = [vals.shape[0] for vals in vals_array]
-        minima = [vals.min() for vals in vals_array]
-        maxima = [vals.max() for vals in vals_array]
-        number_bins = int(np.floor(np.sqrt(np.max(number_entires))))
-        bin_edges = np.linspace(np.min(minima), np.max(maxima), number_bins)
-
-    for i, vals in enumerate(vals_array):
-        bins, bin_esdges = np.histogram(vals, bins=bin_edges)
-        bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])
-        if color_array is None:
-            color = None
-        else:
-            color = color_array[i]
-        ax.step(bin_centers, bins, color=color)
-
-
 def symmetric_hist(vals, ax, nbins=None):
     if nbins is None:
         nbins = int(np.floor(np.sqrt(vals.shape[0])))
