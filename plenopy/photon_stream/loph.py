@@ -184,15 +184,27 @@ def raw_sensor_response_to_photon_stream_in_loph_repr(
     return phs
 
 
+def _workaround_tar_next(tar_object):
+    # woraround for https://bugs.python.org/issue29760
+    try:
+        tarinfo = tar_object.next()
+    except OSError as e:
+        if e.errno == 22:
+            tarinfo = None
+        else:
+            raise e
+    return tarinfo
+
+
 class LopfTarReader:
     def __init__(self, path, id_num_digits=9):
         self.path = path
-        self.tar = tarfile.open(path, "r|*")
+        self.tar = tarfile.open(name=path, mode="r")
         self._id_num_digits = id_num_digits
         assert self._id_num_digits > 0
 
     def __next__(self):
-        info_tar = self.tar.next()
+        info_tar = _workaround_tar_next(tar_object=self.tar)
         if info_tar is None:
             raise StopIteration
         identity = int(info_tar.name[0 : self._id_num_digits])
@@ -218,7 +230,7 @@ class LopfTarReader:
 class LopfTarWriter:
     def __init__(self, path, id_num_digits=9):
         self.path = path
-        self.tar = tarfile.open(path, "w")
+        self.tar = tarfile.open(name=path, mode="w")
         self._id_num_digits = id_num_digits
         assert self._id_num_digits > 0
         self._id_template_str = (
@@ -248,17 +260,11 @@ def concatenate_tars(in_paths, out_path):
     with tarfile.open(out_path, "w") as tarout:
         for part_path in in_paths:
             with tarfile.open(part_path, "r") as tarin:
-                # woraround for https://bugs.python.org/issue29760
-                try:
-                    tarinfo = tarin.next()
-                except OSError as e:
-                    if e.errno == 22:
-                        tarinfo = None
-                    else:
-                        raise e
-                while tarinfo is not None:
+                while True:
+                    tarinfo = _workaround_tar_next(tar_object=tarin)
+                    if tarinfo is None:
+                        break
                     tarout.addfile(tarinfo, tarin.extractfile(tarinfo))
-                    tarinfo = tarin.next()
 
 
 def split_into_chunks(loph_path, out_dir, chunk_prefix, num_events_in_chunk):
