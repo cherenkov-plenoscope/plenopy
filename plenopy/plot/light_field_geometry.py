@@ -125,7 +125,7 @@ def hist_2d(x, y, ax, aspect='auto', norm=None):
     im = ax.imshow(
         bins.T,
         interpolation='none',
-        origin='low',
+        origin='lower',
         extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
         aspect=aspect,
         norm=norm
