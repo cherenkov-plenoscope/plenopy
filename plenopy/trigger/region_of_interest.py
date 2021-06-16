@@ -6,6 +6,10 @@ def from_trigger_response(
     trigger_geometry,
     time_slice_duration,
 ):
+    """
+    Export the position of the largest trigger-response in absolute
+    directions cx/rad, cy/rad, time/s, and object_distance/m.
+    """
     tg = trigger_geometry
     foci_responses = [_focus['response_pe'] for _focus in trigger_response]
     focus = np.argmax(foci_responses)
