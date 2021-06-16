@@ -36,7 +36,14 @@ def estimate_trigger_image_sequences(
 
     assert tg['number_lixel'] == lfg.number_lixel
 
-    foci_trigger_image_sequences = []
+    foci_trigger_image_sequences = np.zeros(
+        shape=(
+            tg['number_foci'],
+            raw_sensor_response.number_time_slices,
+            tg['image']['number_pixel'],
+        ),
+        dtype=np.uint32
+    )
     for focus in range(tg['number_foci']):
         trigger_image_sequence = photon_stream_to_image_sequence(
             photon_stream=raw_sensor_response.photon_stream,
@@ -55,7 +62,7 @@ def estimate_trigger_image_sequences(
             sequnce=trigger_image_sequence,
             integration_time_slices=integration_time_slices
         )
-        foci_trigger_image_sequences.append(trigger_image_sequence_integrated)
+        foci_trigger_image_sequences[focus, :, :] = trigger_image_sequence_integrated
     return foci_trigger_image_sequences
 
 
