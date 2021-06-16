@@ -62,13 +62,13 @@ def estimate_trigger_image_sequences(
 def convole_sequence(sequnce, integration_time_slices):
     """
     Returns the sliding sum of 'sequece' along axis=0.
-    The sliding sum contains 'num_integration_time_slices'.
+    The sliding sum contains 'integration_time_slices'.
 
     Parameters
     ----------
     sequnce : array of floats
             Axis=0 is the time.
-    num_integration_time_slices : int
+    integration_time_slices : int
             The length of the integration-window.
     """
     time_integration_kernel = np.ones(
