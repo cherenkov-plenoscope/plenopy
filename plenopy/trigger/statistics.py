@@ -1,6 +1,6 @@
 import numpy as np
-from .geometry import arrays_to_list_of_lists
-from .geometry import invert_projection_matrix
+from . import utils
+from . import geometry
 
 
 def gather_summation_statistics(trigger_geometry):
@@ -13,13 +13,13 @@ def gather_summation_statistics(trigger_geometry):
 
     stats['foci'] = []
     for focus in range(tg['number_foci']):
-        lixel_to_pixel = arrays_to_list_of_lists(
+        lixel_to_pixel = utils.arrays_to_list_of_lists(
             starts=tg['foci'][focus]['starts'],
             lengths=tg['foci'][focus]['lengths'],
             links=tg['foci'][focus]['links']
         )
 
-        pixel_to_lixel = invert_projection_matrix(
+        pixel_to_lixel = geometry.invert_projection_matrix(
             lixel_to_pixel=lixel_to_pixel,
             number_pixel=tg['image']['number_pixel'],
             number_lixel=tg['number_lixel'],

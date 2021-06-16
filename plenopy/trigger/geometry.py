@@ -1,6 +1,6 @@
 import numpy as np
-import array
 import scipy.spatial
+from . import utils
 
 from .. import tools
 from ..image import ImageRays
@@ -91,7 +91,7 @@ def init_trigger_geometry(
                 'max_number_nearest_lixel_in_pixel'],
         )
 
-        focus = list_of_lists_to_arrays(list_of_lists=lixel_to_pixel)
+        focus = utils.list_of_lists_to_arrays(list_of_lists=lixel_to_pixel)
         focus["object_distance_m"] = object_distance
         tg['foci'].append(focus)
     return tg
@@ -155,36 +155,6 @@ def estimate_projection_of_light_field_to_image(
                 lixel_to_pixel.append(lixel_to_pixel_ids[lix, pix])
         projection_lixel_to_pixel.append(lixel_to_pixel)
     return projection_lixel_to_pixel
-
-
-def list_of_lists_to_arrays(list_of_lists):
-    starts = array.array('l')
-    lengths = array.array('l')
-    stream = array.array('l')
-    i = 0
-    for _list in list_of_lists:
-        starts.append(i)
-        length = 0
-        for symbol in _list:
-            stream.append(symbol)
-            i += 1
-            length += 1
-        lengths.append(length)
-    return {
-        "starts": np.array(starts, dtype=np.uint32),
-        "lengths": np.array(lengths, dtype=np.uint32),
-        "links": np.array(stream, dtype=np.uint32),
-    }
-
-
-def arrays_to_list_of_lists(starts, lengths, links):
-    number_lixel = starts.shape[0]
-    lol = [[] for p in range(number_lixel)]
-    for lixel in range(number_lixel):
-        for l in range(lengths[lixel]):
-            idx = starts[lixel] + l
-            lol[lixel].append(links[idx])
-    return lol
 
 
 def invert_projection_matrix(lixel_to_pixel, number_pixel, number_lixel):
