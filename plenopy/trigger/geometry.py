@@ -1,9 +1,8 @@
 import numpy as np
 import scipy.spatial
 from . import utils
-
 from .. import tools
-from ..image import ImageRays
+from .. import image
 
 
 def init_trigger_image_geometry(
@@ -132,7 +131,7 @@ def estimate_projection_of_light_field_to_image(
 
     image_pixel_radius_rad      Array of floats
     '''
-    image_rays = ImageRays(light_field_geometry)
+    image_rays = image.ImageRays(light_field_geometry)
     lixel_cx, lixel_cy = image_rays.cx_cy_in_object_distance(object_distance)
     trigger_pixel_tree = scipy.spatial.cKDTree(
         np.array([
