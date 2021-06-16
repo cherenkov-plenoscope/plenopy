@@ -3,9 +3,9 @@ import numpy as np
 
 
 def list_of_lists_to_arrays(list_of_lists):
-    starts = array.array('l')
-    lengths = array.array('l')
-    stream = array.array('l')
+    starts = array.array("l")
+    lengths = array.array("l")
+    stream = array.array("l")
     i = 0
     for _list in list_of_lists:
         starts.append(i)

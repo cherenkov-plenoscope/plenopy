@@ -29,22 +29,22 @@ def init_trigger_image_geometry(
             An upper limit for the maximum number of light-field-cells (lixels)
             to be added into a pixel of the image.
     """
-    assert image_outer_radius_rad > 0.
-    assert pixel_spacing_rad > 0.
-    assert pixel_radius_rad > 0.
+    assert image_outer_radius_rad > 0.0
+    assert pixel_spacing_rad > 0.0
+    assert pixel_radius_rad > 0.0
     grid_cx_cy = tools.hexagonal_grid.make_hexagonal_grid(
         outer_radius=image_outer_radius_rad,
         spacing=pixel_spacing_rad,
-        inner_radius=0.0
+        inner_radius=0.0,
     )
     trg_img = {}
     trg_img["pixel_cx_rad"] = grid_cx_cy[:, 0]
     trg_img["pixel_cy_rad"] = grid_cx_cy[:, 1]
     trg_img["pixel_radius_rad"] = pixel_radius_rad
     trg_img["number_pixel"] = grid_cx_cy.shape[0]
-    trg_img["max_number_nearest_lixel_in_pixel"] = (
-        max_number_nearest_lixel_in_pixel
-    )
+    trg_img[
+        "max_number_nearest_lixel_in_pixel"
+    ] = max_number_nearest_lixel_in_pixel
     return trg_img
 
 
@@ -74,26 +74,27 @@ def init_trigger_geometry(
             The object-distances to focus the trigger-images to.
     """
     tg = {}
-    tg['image'] = trigger_image_geometry
-    tg['number_foci'] = len(object_distances)
-    tg['number_lixel'] = np.uint32(light_field_geometry.number_lixel)
-    tg['foci'] = []
+    tg["image"] = trigger_image_geometry
+    tg["number_foci"] = len(object_distances)
+    tg["number_lixel"] = np.uint32(light_field_geometry.number_lixel)
+    tg["foci"] = []
 
     for object_distance in object_distances:
 
         lixel_to_pixel = estimate_projection_of_light_field_to_image(
             light_field_geometry=light_field_geometry,
             object_distance=object_distance,
-            image_pixel_cx_rad=tg['image']['pixel_cx_rad'],
-            image_pixel_cy_rad=tg['image']['pixel_cy_rad'],
-            image_pixel_radius_rad=tg['image']['pixel_radius_rad'],
-            max_number_nearest_lixel_in_pixel=tg['image'][
-                'max_number_nearest_lixel_in_pixel'],
+            image_pixel_cx_rad=tg["image"]["pixel_cx_rad"],
+            image_pixel_cy_rad=tg["image"]["pixel_cy_rad"],
+            image_pixel_radius_rad=tg["image"]["pixel_radius_rad"],
+            max_number_nearest_lixel_in_pixel=tg["image"][
+                "max_number_nearest_lixel_in_pixel"
+            ],
         )
 
         focus = utils.list_of_lists_to_arrays(list_of_lists=lixel_to_pixel)
         focus["object_distance_m"] = object_distance
-        tg['foci'].append(focus)
+        tg["foci"].append(focus)
     return tg
 
 
@@ -105,7 +106,7 @@ def estimate_projection_of_light_field_to_image(
     image_pixel_radius_rad,
     max_number_nearest_lixel_in_pixel=7,
 ):
-    '''
+    """
     Returns a list over lixels of lists of pixels.
     For each lixel there is a list of pixels where the lixel has to be added
     to.
@@ -131,14 +132,11 @@ def estimate_projection_of_light_field_to_image(
     image_pixel_cy_rad          Array of floats
 
     image_pixel_radius_rad      Array of floats
-    '''
+    """
     image_rays = image.ImageRays(light_field_geometry)
     lixel_cx, lixel_cy = image_rays.cx_cy_in_object_distance(object_distance)
     trigger_pixel_tree = scipy.spatial.cKDTree(
-        np.array([
-            image_pixel_cx_rad,
-            image_pixel_cy_rad
-        ]).T
+        np.array([image_pixel_cx_rad, image_pixel_cy_rad]).T
     )
     search = trigger_pixel_tree.query(
         x=np.vstack((lixel_cx, lixel_cy)).T,
@@ -174,29 +172,29 @@ def init_summation_statistics(trigger_geometry):
     tg = trigger_geometry
 
     stats = {}
-    stats['number_foci'] = int(tg['number_foci'])
-    stats['number_pixel'] = int(tg['image']['number_pixel'])
-    stats['number_lixel'] = int(tg['number_lixel'])
+    stats["number_foci"] = int(tg["number_foci"])
+    stats["number_pixel"] = int(tg["image"]["number_pixel"])
+    stats["number_lixel"] = int(tg["number_lixel"])
 
-    stats['foci'] = []
-    for focus in range(tg['number_foci']):
+    stats["foci"] = []
+    for focus in range(tg["number_foci"]):
         lixel_to_pixel = utils.arrays_to_list_of_lists(
-            starts=tg['foci'][focus]['starts'],
-            lengths=tg['foci'][focus]['lengths'],
-            links=tg['foci'][focus]['links']
+            starts=tg["foci"][focus]["starts"],
+            lengths=tg["foci"][focus]["lengths"],
+            links=tg["foci"][focus]["links"],
         )
 
         pixel_to_lixel = invert_projection_matrix(
             lixel_to_pixel=lixel_to_pixel,
-            number_pixel=tg['image']['number_pixel'],
-            number_lixel=tg['number_lixel'],
+            number_pixel=tg["image"]["number_pixel"],
+            number_lixel=tg["number_lixel"],
         )
 
         stat = {}
-        stat['number_lixel_in_pixel'] = [len(pix) for pix in pixel_to_lixel]
-        stat['number_pixel_in_lixel'] = [len(lix) for lix in lixel_to_pixel]
+        stat["number_lixel_in_pixel"] = [len(pix) for pix in pixel_to_lixel]
+        stat["number_pixel_in_lixel"] = [len(lix) for lix in lixel_to_pixel]
 
-        stats['foci'].append(stat)
+        stats["foci"].append(stat)
     return stats
 
 
@@ -206,86 +204,88 @@ def write(trigger_geometry, path):
     tg = trigger_geometry
 
     join = os.path.join
-    _write(join(path, "number_lixel"), tg['number_lixel'], 'u4')
+    _write(join(path, "number_lixel"), tg["number_lixel"], "u4")
 
-    _write(join(path, "image.number_pixel"), tg['image']['number_pixel'], 'u4')
+    _write(join(path, "image.number_pixel"), tg["image"]["number_pixel"], "u4")
     _write(
         join(path, "image.max_number_nearest_lixel_in_pixel"),
-        tg['image']['max_number_nearest_lixel_in_pixel'],
-        'u4')
-    _write(join(path, "image.pixel_cx_rad"), tg['image']['pixel_cx_rad'], 'f4')
-    _write(join(path, "image.pixel_cy_rad"), tg['image']['pixel_cy_rad'], 'f4')
+        tg["image"]["max_number_nearest_lixel_in_pixel"],
+        "u4",
+    )
+    _write(join(path, "image.pixel_cx_rad"), tg["image"]["pixel_cx_rad"], "f4")
+    _write(join(path, "image.pixel_cy_rad"), tg["image"]["pixel_cy_rad"], "f4")
     _write(
         join(path, "image.pixel_radius_rad"),
-        tg['image']['pixel_radius_rad'],
-        'f4'
+        tg["image"]["pixel_radius_rad"],
+        "f4",
     )
 
-    _write(join(path, "number_foci"), tg['number_foci'], 'u4')
-    for focus in range(tg['number_foci']):
+    _write(join(path, "number_foci"), tg["number_foci"], "u4")
+    for focus in range(tg["number_foci"]):
         name = "foci.{:06d}".format(focus)
         _write(
-            join(path, name+".object_distance_m"),
-            tg['foci'][focus]['object_distance_m'],
-            'f4')
-        _write(join(path, name+".starts"), tg['foci'][focus]['starts'], 'u4')
-        _write(join(path, name+".lengths"), tg['foci'][focus]['lengths'], 'u4')
-        _write(join(path, name+".links"), tg['foci'][focus]['links'], 'u4')
+            join(path, name + ".object_distance_m"),
+            tg["foci"][focus]["object_distance_m"],
+            "f4",
+        )
+        _write(join(path, name + ".starts"), tg["foci"][focus]["starts"], "u4")
+        _write(
+            join(path, name + ".lengths"), tg["foci"][focus]["lengths"], "u4"
+        )
+        _write(join(path, name + ".links"), tg["foci"][focus]["links"], "u4")
 
 
 def read(path):
     join = os.path.join
     tg = {}
-    tg['number_lixel'] = _read(join(path, "number_lixel"), 'u4')[0]
+    tg["number_lixel"] = _read(join(path, "number_lixel"), "u4")[0]
 
-    tg['image'] = {}
-    tg['image']['number_pixel'] = _read(
-        join(path, "image.number_pixel"),
-        'u4'
+    tg["image"] = {}
+    tg["image"]["number_pixel"] = _read(
+        join(path, "image.number_pixel"), "u4"
     )[0]
-    tg['image']['max_number_nearest_lixel_in_pixel'] = _read(
-        join(path, "image.max_number_nearest_lixel_in_pixel"),
-        'u4'
+    tg["image"]["max_number_nearest_lixel_in_pixel"] = _read(
+        join(path, "image.max_number_nearest_lixel_in_pixel"), "u4"
     )[0]
-    tg['image']['pixel_cx_rad'] = _read(join(path, "image.pixel_cx_rad"), 'f4')
-    tg['image']['pixel_cy_rad'] = _read(join(path, "image.pixel_cy_rad"), 'f4')
-    tg['image']['pixel_radius_rad'] = _read(
-        join(path, "image.pixel_radius_rad"),
-        'f4'
+    tg["image"]["pixel_cx_rad"] = _read(join(path, "image.pixel_cx_rad"), "f4")
+    tg["image"]["pixel_cy_rad"] = _read(join(path, "image.pixel_cy_rad"), "f4")
+    tg["image"]["pixel_radius_rad"] = _read(
+        join(path, "image.pixel_radius_rad"), "f4"
     )[0]
 
-    tg['number_foci'] = _read(join(path, "number_foci"), 'u4')[0]
-    tg['foci'] = [{} for i in range(tg['number_foci'])]
-    for focus in range(tg['number_foci']):
+    tg["number_foci"] = _read(join(path, "number_foci"), "u4")[0]
+    tg["foci"] = [{} for i in range(tg["number_foci"])]
+    for focus in range(tg["number_foci"]):
         name = "foci.{:06d}".format(focus)
-        tg['foci'][focus]['object_distance_m'] = _read(
-            join(path, name+".object_distance_m"),
-            'f4'
+        tg["foci"][focus]["object_distance_m"] = _read(
+            join(path, name + ".object_distance_m"), "f4"
         )[0]
-        tg['foci'][focus]['starts'] = _read(join(path, name+".starts"), 'u4')
-        tg['foci'][focus]['lengths'] = _read(join(path, name+".lengths"), 'u4')
-        tg['foci'][focus]['links'] = _read(join(path, name+".links"), 'u4')
+        tg["foci"][focus]["starts"] = _read(join(path, name + ".starts"), "u4")
+        tg["foci"][focus]["lengths"] = _read(
+            join(path, name + ".lengths"), "u4"
+        )
+        tg["foci"][focus]["links"] = _read(join(path, name + ".links"), "u4")
 
     assert_trigger_geometry_consistent(trigger_geometry=tg)
     return tg
 
 
 def _write(path, value, dtype):
-    with open(path+'.'+dtype, 'wb') as f:
+    with open(path + "." + dtype, "wb") as f:
         f.write(np.float32(value).astype(dtype).tobytes())
 
 
 def _read(path, dtype):
-    with open(path+'.'+dtype, 'rb') as f:
+    with open(path + "." + dtype, "rb") as f:
         return np.frombuffer(f.read(), dtype=dtype)
 
 
 def assert_trigger_geometry_consistent(trigger_geometry):
     tg = trigger_geometry
-    assert tg['image']['number_pixel'] == tg['image']['pixel_cx_rad'].shape[0]
-    assert tg['image']['number_pixel'] == tg['image']['pixel_cy_rad'].shape[0]
-    assert tg['image']['pixel_radius_rad'] >= 0.0
+    assert tg["image"]["number_pixel"] == tg["image"]["pixel_cx_rad"].shape[0]
+    assert tg["image"]["number_pixel"] == tg["image"]["pixel_cy_rad"].shape[0]
+    assert tg["image"]["pixel_radius_rad"] >= 0.0
 
-    for focus in range(tg['number_foci']):
-        assert tg['number_lixel'] == tg['foci'][focus]['starts'].shape[0]
-        assert tg['number_lixel'] == tg['foci'][focus]['lengths'].shape[0]
+    for focus in range(tg["number_foci"]):
+        assert tg["number_lixel"] == tg["foci"][focus]["starts"].shape[0]
+        assert tg["number_lixel"] == tg["foci"][focus]["lengths"].shape[0]
