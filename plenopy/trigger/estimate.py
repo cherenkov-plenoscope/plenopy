@@ -1,6 +1,6 @@
 import numpy as np
 from ..photon_stream.cython_reader import photon_stream_to_image_sequence
-from scipy.ndimage import convolve1d as scipy_ndimage_convolve1d
+import scipy.ndimage
 
 
 def first_stage(
@@ -75,7 +75,7 @@ def convole_sequence(sequnce, integration_time_slices):
         integration_time_slices,
         dtype=np.uint32
     )
-    integral = scipy_ndimage_convolve1d(
+    integral = scipy.ndimage.convolve1d(
         input=sequnce,
         weights=time_integration_kernel,
         axis=0,
