@@ -51,7 +51,7 @@ def estimate_trigger_image_sequences(
             number_pixel=tg['image']['number_pixel'],
             number_time_slices=raw_sensor_response.number_time_slices,
         )
-        trigger_image_sequence_integrated = convole_sequence(
+        trigger_image_sequence_integrated = integrate_in_sliding_window(
             sequnce=trigger_image_sequence,
             integration_time_slices=integration_time_slices
         )
@@ -59,7 +59,7 @@ def estimate_trigger_image_sequences(
     return foci_trigger_image_sequences
 
 
-def convole_sequence(sequnce, integration_time_slices):
+def integrate_in_sliding_window(sequnce, integration_time_slices):
     """
     Returns the sliding sum of 'sequece' along axis=0.
     The sliding sum contains 'integration_time_slices'.

@@ -189,42 +189,42 @@ def test_io():
 
 def test_sliding_coincidence_window():
     sequence = np.array([], dtype=np.uint16)
-    rs = pl.trigger.estimate.convole_sequence(
+    rs = pl.trigger.estimate.integrate_in_sliding_window(
         sequence,
         integration_time_slices=5
     )
     assert rs.shape == sequence.shape
 
     np.testing.assert_array_equal(
-        pl.trigger.estimate.convole_sequence(
+        pl.trigger.estimate.integrate_in_sliding_window(
             np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),
         np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.trigger.estimate.convole_sequence(
+        pl.trigger.estimate.integrate_in_sliding_window(
             np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
             integration_time_slices=1
         ),
         np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.trigger.estimate.convole_sequence(
+        pl.trigger.estimate.integrate_in_sliding_window(
             np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
             integration_time_slices=2
         ),
         np.array([1, 3, 5, 5, 3, 1, 1, 3, 5, 5, 2], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.trigger.estimate.convole_sequence(
+        pl.trigger.estimate.integrate_in_sliding_window(
             np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),
         np.array([0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.trigger.estimate.convole_sequence(
+        pl.trigger.estimate.integrate_in_sliding_window(
             np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),
