@@ -1,11 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import json
-
-from . import image
-from .FigureSize import FigureSize
-from .. import trigger
+from .. import plot
 
 
 def _make_fig_ax(figsize):
@@ -37,7 +33,7 @@ def write_figures_to_directory(
     pixel_rows=1080,
     dpi=200,
 ):
-    figsize = FigureSize(
+    figsize = plot.FigureSize(
         relative_width=relative_width,
         relative_hight=relative_hight,
         pixel_rows=pixel_rows,
@@ -50,7 +46,7 @@ def write_figures_to_directory(
     for focus in range(trigger_geometry['number_foci']):
 
         fig, ax = _make_fig_ax(figsize)
-        image.add2ax(
+        plot.image.add2ax(
             ax=ax,
             I=np.array(stats['foci'][focus]['number_lixel_in_pixel']),
             px=np.rad2deg(trigger_geometry['image']['pixel_cx_rad']),

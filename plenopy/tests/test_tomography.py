@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 import plenopy as pl
 import ray_voxel_overlap as rvo
@@ -20,16 +19,16 @@ def test_image_domain():
     run = pl.Run(run_path)
     event = run[0]
 
-    trigger_image = pl.trigger.prepare.generate_trigger_image(
+    trigger_image_geometry = pl.trigger.geometry.init_trigger_image_geometry(
         image_outer_radius_rad=np.deg2rad(1.5),
         pixel_spacing_rad=np.deg2rad(0.15),
         pixel_radius_rad=2.2*np.deg2rad(0.15),
         max_number_nearest_lixel_in_pixel=7,
     )
 
-    trigger_geometry = pl.trigger.prepare.prepare_trigger_geometry(
+    trigger_geometry = pl.trigger.geometry.init_trigger_geometry(
         light_field_geometry=run.light_field_geometry,
-        trigger_image=trigger_image,
+        trigger_image_geometry=trigger_image_geometry,
         object_distances=[10e3]
     )
 
