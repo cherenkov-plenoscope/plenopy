@@ -11,7 +11,7 @@ def test_list_of_list_to_array():
         [3, 4, 5],
         [],
     ]
-    arr = pl.trigger.prepare.list_of_lists_to_arrays(lol)
+    arr = pl.trigger.geometry.list_of_lists_to_arrays(lol)
     assert arr['starts'].shape[0] == 4
     assert arr['lengths'].shape[0] == 4
 
@@ -25,7 +25,7 @@ def test_list_of_list_to_array():
     assert arr['starts'][2] == 5
     assert arr['starts'][3] == 8
 
-    lol_back = pl.trigger.prepare.arrays_to_list_of_lists(
+    lol_back = pl.trigger.geometry.arrays_to_list_of_lists(
         starts=arr['starts'],
         lengths=arr['lengths'],
         links=arr['links']
@@ -49,7 +49,7 @@ def test_invert_projection():
     ]
     assert len(lol) == number_lixel
 
-    inv_lol = pl.trigger.prepare.invert_projection_matrix(
+    inv_lol = pl.trigger.geometry.invert_projection_matrix(
         lol,
         number_lixel=number_lixel,
         number_pixel=number_pixel
@@ -127,7 +127,7 @@ def test_io():
         [1],
         [1, 2],
     ]
-    focus = pl.trigger.prepare.list_of_lists_to_arrays(projection)
+    focus = pl.trigger.geometry.list_of_lists_to_arrays(projection)
     focus['object_distance_m'] = np.float32(1e3)
     tg['foci'].append(focus)
 
@@ -139,7 +139,7 @@ def test_io():
         [0],
         [0, 1],
     ]
-    focus = pl.trigger.prepare.list_of_lists_to_arrays(projection)
+    focus = pl.trigger.geometry.list_of_lists_to_arrays(projection)
     focus['object_distance_m'] = np.float32(2e3)
     tg['foci'].append(focus)
 

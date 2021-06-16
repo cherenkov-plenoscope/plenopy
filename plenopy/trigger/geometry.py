@@ -6,7 +6,7 @@ from .. import tools
 from ..image import ImageRays
 
 
-def generate_trigger_image(
+def init_trigger_image_geometry(
     image_outer_radius_rad,
     pixel_spacing_rad,
     pixel_radius_rad,
@@ -48,9 +48,9 @@ def generate_trigger_image(
     return trg_img
 
 
-def prepare_trigger_geometry(
+def init_trigger_geometry(
     light_field_geometry,
-    trigger_image,
+    trigger_image_geometry,
     object_distances=[7.5e3, 15e3, 22.5e3],
 ):
     """
@@ -74,7 +74,7 @@ def prepare_trigger_geometry(
             The object-distances to focus the trigger-images to.
     """
     tg = {}
-    tg['image'] = trigger_image
+    tg['image'] = trigger_image_geometry
     tg['number_foci'] = len(object_distances)
     tg['number_lixel'] = np.uint32(light_field_geometry.number_lixel)
     tg['foci'] = []

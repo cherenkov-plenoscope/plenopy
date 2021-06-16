@@ -14,7 +14,7 @@ The pattern of light-field-cells to be added up is stored in the
 trigger-geometry, which is estimated from the ligth-field-geometry.
 """
 from . import io
-from . import prepare
+from . import geometry
 from . import estimate
 from . import region_of_interest
 from . import statistics

@@ -1,6 +1,6 @@
 import numpy as np
-from .prepare import arrays_to_list_of_lists
-from .prepare import invert_projection_matrix
+from .geometry import arrays_to_list_of_lists
+from .geometry import invert_projection_matrix
 
 
 def gather_summation_statistics(trigger_geometry):
