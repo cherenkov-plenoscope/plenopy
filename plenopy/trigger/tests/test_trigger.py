@@ -143,17 +143,17 @@ def test_io():
     focus['object_distance_m'] = np.float32(2e3)
     tg['foci'].append(focus)
 
-    pl.trigger.io.assert_trigger_geometry_consistent(
+    pl.trigger.geometry.assert_trigger_geometry_consistent(
         trigger_geometry=tg
     )
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy_trigger") as tmp:
-        pl.trigger.io.write_trigger_geometry_to_path(
+        pl.trigger.geometry.write(
             trigger_geometry=tg,
             path=os.path.join(tmp, 'trigger_geometry')
         )
 
-        tg_back = pl.trigger.io.read_trigger_geometry_from_path(
+        tg_back = pl.trigger.geometry.read(
             path=os.path.join(tmp, 'trigger_geometry')
         )
 
