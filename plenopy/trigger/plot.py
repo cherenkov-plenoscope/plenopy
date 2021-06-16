@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import sebastians_matplotlib_addons as splt
 import os
 from .. import plot
 
@@ -28,24 +28,15 @@ def write_figures_to_directory(
     trigger_geometry,
     trigger_summation_statistics,
     out_dir,
-    relative_width=16,
-    relative_hight=9,
-    pixel_rows=1080,
-    dpi=200,
+    figure_style=splt.FIGURE_16_9,
 ):
-    figsize = plot.FigureSize(
-        relative_width=relative_width,
-        relative_hight=relative_hight,
-        pixel_rows=pixel_rows,
-        dpi=dpi
-    )
-
     os.makedirs(out_dir, exist_ok=True)
     stats = trigger_summation_statistics
 
     for focus in range(trigger_geometry['number_foci']):
 
-        fig, ax = _make_fig_ax(figsize)
+        fig = splt.figure(style=figure_style)
+        ax = splt.add_axes(fig=fig, span=[0.1, 0.1, 0.8, 0.8])
         plot.image.add2ax(
             ax=ax,
             I=np.array(stats['foci'][focus]['number_lixel_in_pixel']),
@@ -66,16 +57,18 @@ def write_figures_to_directory(
                 'focus_{:06d}_lixel_in_pixel_overview.jpg'.format(focus)
             )
         )
-        plt.close('all')
+        splt.close_figure(fig)
 
-        fig, ax = _make_fig_ax(figsize)
+        fig = splt.figure(style=figure_style)
+        ax = splt.add_axes(fig=fig, span=[0.1, 0.1, 0.8, 0.8])
         num_lip = stats['foci'][focus]['number_lixel_in_pixel']
         bin_edges = np.arange(np.min(num_lip), np.max(num_lip)+1)
-        add2ax_histogram(
+        splt.ax_add_histogram(
             ax=ax,
-            counts=np.histogram(num_lip, bins=bin_edges)[0],
+            bincounts=np.histogram(num_lip, bins=bin_edges)[0],
             bin_edges=bin_edges,
-            style='k-'
+            linestyle='-',
+            linecolor="k",
         )
         ax.set_xlabel('number lixel in pixel')
         ax.set_ylabel('number pixel')
@@ -87,16 +80,18 @@ def write_figures_to_directory(
                 'focus_{:06d}_lixel_in_pixel_histogram.jpg'.format(focus)
             )
         )
-        plt.close('all')
+        splt.close_figure(fig)
 
-        fig, ax = _make_fig_ax(figsize)
+        fig = splt.figure(style=figure_style)
+        ax = splt.add_axes(fig=fig, span=[0.1, 0.1, 0.8, 0.8])
         num_pil = stats['foci'][focus]['number_pixel_in_lixel']
         bin_edges = np.arange(np.min(num_pil), np.max(num_pil)+1)
-        add2ax_histogram(
+        splt.ax_add_histogram(
             ax=ax,
-            counts=np.histogram(num_pil, bins=bin_edges)[0],
+            bincounts=np.histogram(num_pil, bins=bin_edges)[0],
             bin_edges=bin_edges,
-            style='k-'
+            linestyle='-',
+            linecolor="k",
         )
         ax.set_xlabel('number pixel in lixel')
         ax.set_ylabel('number lixel')
@@ -108,4 +103,4 @@ def write_figures_to_directory(
                 'focus_{:06d}_pixel_in_lixel_histogram.jpg'.format(focus)
             )
         )
-        plt.close('all')
+        splt.close_figure(fig)
