@@ -5,7 +5,7 @@ import json
 
 from . import image
 from .FigureSize import FigureSize
-from .. import simple_trigger
+from .. import trigger
 
 
 def _make_fig_ax(figsize):

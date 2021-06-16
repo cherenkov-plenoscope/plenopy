@@ -11,7 +11,7 @@ def test_list_of_list_to_array():
         [3, 4, 5],
         [],
     ]
-    arr = pl.simple_trigger.prepare.list_of_lists_to_arrays(lol)
+    arr = pl.trigger.prepare.list_of_lists_to_arrays(lol)
     assert arr['starts'].shape[0] == 4
     assert arr['lengths'].shape[0] == 4
 
@@ -25,7 +25,7 @@ def test_list_of_list_to_array():
     assert arr['starts'][2] == 5
     assert arr['starts'][3] == 8
 
-    lol_back = pl.simple_trigger.prepare.arrays_to_list_of_lists(
+    lol_back = pl.trigger.prepare.arrays_to_list_of_lists(
         starts=arr['starts'],
         lengths=arr['lengths'],
         links=arr['links']
@@ -49,7 +49,7 @@ def test_invert_projection():
     ]
     assert len(lol) == number_lixel
 
-    inv_lol = pl.simple_trigger.prepare.invert_projection_matrix(
+    inv_lol = pl.trigger.prepare.invert_projection_matrix(
         lol,
         number_lixel=number_lixel,
         number_pixel=number_pixel
@@ -93,7 +93,7 @@ def test_max_response_unique_maximum():
             assert image_sequence.shape[1] == number_pixel
 
             mres = (
-                pl.simple_trigger.estimate.
+                pl.trigger.estimate.
                 _find_max_response_in_image_sequence(
                     image_sequence=image_sequence
                 )
@@ -127,7 +127,7 @@ def test_io():
         [1],
         [1, 2],
     ]
-    focus = pl.simple_trigger.prepare.list_of_lists_to_arrays(projection)
+    focus = pl.trigger.prepare.list_of_lists_to_arrays(projection)
     focus['object_distance_m'] = np.float32(1e3)
     tg['foci'].append(focus)
 
@@ -139,21 +139,21 @@ def test_io():
         [0],
         [0, 1],
     ]
-    focus = pl.simple_trigger.prepare.list_of_lists_to_arrays(projection)
+    focus = pl.trigger.prepare.list_of_lists_to_arrays(projection)
     focus['object_distance_m'] = np.float32(2e3)
     tg['foci'].append(focus)
 
-    pl.simple_trigger.io.assert_trigger_geometry_consistent(
+    pl.trigger.io.assert_trigger_geometry_consistent(
         trigger_geometry=tg
     )
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy_trigger") as tmp:
-        pl.simple_trigger.io.write_trigger_geometry_to_path(
+        pl.trigger.io.write_trigger_geometry_to_path(
             trigger_geometry=tg,
             path=os.path.join(tmp, 'trigger_geometry')
         )
 
-        tg_back = pl.simple_trigger.io.read_trigger_geometry_from_path(
+        tg_back = pl.trigger.io.read_trigger_geometry_from_path(
             path=os.path.join(tmp, 'trigger_geometry')
         )
 
@@ -189,42 +189,42 @@ def test_io():
 
 def test_sliding_coincidence_window():
     sequence = np.array([], dtype=np.uint16)
-    rs = pl.simple_trigger.estimate.convole_sequence(
+    rs = pl.trigger.estimate.convole_sequence(
         sequence,
         integration_time_slices=5
     )
     assert rs.shape == sequence.shape
 
     np.testing.assert_array_equal(
-        pl.simple_trigger.estimate.convole_sequence(
+        pl.trigger.estimate.convole_sequence(
             np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),
         np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.simple_trigger.estimate.convole_sequence(
+        pl.trigger.estimate.convole_sequence(
             np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
             integration_time_slices=1
         ),
         np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.simple_trigger.estimate.convole_sequence(
+        pl.trigger.estimate.convole_sequence(
             np.array([0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2], dtype=np.uint16),
             integration_time_slices=2
         ),
         np.array([1, 3, 5, 5, 3, 1, 1, 3, 5, 5, 2], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.simple_trigger.estimate.convole_sequence(
+        pl.trigger.estimate.convole_sequence(
             np.array([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),
         np.array([0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0], dtype=np.uint16)
     )
     np.testing.assert_array_equal(
-        pl.simple_trigger.estimate.convole_sequence(
+        pl.trigger.estimate.convole_sequence(
             np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0], dtype=np.uint16),
             integration_time_slices=5
         ),

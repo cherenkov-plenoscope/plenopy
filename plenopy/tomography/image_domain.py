@@ -11,7 +11,7 @@ from ..thin_lens import xyz2cxcyb
 
 from .. import classify
 from .. import image
-from .. import simple_trigger
+from .. import trigger
 from .simulation_truth import emission_positions_of_photon_bunches
 from ..plot import slices
 
@@ -392,10 +392,10 @@ def fit_trajectory_to_point_cloud(
 
 def init_reconstruction_from_event(event, trigger_geometry, binning):
 
-    trigger_responses = pl.simple_trigger.io.read_trigger_response_from_path(
+    trigger_responses = pl.trigger.io.read_trigger_response_from_path(
         path=os.path.join(event._path, 'refocus_sum_trigger.json')
     )
-    roi =pl.simple_trigger.region_of_interest.from_trigger_response(
+    roi =pl.trigger.region_of_interest.from_trigger_response(
         trigger_response=trigger_responses,
         trigger_geometry=trigger_geometry,
         time_slice_duration=event.raw_sensor_response.time_slice_duration,
