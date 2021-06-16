@@ -166,6 +166,40 @@ def invert_projection_matrix(lixel_to_pixel, number_pixel, number_lixel):
     return pixel_to_lixel
 
 
+def init_summation_statistics(trigger_geometry):
+    """
+    Returns a dict of count-statistics.
+    Counting how many light-field-cells are combined into one picture-cell.
+    """
+    tg = trigger_geometry
+
+    stats = {}
+    stats['number_foci'] = int(tg['number_foci'])
+    stats['number_pixel'] = int(tg['image']['number_pixel'])
+    stats['number_lixel'] = int(tg['number_lixel'])
+
+    stats['foci'] = []
+    for focus in range(tg['number_foci']):
+        lixel_to_pixel = utils.arrays_to_list_of_lists(
+            starts=tg['foci'][focus]['starts'],
+            lengths=tg['foci'][focus]['lengths'],
+            links=tg['foci'][focus]['links']
+        )
+
+        pixel_to_lixel = invert_projection_matrix(
+            lixel_to_pixel=lixel_to_pixel,
+            number_pixel=tg['image']['number_pixel'],
+            number_lixel=tg['number_lixel'],
+        )
+
+        stat = {}
+        stat['number_lixel_in_pixel'] = [len(pix) for pix in pixel_to_lixel]
+        stat['number_pixel_in_lixel'] = [len(lix) for lix in lixel_to_pixel]
+
+        stats['foci'].append(stat)
+    return stats
+
+
 def write(trigger_geometry, path):
     assert_trigger_geometry_consistent(trigger_geometry=trigger_geometry)
     os.makedirs(path, exist_ok=True)
