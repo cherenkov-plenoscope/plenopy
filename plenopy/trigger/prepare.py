@@ -12,6 +12,23 @@ def generate_trigger_image(
     pixel_radius_rad,
     max_number_nearest_lixel_in_pixel,
 ):
+    """
+    Returns a dict with the basic geometry of the image where the
+    trigger-decision is made. This is independent of the instrument's
+    hardware.
+
+    Parameter
+    ---------
+    image_outer_radius_rad : float
+            The outer radius, (opening-angle), of the disc-shaped image.
+    pixel_spacing_rad : float
+            The angle between the centers of neighboring pixels in the image.
+    pixel_radius_rad : float
+            The outer radius (opening-angle) of a pixel.
+    max_number_nearest_lixel_in_pixel : int
+            An upper limit for the maximum number of light-field-cells (lixels)
+            to be added into a pixel of the image.
+    """
     assert image_outer_radius_rad > 0.
     assert pixel_spacing_rad > 0.
     assert pixel_radius_rad > 0.
@@ -36,6 +53,26 @@ def prepare_trigger_geometry(
     trigger_image,
     object_distances=[7.5e3, 15e3, 22.5e3],
 ):
+    """
+    Returns a dict with the trigger's geometry.
+
+    For each object_distance there is the projection-matrix describing
+    which light-field-cells need to be added up into a pixel of the
+    trigger-image.
+
+    Parameters
+    ----------
+    light_field_geometry : class
+            The light-field's geometry. I.e. the viewing-directions
+            and support-positions of each light-field-cell.
+    image_geometry : dict
+            The geometry of the image where the trigger-decision is made.
+            We use the same image_geometry for all foci/object-distances.
+            This ensures that the actual hardware will be easily able to
+            compare the responses in two, or more, different images.
+    object_distances : list of floats
+            The object-distances to focus the trigger-images to.
+    """
     tg = {}
     tg['image'] = trigger_image
     tg['number_foci'] = len(object_distances)
