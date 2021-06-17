@@ -1,12 +1,12 @@
 import numpy as np
+import sebastians_matplotlib_addons as splt
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.collections import PolyCollection
-from .FigureSize import FigureSize
 import os
 
 
-def save_all(light_field_geometry, out_dir, figure_size=None):
+def save_all(light_field_geometry, out_dir, figure_style=splt.FIGURE_16_9):
     """
     Parameters
     ----------
@@ -14,8 +14,7 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
 
     out_dir                 The output directory to save the figures in.
 
-    figure_size             The output figure size and resolution.
-                            [optional]
+    figure_style            The output figure size and resolution.
     """
     plt.rc('text', usetex=True)
     plt.rc('text.latex', preamble=r'\usepackage{amsmath}') # for \mathrm{}
@@ -24,7 +23,7 @@ def save_all(light_field_geometry, out_dir, figure_size=None):
     plotter = PlotLightFieldGeometry(
         light_field_geometry=light_field_geometry,
         out_dir=out_dir,
-        figure_size=figure_size)
+        figure_style=figure_style)
     plotter.save()
 
 
@@ -224,33 +223,14 @@ def colored_lixels(
 
 
 class PlotLightFieldGeometry(object):
-    def __init__(self, light_field_geometry, out_dir, figure_size=None):
-        if figure_size is None:
-            self.figure_size = FigureSize(
-                relative_width=16,
-                relative_hight=9,
-                pixel_rows=1080,
-                dpi=300)
-        else:
-            self.figure_size = figure_size
-
+    def __init__(self, light_field_geometry, out_dir, figure_style):
+        self.figure_style = figure_style
         self.lfg = light_field_geometry
         self.out_dir = out_dir
 
-    def __style(self, ax):
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.yaxis.tick_left()
-        ax.xaxis.tick_bottom()
-
     def fig_ax(self):
-        fig = plt.figure(
-            figsize=(self.figure_size.width, self.figure_size.hight),
-            dpi=self.figure_size.dpi
-        )
-        ax = fig.add_axes([0.15, 0.15, 0.8, 0.8])
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
+        fig = splt.figure(self.figure_style)
+        ax = splt.add_axes(fig=fig, span=[0.15, 0.15, 0.8, 0.8])
         return fig, ax
 
     def __save_fig(self, fig, filename):
@@ -408,19 +388,19 @@ class PlotLightFieldGeometry(object):
         # full
         outer_fov_r = 0.95 * outer_radius + zoom_radius
         if indicate_zoom_region_center:
-            add_box_to_ax(
+            splt.ax_add_box(
                 ax,
                 xlim=zoom_center_x,
                 ylim=zoom_center_y,
                 linewidth=1)
         if indicate_zoom_region_pos_x:
-            add_box_to_ax(
+            splt.ax_add_box(
                 ax,
                 xlim=zoom_posx_x,
                 ylim=zoom_posx_y,
                 linewidth=1)
         if indicate_zoom_region_pos_y:
-            add_box_to_ax(
+            splt.ax_add_box(
                 ax,
                 xlim=zoom_posy_x,
                 ylim=zoom_posy_y,
@@ -552,39 +532,3 @@ class PlotLightFieldGeometry(object):
             indicate_zoom_region_center=False,
             indicate_zoom_region_pos_x=False,
             indicate_zoom_region_pos_y=False)
-
-
-def add_box_to_ax(
-    ax,
-    xlim,
-    ylim,
-    color='k',
-    linewidth=None):
-    #  __
-    # |  |
-    ax.plot(
-        [xlim[0], xlim[1]],
-        [ylim[0], ylim[0]],
-        color=color,
-        linewidth=linewidth)
-    #  __
-    # |__
-    ax.plot(
-        [xlim[1], xlim[1]],
-        [ylim[0], ylim[1]],
-        color=color,
-        linewidth=linewidth)
-    #
-    # |__|
-    ax.plot(
-        [xlim[0], xlim[1]],
-        [ylim[1], ylim[1]],
-        color=color,
-        linewidth=linewidth)
-    #  __
-    #  __|
-    ax.plot(
-        [xlim[0], xlim[0]],
-        [ylim[0], ylim[1]],
-        color=color,
-        linewidth=linewidth)

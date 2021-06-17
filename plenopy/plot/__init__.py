@@ -6,5 +6,4 @@ from . import classic_iact_array
 from . import event
 from . import image
 from . import light_field_geometry
-from .FigureSize import FigureSize
 from . import ruler

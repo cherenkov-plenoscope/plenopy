@@ -6,7 +6,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import os
 import tempfile
 import shutil
-from .FigureSize import FigureSize
 from .ruler import add2ax_object_distance_ruler
 
 
@@ -21,12 +20,9 @@ def save_slice_stack(
     xlabel='x/m',
     ylabel='y/m',
     sqrt_intensity=False,
+    figure_style=splt.FIGURE_16_9,
 ):
-    fig_size = FigureSize(dpi=200)
-    fig = plt.figure(
-        figsize=(fig_size.width, fig_size.hight),
-        dpi=fig_size.dpi
-    )
+    fig = splt.figure(figure_style)
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 3])
     ax_object_distance_ruler = plt.subplot(gs[0])
     ax_histogram = plt.subplot(gs[1])

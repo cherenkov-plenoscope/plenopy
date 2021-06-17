@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.art3d as art3d
 import os
 import tempfile
-
-from .FigureSize import FigureSize
 from ..tomography import Rays
 
 SPEED_OF_LIGHT = 299792458
@@ -37,17 +35,9 @@ def save_principal_aperture_arrival_stack(
     steps=7,
     alpha=0.3,
     size=35.,
-    figure_size=None
+    figure_style=splt.FIGURE_16_9
 ):
-    if figure_size is None:
-        fsz = FigureSize(16, 9, pixel_rows=1080, dpi=240)
-    else:
-        fsz = figure_size
-
-    plt.rcParams.update({'font.size': 12})
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-    fig = plt.figure(figsize=(fsz.width, fsz.hight))
+    fig = splt.figure(figure_style)
     ax = fig.gca(projection='3d')
 
     time_start = np.min(photon_arrival_times)
@@ -89,7 +79,7 @@ def save_principal_aperture_arrival_stack(
         plt.savefig(
             os.path.join(out_dir, 'aperture3D_{:06d}.png'.format(i)),
             dpi=fsz.dpi)
-    plt.close()
+    plt.close(fig)
 
 
 def save_principal_aperture_arrival_video(
@@ -100,7 +90,7 @@ def save_principal_aperture_arrival_video(
     elev=15,
     steps=73,
     frames_per_second=12,
-    figure_size=None
+    figure_style=splt.FIGURE_16_9,
 ):
     with tempfile.TemporaryDirectory(prefix='plenopy_video') as tmp:
 
@@ -111,7 +101,7 @@ def save_principal_aperture_arrival_video(
             out_dir=tmp,
             elev=elev,
             steps=steps,
-            figure_size=None)
+            figure_style=figure_style)
 
         splt.write_video_from_image_slices(
             image_sequence_wildcard_path=os.path.join(tmp, 'aperture3D_%06d.png'),

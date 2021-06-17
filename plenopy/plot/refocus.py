@@ -6,7 +6,6 @@ from os.path import join
 import tempfile
 import shutil
 from .ruler import add2ax_object_distance_ruler
-from .FigureSize import FigureSize
 from .. import image
 from .image import add_pixel_image_to_ax
 
@@ -168,12 +167,9 @@ def save_refocus_stack(
     time_slices_window_radius=1,
     steps=16,
     use_absolute_scale=True,
-    image_prefix='refocus_'
+    image_prefix='refocus_',
+    figure_style=splt.FIGURE_16_9
 ):
-    plt.rcParams.update({'font.size': 12})
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-
     object_distances = np.logspace(
         np.log10(obj_dist_min),
         np.log10(obj_dist_max),
@@ -192,9 +188,7 @@ def save_refocus_stack(
     else:
         vmin, vmax = None, None
 
-    fig_size = FigureSize(dpi=200)
-
-    fig = plt.figure(figsize=(fig_size.width, fig_size.hight))
+    fig = splt.figure(figure_style)
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 6])
     ax_ruler = plt.subplot(gs[0])
     ax_image = plt.subplot(gs[1])
