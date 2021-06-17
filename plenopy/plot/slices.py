@@ -1,4 +1,5 @@
 import numpy as np
+import sebastians_matplotlib_addons as splt
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -7,7 +8,6 @@ import tempfile
 import shutil
 from .FigureSize import FigureSize
 from .ruler import add2ax_object_distance_ruler
-from ..plot.images2video import images2video
 
 
 def save_slice_stack(
@@ -205,8 +205,8 @@ def save_slice_video(
             )
             i += 1
 
-        images2video(
-            image_path=os.path.join(work_dir, 'video_%06d.jpg'),
+        splt.write_video_from_image_slices(
+            image_sequence_wildcard_path=os.path.join(work_dir, 'video_%06d.jpg'),
             output_path=output_path,
             frames_per_second=fps
         )

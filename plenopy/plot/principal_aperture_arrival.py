@@ -1,4 +1,5 @@
 import numpy as np
+import sebastians_matplotlib_addons as splt
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from mpl_toolkits.mplot3d import Axes3D
@@ -6,11 +7,9 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.art3d as art3d
 import os
 import tempfile
-import subprocess
-import tqdm
+
 from .FigureSize import FigureSize
 from ..tomography import Rays
-from . import images2video
 
 SPEED_OF_LIGHT = 299792458
 
@@ -114,7 +113,7 @@ def save_principal_aperture_arrival_video(
             steps=steps,
             figure_size=None)
 
-        images2video.images2video(
-            image_path=os.path.join(tmp, 'aperture3D_%06d.png'),
+        splt.write_video_from_image_slices(
+            image_sequence_wildcard_path=os.path.join(tmp, 'aperture3D_%06d.png'),
             output_path=output_path,
             frames_per_second=frames_per_second)

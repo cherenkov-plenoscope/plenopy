@@ -1,4 +1,5 @@
 import numpy as np
+import sebastians_matplotlib_addons as splt
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from os.path import join
@@ -6,7 +7,6 @@ import tempfile
 import shutil
 from .ruler import add2ax_object_distance_ruler
 from .FigureSize import FigureSize
-from .images2video import images2video
 from .. import image
 from .image import add_pixel_image_to_ax
 
@@ -269,7 +269,7 @@ def save_refocus_video(
                 join(tmp, 'video_'+str(i).zfill(6)+'.jpg'))
             i += 1
 
-        images2video(
-            image_path=join(tmp, 'video_%06d.jpg'),
+        splt.write_video_from_image_slices(
+            image_sequence_wildcard_path=join(tmp, 'video_%06d.jpg'),
             output_path=output_path,
             frames_per_second=fps)
