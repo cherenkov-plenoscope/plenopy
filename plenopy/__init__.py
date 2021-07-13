@@ -3,7 +3,7 @@ from .light_field_geometry.LightFieldGeometry import LightFieldGeometry
 from .event.Event import Event
 from .Run import Run
 from .image.Image import Image
-from .SplitLightField import SplitLightField
+from . import split_light_field
 from . import plot
 from . import corsika
 from . import simulation_truth
