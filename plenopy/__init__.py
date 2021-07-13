@@ -3,6 +3,7 @@ from .light_field_geometry.LightFieldGeometry import LightFieldGeometry
 from .event.Event import Event
 from .Run import Run
 from .image.Image import Image
+from .SplitLightField import SplitLightField
 from . import plot
 from . import corsika
 from . import simulation_truth
@@ -14,4 +15,3 @@ from . import classify
 from . import sequence
 from . import features
 from . import thin_lens
-from . import fuzzy
