@@ -46,8 +46,6 @@ def make_split_light_field(loph_record, light_field_geometry):
     )
     ph_cx = light_field_geometry.cx_mean[loph_record["photons"]["channels"]]
     ph_cy = light_field_geometry.cy_mean[loph_record["photons"]["channels"]]
-    out["median_cx"] = np.median(ph_cx)
-    out["median_cy"] = np.median(ph_cy)
     ph_t = (
         loph_record["sensor"]["time_slice_duration"]
         * loph_record["photons"]["arrival_time_slices"]
@@ -66,3 +64,9 @@ def make_split_light_field(loph_record, light_field_geometry):
                 dtype=np.float32
             )
     return out
+
+
+def median_cx_cy(loph_record, light_field_geometry):
+    ph_cx = light_field_geometry.cx_mean[loph_record["photons"]["channels"]]
+    ph_cy = light_field_geometry.cy_mean[loph_record["photons"]["channels"]]
+    return np.median(ph_cx), np.median(ph_cy)
