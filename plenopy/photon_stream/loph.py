@@ -197,21 +197,21 @@ def _workaround_tar_next(tar_object):
 
 
 class LopfTarReader:
-    def __init__(self, path, id_num_digits=9):
+    def __init__(self, path, uid_num_digits=12):
         self.path = path
         self.tar = tarfile.open(name=path, mode="r")
-        self._id_num_digits = id_num_digits
-        assert self._id_num_digits > 0
+        self._uid_num_digits = uid_num_digits
+        assert self._uid_num_digits > 0
 
     def __next__(self):
         info_tar = _workaround_tar_next(tar_object=self.tar)
         if info_tar is None:
             raise StopIteration
-        identity = int(info_tar.name[0 : self._id_num_digits])
+        uid = int(info_tar.name[0 : self._uid_num_digits])
         phs = read_photon_stream_from_file(
             fileobj=self.tar.extractfile(info_tar)
         )
-        return identity, phs
+        return uid, phs
 
     def __enter__(self):
         return self
@@ -228,18 +228,16 @@ class LopfTarReader:
 
 
 class LopfTarWriter:
-    def __init__(self, path, id_num_digits=9):
+    def __init__(self, path, uid_num_digits=12):
         self.path = path
         self.tar = tarfile.open(name=path, mode="w")
-        self._id_num_digits = id_num_digits
-        assert self._id_num_digits > 0
-        self._id_template_str = (
-            "{:0" + str(self._id_num_digits) + "d}.phs.loph"
-        )
+        self._uid_num_digits = uid_num_digits
+        assert self._uid_num_digits > 0
+        self._uid_str = "{uid:0" + str(self._uid_num_digits) + "d}.phs.loph"
 
-    def add(self, identity, phs):
+    def add(self, uid, phs):
         with io.BytesIO() as buff:
-            info = tarfile.TarInfo(self._id_template_str.format(identity))
+            info = tarfile.TarInfo(self._uid_str.format(uid=uid))
             info.size = write_photon_stream_to_file(phs=phs, fileobj=buff)
             buff.seek(0)
             self.tar.addfile(info, buff)
@@ -279,26 +277,26 @@ def split_into_chunks(loph_path, out_dir, chunk_prefix, num_events_in_chunk):
         while has_events_left:
 
             chunk_path = os.path.join(
-                out_dir,
-                "{:s}{:09d}.tar".format(chunk_prefix, chunk_count)
+                out_dir, "{:s}{:09d}.tar".format(chunk_prefix, chunk_count)
             )
 
             with LopfTarWriter(path=chunk_path) as chunk:
                 for ii in range(num_events_in_chunk):
                     try:
                         event = run.__next__()
-                        identity, phs = event
-                        chunk.add(identity=identity, phs=phs)
+                        uid, phs = event
+                        chunk.add(uid=uid, phs=phs)
                     except StopIteration as stop:
                         has_events_left = False
             chunk_count += 1
 
-def read_filter_write(in_path, out_path, identity_set):
+
+def read_filter_write(in_path, out_path, uid_set):
     """
-    Read in_path, and write event to out_path when idx is in identity_set
+    Read in_path, and write event to out_path when uid is in uid_set
     """
     with LopfTarReader(in_path) as irun, LopfTarWriter(out_path) as orun:
         for event in irun:
-            identity, phs = event
-            if identity in identity_set:
-                orun.add(identity=identity, phs=phs)
+            uid, phs = event
+            if uid in uid_set:
+                orun.add(uid=uid, phs=phs)
