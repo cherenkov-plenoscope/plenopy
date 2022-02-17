@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from matplotlib.collections import PolyCollection
 import os
+import warnings
 
 
 def save_all(light_field_geometry, out_dir, figure_style=splt.FIGURE_16_9):
@@ -185,22 +186,38 @@ def cx_cy_hist2d(lss, ax):
     ax.set_ylabel(r'$\overline{c_y}$/$^\circ$')
 
 
-def colored_lixels(
-    lss,
+def is_polygon_in_lim(polygon, xlim, ylim):
+    for vertex in polygon:
+        x, y = vertex
+        if xlim[0] < x < xlim[1] and ylim[0] < y < ylim[1]:
+            return True
+    return False
+
+
+def ax_add_polygons_with_colormap(
+    polygons,
     I,
     ax,
     cmap='Greys',
     vmin=None,
     vmax=None,
     edgecolors='none',
-    linewidths=None
+    linewidths=None,
+    xlim=None,
+    ylim=None,
 ):
     I = I.flatten()
     valid = ~np.isnan(I)
+
+    if xlim and ylim:
+        for i, polygon in enumerate(polygons):
+            if not is_polygon_in_lim(polygon=polygon, xlim=xlim, ylim=ylim):
+                valid[i] = False
+
     valid_I = I[valid]
 
     valid_polygons = []
-    for i, poly in enumerate(lss.lixel_polygons):
+    for i, poly in enumerate(polygons):
         if valid[i]:
             valid_polygons.append(poly)
 
@@ -220,6 +237,29 @@ def colored_lixels(
     ax.autoscale_view()
     ax.set_aspect('equal')
     return coll  # to set colorbar
+
+
+def colored_lixels(
+    lss,
+    I,
+    ax,
+    cmap='Greys',
+    vmin=None,
+    vmax=None,
+    edgecolors='none',
+    linewidths=None,
+):
+    warnings.warn(DeprecationWarning("Use ax_add_polygons_with_colormap()"))
+    return ax_add_polygons_with_colormap(
+        polygons=lss.lixel_polygons,
+        I=I,
+        ax=ax,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        edgecolors=edgecolors,
+        linewidths=linewidths,
+    )
 
 
 class PlotLightFieldGeometry(object):
