@@ -205,12 +205,11 @@ def save_refocus_stack(
         ax_image.set_aspect('equal')
         add_pixel_image_to_ax(images[i], ax_image, vmin=vmin, vmax=vmax)
 
-        plt.savefig(
-            join(output_path, image_prefix+str(i).zfill(6)+'.jpg'),
-            dpi=fig_size.dpi)
+        fig.savefig(
+            join(output_path, image_prefix+str(i).zfill(6)+'.jpg'))
         ax_ruler.clear()
         ax_image.clear()
-    plt.close(fig)
+    splt.close(fig)
 
 
 def save_refocus_video(
