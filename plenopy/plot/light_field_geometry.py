@@ -31,7 +31,10 @@ def save_all(light_field_geometry, out_dir, figure_style=splt.FIGURE_16_9):
 def symmetric_hist(vals, ax, nbins=None):
     if nbins is None:
         nbins = int(np.floor(np.sqrt(vals.shape[0])))
-    bins, bin_esdges = np.histogram(vals, bins=nbins)
+        nbins = np.max([nbins, 1])
+    valid = np.logical_not(np.isnan(vals))
+    vvals = vals[valid]
+    bins, bin_esdges = np.histogram(vvals, bins=nbins)
     bin_centers = 0.5 * (bin_esdges[1:] + bin_esdges[:-1])
     ax.set_xlim([1.025 * bin_esdges[0], 1.025 * bin_esdges[-1]])
     ax.step(bin_centers, bins, color='k')
