@@ -120,16 +120,16 @@ def time_delay_from_sensors_to_image(
     y_std,
     speed_of_light=299792458,
 ):
-    rel_dists_mean, rel_dists_std = (
-        estimate_relative_path_length_and_uncertainty_for_isochor_image(
-            cx_mean=cx_mean,
-            cx_std=cx_std,
-            cy_mean=cy_mean,
-            cy_std=cy_std,
-            x_mean=x_mean,
-            x_std=x_std,
-            y_mean=y_mean,
-            y_std=y_std,))
+    rel_dists_mean, rel_dists_std = relative_path_length_for_isochor_image(
+        cx_mean=cx_mean,
+        cx_std=cx_std,
+        cy_mean=cy_mean,
+        cy_std=cy_std,
+        x_mean=x_mean,
+        x_std=x_std,
+        y_mean=y_mean,
+        y_std=y_std,
+    )
     time_delay_principal_aperture_plane_2_image = rel_dists_mean/speed_of_light
     time_delay_sesnsor_2_image = (
         time_delay_from_sensors_to_principal_aperture_plane -
