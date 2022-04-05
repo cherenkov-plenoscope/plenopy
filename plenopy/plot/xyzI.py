@@ -36,33 +36,44 @@ def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
             ball_size=ball_size)
 
 
-def hist3D_to_xyzI(hist, binning, threshold=0):
+def hist3D_to_xyzI(
+    xyz_hist,
+    x_bin_centers,
+    y_bin_centers,
+    z_bin_centers,
+    threshold=0,
+):
     """
     Returns a flat array of x,y,z positions and intensities for each voxel in
     the 3D histogram.
 
     Parameters
     ----------
-    hist            A 3D intensity histogram with the shape specified in the
-                    binning parameter.
+    xyz_hist : array 3d
+        A 3D intensity histogram with the shape specified in the
+        binning parameter.
 
-    binning         The 3D volume binning used to create the 3D intensity
-                    histogram.
+    x_bin_centers : array 1d
+        The centers of the bins in x
 
+    y_bin_centers : array 1d
 
-    threshold       Voxels in the 3D intensity histogram below this threshold
-                    are neglected.
+    z_bin_centers : array 1d
+
+    threshold : float
+        Voxels in the 3D intensity histogram below this threshold
+        are neglected.
     """
     xyzi = []
-    for x in range(hist.shape[0]):
-        for y in range(hist.shape[1]):
-            for z in range(hist.shape[2]):
-                if hist[x, y, z] > threshold:
+    for x in range(xyz_hist.shape[0]):
+        for y in range(xyz_hist.shape[1]):
+            for z in range(xyz_hist.shape[2]):
+                if xyz_hist[x, y, z] > threshold:
                     xyzi.append(np.array([
-                        binning.xy_bin_centers[x],
-                        binning.xy_bin_centers[y],
-                        binning.z_bin_centers[z],
-                        hist[x, y, z]]))
+                        x_bin_centers[x],
+                        y_bin_centers[y],
+                        z_bin_centers[z],
+                        xyz_hist[x, y, z]]))
     xyzi = np.array(xyzi)
     return xyzi
 

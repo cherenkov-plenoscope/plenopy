@@ -79,7 +79,6 @@ def save_slice_stack(
                 output_path,
                 image_prefix+str(z_slice).zfill(6)+".jpg"
             ),
-            dpi=fig_size.dpi
         )
 
         ax_object_distance_ruler.clear()
