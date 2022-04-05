@@ -61,7 +61,7 @@ def test_image_domain():
         photon_lixel_ids
     )= event.photon_arrival_times_and_lixel_ids()
 
-    ssm_jobs = pl.tomography.system_matrix.__make_jobs(
+    ssm_jobs = pl.tomography.system_matrix.make_jobs(
         light_field_geometry=run.light_field_geometry,
         sen_x_bin_edges=binning["sen_x_bin_edges"],
         sen_y_bin_edges=binning["sen_y_bin_edges"],

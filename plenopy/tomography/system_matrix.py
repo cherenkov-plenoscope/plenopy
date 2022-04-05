@@ -5,7 +5,7 @@ import os
 import array
 
 
-def __make_jobs(
+def make_jobs(
     light_field_geometry,
     sen_x_bin_edges,
     sen_y_bin_edges,
@@ -14,6 +14,33 @@ def __make_jobs(
     num_lixels_in_job=1000,
     num_samples_per_lixel=100,
 ):
+    """
+    Returns a list of jobs to steer the compute of a 'system-matrix' for
+    tomography.
+    The jobs can then be computed in parallel. The results of the jobs
+    need to be reduced later on to obtain the 'system-matrix'.
+    The work is split along the beams observed by the photo-sensors in the
+    instrument. So this can only profit from parallel computing when there are
+    many photo-sensors.
+
+    light_field_geometry : class
+        The geometry of the light-field observed by our instrument
+    sen_x_bin_edges : array 1d
+        Bin-edges in (sen)sor-frame along x-axis, perpendicular to
+        optical-axis.
+    sen_x_bin_edges : array 1d
+        Like sen_x_bin_edges, but on y-axis.
+    sen_z_bin_edges : array 1d
+        like sen_x_bin_edges but parallel to optical-axis.
+    random_seed : int
+        The random-seed used for the estimate of the 'system-matrix'.
+    num_lixels_in_job : int
+        This many beams/lixels will be worked on by a single job.
+    num_samples_per_lixel : int
+        This many rays are casted to approximate a beam observed by a
+        photo-sensor. The spread of the rays is based on the spread stored in
+        light_field_geometry.
+    """
     focal_length = light_field_geometry.expected_focal_length_of_imaging_system
 
     jobs = []

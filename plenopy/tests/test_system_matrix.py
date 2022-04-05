@@ -11,7 +11,7 @@ light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
 
 def test_num_lixel_jobs():
-    jobs = pl.tomography.system_matrix.__make_jobs(
+    jobs = pl.tomography.system_matrix.make_jobs(
         light_field_geometry=light_field_geometry,
         sen_x_bin_edges=None,
         sen_y_bin_edges=None,
@@ -44,7 +44,7 @@ def test_run_job():
         obj_max=25e3,
         number_obj_bins=16)
 
-    jobs = pl.tomography.system_matrix.__make_jobs(
+    jobs = pl.tomography.system_matrix.make_jobs(
         light_field_geometry=light_field_geometry,
         sen_x_bin_edges=binning["sen_x_bin_edges"],
         sen_y_bin_edges=binning["sen_y_bin_edges"],
