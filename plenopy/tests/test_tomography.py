@@ -78,21 +78,21 @@ def test_image_domain():
         results=ssm_results
     )
 
-    mat = pl.tomography.system_matrix.to_numpy_csr_matrix(
+    psf = pl.tomography.image_domain.point_spread_function.init(
         sparse_system_matrix=sparse_system_matrix,
-        number_beams=run.light_field_geometry.number_lixel,
-        number_volume_cells=binning["number_bins"],
     )
 
     rec = pl.tomography.image_domain.reconstruction.init(
         light_field_geometry=event.light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         binning=binning,
-        sparse_system_matrix=sparse_system_matrix,
     )
 
     for i in range(10):
-        rec = pl.tomography.image_domain.reconstruction.iterate(rec)
+        rec = pl.tomography.image_domain.reconstruction.iterate(
+            reconstruction=rec,
+            point_spread_function=psf,
+        )
 
     vol = rec["reconstructed_volume_intensity"]
     assert (vol < 0.0).sum() == 0

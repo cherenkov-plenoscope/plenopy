@@ -4,13 +4,16 @@ import json
 import os
 from .. import system_matrix
 from ... import plot
+from ... import thin_lens
 from . import binning
+from . import point_spread_function
 from . import reconstruction
 from . import simulation_truth
-from ... import thin_lens
+
 
 
 def save_imgae_slice_stack(
+    binning,
     reconstruction,
     simulation_truth=None,
     out_dir='./tomography',
@@ -23,25 +26,22 @@ def save_imgae_slice_stack(
     if simulation_truth is None:
         intensity_volume_2 = None
     else:
-        assert binning.is_equal(
-            simulation_truth['binning'],
-            reconstruction['binning'])
         intensity_volume_2 = binning.volume_intensity_as_cube(
             volume_intensity=simulation_truth['true_volume_intensity'],
-            binning=r['binning'],
+            binning=binning,
         )
 
     plot.slices.save_slice_stack(
         intensity_volume=binning.volume_intensity_as_cube(
             volume_intensity=r['reconstructed_volume_intensity'],
-            binning=r['binning'],
+            binning=binning,
         ),
         event_info_repr=event_info_repr,
         xy_extent=[
-            r['binning']['sen_x_bin_edges'].min(),
-            r['binning']['sen_x_bin_edges'].max(),
-            r['binning']['sen_y_bin_edges'].min(),
-            r['binning']['sen_y_bin_edges'].max(),
+            binning['sen_x_bin_edges'].min(),
+            binning['sen_x_bin_edges'].max(),
+            binning['sen_y_bin_edges'].min(),
+            binning['sen_y_bin_edges'].max(),
         ],
         z_bin_centers=r['binning']['sen_z_bin_centers'],
         output_path=out_dir,

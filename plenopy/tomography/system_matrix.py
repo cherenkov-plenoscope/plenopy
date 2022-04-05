@@ -3,6 +3,7 @@ import numpy as np
 import scipy
 import os
 import array
+import json
 
 
 def make_jobs(
@@ -65,6 +66,12 @@ def make_jobs(
         job["y_mean"] = light_field_geometry.y_mean[idx_start:idx_stop]
         job["y_std"] = light_field_geometry.y_std[idx_start:idx_stop]
         job["lixel_idx"] = np.arange(idx_start, idx_stop)
+        job["number_lixel"] = light_field_geometry.number_lixel
+        job["number_voxel"] = (
+            (len(sen_x_bin_edges) - 1)
+            * (len(sen_y_bin_edges) - 1)
+            * (len(sen_z_bin_edges) - 1)
+        )
         jobs.append(job)
         idx_start = idx_stop
     return jobs
@@ -115,6 +122,8 @@ def run_job(job):
         result["lixel_voxel_overlaps"] = lixel_voxel_overlaps.astype(
             np.float32
         )
+        result["number_lixel"] = job["number_lixel"]
+        result["number_voxel"] = job["number_voxel"]
         results.append(result)
     return results
 
@@ -178,7 +187,14 @@ def reduce_results(results):
     voxel_indicies = array.array("L")
     lixel_indicies = array.array("L")
 
+    sys_mat = {}
+    sys_mat["number_lixel"] = results[0][0]["number_lixel"]
+    sys_mat["number_voxel"] = results[0][0]["number_voxel"]
+
     for result in results:
+        assert sys_mat["number_lixel"] == result[0]["number_lixel"]
+        assert sys_mat["number_voxel"] == result[0]["number_voxel"]
+
         for lix in range(len(result)):
             lixel_result = result[lix]
             num_overlaps = lixel_result["voxel_indicies"].shape[0]
@@ -189,7 +205,6 @@ def reduce_results(results):
             voxel_indicies.extend(lixel_result["voxel_indicies"])
             lixel_indicies.extend(__lixel_indicies)
 
-    sys_mat = {}
     sys_mat["lixel_indicies"] = np.array(lixel_indicies, dtype=np.uint32)
     sys_mat["voxel_indicies"] = np.array(voxel_indicies, dtype=np.uint32)
     sys_mat["lixel_voxel_overlaps"] = np.array(
@@ -199,27 +214,36 @@ def reduce_results(results):
 
 
 def write(sparse_system_matrix, path):
+    ssm = sparse_system_matrix
     os.makedirs(path)
     for key in SYSTEM_MATRIX_DTYPE:
         key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
         with open(os.path.join(path, key + "." + key_dtype_str), "wb") as f:
-            f.write(sparse_system_matrix[key].tobytes())
+            f.write(ssm[key].tobytes())
+    with open(os.path.join(path, "number.json"), "wb") as f:
+        f.write(json.dumps(
+            {
+                "number_lixel": ssm["number_lixel"],
+                "number_voxel": ssm["number_voxel"],
+            }
+        )
+    )
 
 
 def read(path):
-    sparse_sys_mat = {}
+    ssm = {}
+    with open(os.path.join(path, "number.json"), "rb") as f:
+        ssm = json.loads(f.read())
     for key in SYSTEM_MATRIX_DTYPE:
         key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
         with open(os.path.join(path, key + "." + key_dtype_str), "rb") as f:
-            sparse_sys_mat[key] = np.frombuffer(
+            ssm[key] = np.frombuffer(
                 f.read(), dtype=np.dtype(SYSTEM_MATRIX_DTYPE[key])
             )
-    return sparse_sys_mat
+    return ssm
 
 
-def to_numpy_csr_matrix(
-    sparse_system_matrix, number_beams, number_volume_cells
-):
+def to_numpy_csr_matrix(sparse_system_matrix):
     """
     Returns a numpy CSR-matrix for efficient application of the system-matrix
     in iterative tomography.
@@ -227,19 +251,14 @@ def to_numpy_csr_matrix(
     sparse_system_matrix : dict
         Represents the system-matrix with explicit arrays of indices for
         beams and volume-cells in a dict.
-    number_beams : int
-        The total number of beams observed by photo-sensors.
-    number_volume_cells : int
-        The total number of all volume-cells in the 3D volume infront of
-        the instrument's aperture.
     """
-    sm = sparse_system_matrix
+    ssm = sparse_system_matrix
     s = scipy.sparse.coo_matrix(
         (
-            sm["lixel_voxel_overlaps"],
-            (sm["voxel_indicies"], sm["lixel_indicies"]),
+            ssm["lixel_voxel_overlaps"],
+            (ssm["voxel_indicies"], ssm["lixel_indicies"]),
         ),
-        shape=(number_volume_cells, number_beams),
+        shape=(ssm["number_voxel"], ssm["number_lixel"]),
         dtype=np.float32,
     )
 

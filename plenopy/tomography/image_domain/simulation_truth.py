@@ -6,7 +6,6 @@ from ... import thin_lens
 
 def init(event, binning):
     r = {}
-    r['binning'] = binning
 
     s2i = event.light_field_geometry.sensor_plane2imaging_system
     crh = event.simulation_truth.event.corsika_run_header
