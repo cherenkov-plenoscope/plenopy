@@ -56,14 +56,14 @@ def make_jobs(
         job["sen_y_bin_edges"] = sen_y_bin_edges
         job["sen_z_bin_edges"] = sen_z_bin_edges
         job["focal_length"] = focal_length
-        job["cx_mean"] = light_field_geometry.cx_mean[idx_start: idx_stop]
-        job["cx_std"] = light_field_geometry.cx_std[idx_start: idx_stop]
-        job["cy_mean"] = light_field_geometry.cy_mean[idx_start: idx_stop]
-        job["cy_std"] = light_field_geometry.cy_std[idx_start: idx_stop]
-        job["x_mean"] = light_field_geometry.x_mean[idx_start: idx_stop]
-        job["x_std"] = light_field_geometry.x_std[idx_start: idx_stop]
-        job["y_mean"] = light_field_geometry.y_mean[idx_start: idx_stop]
-        job["y_std"] = light_field_geometry.y_std[idx_start: idx_stop]
+        job["cx_mean"] = light_field_geometry.cx_mean[idx_start:idx_stop]
+        job["cx_std"] = light_field_geometry.cx_std[idx_start:idx_stop]
+        job["cy_mean"] = light_field_geometry.cy_mean[idx_start:idx_stop]
+        job["cy_std"] = light_field_geometry.cy_std[idx_start:idx_stop]
+        job["x_mean"] = light_field_geometry.x_mean[idx_start:idx_stop]
+        job["x_std"] = light_field_geometry.x_std[idx_start:idx_stop]
+        job["y_mean"] = light_field_geometry.y_mean[idx_start:idx_stop]
+        job["y_std"] = light_field_geometry.y_std[idx_start:idx_stop]
         job["lixel_idx"] = np.arange(idx_start, idx_stop)
         jobs.append(job)
         idx_start = idx_stop
@@ -83,8 +83,7 @@ def run_job(job):
     results = []
     num_lixel = job["cx_mean"].shape[0]
     for lix in range(num_lixel):
-        (image_ray_supports,
-            image_ray_directions) = _make_image_ray_bundle(
+        (image_ray_supports, image_ray_directions) = _make_image_ray_bundle(
             prng=prng,
             cx_mean=job["cx_mean"][lix],
             cx_std=job["cx_std"][lix],
@@ -95,22 +94,27 @@ def run_job(job):
             y_mean=job["y_mean"][lix],
             y_std=job["y_std"][lix],
             focal_length=job["focal_length"],
-            num_samples=job["num_samples_per_lixel"])
+            num_samples=job["num_samples_per_lixel"],
+        )
 
-        (lixel_voxel_overlaps,
-            voxel_indicies) = rvo.estimate_overlap_of_ray_bundle_with_voxels(
+        (
+            lixel_voxel_overlaps,
+            voxel_indicies,
+        ) = rvo.estimate_overlap_of_ray_bundle_with_voxels(
             supports=image_ray_supports,
             directions=image_ray_directions,
             x_bin_edges=job["sen_x_bin_edges"],
             y_bin_edges=job["sen_y_bin_edges"],
             z_bin_edges=job["sen_z_bin_edges"],
-            order="C")
+            order="C",
+        )
 
         result = {}
         result["lixel_idx"] = np.uint32(job["lixel_idx"][lix])
         result["voxel_indicies"] = voxel_indicies.astype(np.uint32)
         result["lixel_voxel_overlaps"] = lixel_voxel_overlaps.astype(
-            np.float32)
+            np.float32
+        )
         results.append(result)
     return results
 
@@ -134,13 +138,16 @@ def _make_image_ray_bundle(
     """
     cx = prng.normal(loc=cx_mean, scale=cx_std, size=num_samples)
     cy = prng.normal(loc=cy_mean, scale=cy_std, size=num_samples)
-    x = prng.normal(loc=x_mean, scale=x_std/2, size=num_samples)
-    y = prng.normal(loc=y_mean, scale=y_std/2, size=num_samples)
+    x = prng.normal(loc=x_mean, scale=x_std / 2, size=num_samples)
+    y = prng.normal(loc=y_mean, scale=y_std / 2, size=num_samples)
 
-    sensor_plane_intersections = np.array([
-        -focal_length*np.tan(cx),
-        -focal_length*np.tan(cy),
-        focal_length*np.ones(num_samples)]).T
+    sensor_plane_intersections = np.array(
+        [
+            -focal_length * np.tan(cx),
+            -focal_length * np.tan(cy),
+            focal_length * np.ones(num_samples),
+        ]
+    ).T
     image_ray_supports = np.array([x, y, np.zeros(num_samples)]).T
 
     image_ray_directions = sensor_plane_intersections - image_ray_supports
@@ -155,7 +162,8 @@ def _make_image_ray_bundle(
 SYSTEM_MATRIX_DTYPE = {
     "lixel_voxel_overlaps": "float32",
     "lixel_indicies": "uint32",
-    "voxel_indicies": "uint32"}
+    "voxel_indicies": "uint32",
+}
 
 
 def reduce_results(results):
@@ -166,17 +174,17 @@ def reduce_results(results):
     results : list of results.
         Each result in the list is a result of a 'job'.
     """
-    lixel_voxel_overlaps = array.array('f')
-    voxel_indicies = array.array('L')
-    lixel_indicies = array.array('L')
+    lixel_voxel_overlaps = array.array("f")
+    voxel_indicies = array.array("L")
+    lixel_indicies = array.array("L")
 
     for result in results:
         for lix in range(len(result)):
             lixel_result = result[lix]
             num_overlaps = lixel_result["voxel_indicies"].shape[0]
-            __lixel_indicies = lixel_result["lixel_idx"]*np.ones(
-                num_overlaps,
-                dtype=np.uint32)
+            __lixel_indicies = lixel_result["lixel_idx"] * np.ones(
+                num_overlaps, dtype=np.uint32
+            )
             lixel_voxel_overlaps.extend(lixel_result["lixel_voxel_overlaps"])
             voxel_indicies.extend(lixel_result["voxel_indicies"])
             lixel_indicies.extend(__lixel_indicies)
@@ -185,8 +193,8 @@ def reduce_results(results):
     sys_mat["lixel_indicies"] = np.array(lixel_indicies, dtype=np.uint32)
     sys_mat["voxel_indicies"] = np.array(voxel_indicies, dtype=np.uint32)
     sys_mat["lixel_voxel_overlaps"] = np.array(
-            lixel_voxel_overlaps,
-            dtype=np.float32)
+        lixel_voxel_overlaps, dtype=np.float32
+    )
     return sys_mat
 
 
@@ -204,12 +212,14 @@ def read(path):
         key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
         with open(os.path.join(path, key + "." + key_dtype_str), "rb") as f:
             sparse_sys_mat[key] = np.frombuffer(
-                f.read(),
-                dtype=np.dtype(SYSTEM_MATRIX_DTYPE[key]))
+                f.read(), dtype=np.dtype(SYSTEM_MATRIX_DTYPE[key])
+            )
     return sparse_sys_mat
 
 
-def to_numpy_csr_matrix(sparse_system_matrix, number_beams, number_volume_cells):
+def to_numpy_csr_matrix(
+    sparse_system_matrix, number_beams, number_volume_cells
+):
     """
     Returns a numpy CSR-matrix for efficient application of the system-matrix
     in iterative tomography.
@@ -227,12 +237,10 @@ def to_numpy_csr_matrix(sparse_system_matrix, number_beams, number_volume_cells)
     s = scipy.sparse.coo_matrix(
         (
             sm["lixel_voxel_overlaps"],
-            (
-                sm["voxel_indicies"],
-                sm["lixel_indicies"]
-            )
+            (sm["voxel_indicies"], sm["lixel_indicies"]),
         ),
         shape=(number_volume_cells, number_beams),
-        dtype=np.float32)
+        dtype=np.float32,
+    )
 
     return s.tocsr()

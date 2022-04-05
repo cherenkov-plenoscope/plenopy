@@ -11,8 +11,8 @@ reconstruction but they can not give physical results, 17m is just too small of
 a baseline.
 """
 run_path = pkg_resources.resource_filename(
-    'plenopy',
-    'tests/resources/run.acp')
+    "plenopy", "tests/resources/run.acp"
+)
 
 
 def test_image_domain():
@@ -22,34 +22,33 @@ def test_image_domain():
     trigger_image_geometry = pl.trigger.geometry.init_trigger_image_geometry(
         image_outer_radius_rad=np.deg2rad(1.5),
         pixel_spacing_rad=np.deg2rad(0.15),
-        pixel_radius_rad=2.2*np.deg2rad(0.15),
+        pixel_radius_rad=2.2 * np.deg2rad(0.15),
         max_number_nearest_lixel_in_pixel=7,
     )
 
     trigger_geometry = pl.trigger.geometry.init_trigger_geometry(
         light_field_geometry=run.light_field_geometry,
         trigger_image_geometry=trigger_image_geometry,
-        object_distances=[10e3]
+        object_distances=[10e3],
     )
 
     trigger_response, _ = pl.trigger.estimate.first_stage(
         raw_sensor_response=event.raw_sensor_response,
         light_field_geometry=run.light_field_geometry,
         trigger_geometry=trigger_geometry,
-        integration_time_slices=10
+        integration_time_slices=10,
     )
 
     roi = pl.trigger.region_of_interest.from_trigger_response(
         trigger_response=trigger_response,
         trigger_geometry=trigger_geometry,
-        time_slice_duration=event.raw_sensor_response.time_slice_duration
+        time_slice_duration=event.raw_sensor_response.time_slice_duration,
     )
 
     photons = pl.classify.RawPhotons.from_event(event)
 
     cherenkov_photons = pl.classify.cherenkov_photons_in_roi_in_image(
-        photons=photons,
-        roi=roi
+        photons=photons, roi=roi
     )
 
     binning = pl.tomography.image_domain.init_binning_for_depth_of_field(
@@ -58,8 +57,8 @@ def test_image_domain():
 
     (
         photon_arrival_times,
-        photon_lixel_ids
-    )= event.photon_arrival_times_and_lixel_ids()
+        photon_lixel_ids,
+    ) = event.photon_arrival_times_and_lixel_ids()
 
     ssm_jobs = pl.tomography.system_matrix.make_jobs(
         light_field_geometry=run.light_field_geometry,
@@ -68,7 +67,7 @@ def test_image_domain():
         sen_z_bin_edges=binning["sen_z_bin_edges"],
         num_lixels_in_job=1000,
         num_samples_per_lixel=3,
-        random_seed=0
+        random_seed=0,
     )
     ssm_results = []
     for job in ssm_jobs:
@@ -95,5 +94,5 @@ def test_image_domain():
     for i in range(10):
         rec = pl.tomography.image_domain.one_more_iteration(rec)
 
-    vol = rec['reconstructed_volume_intensity']
+    vol = rec["reconstructed_volume_intensity"]
     assert (vol < 0.0).sum() == 0
