@@ -12,6 +12,7 @@ from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
 from . import binning
 from . import reconstruction
+from ... import thin_lens
 
 
 
@@ -35,7 +36,7 @@ def init_simulation_truth_from_event(
 
     r['emission_positions'] = ep['emission_positions'][ep['valid_acceptence']]
 
-    true_emission_positions_image_domain = xyz2cxcyb(
+    true_emission_positions_image_domain = thin_lens.xyz2cxcyb(
         r['emission_positions'][:, 0],
         r['emission_positions'][:, 1],
         r['emission_positions'][:, 2],
@@ -76,17 +77,19 @@ def save_imgae_slice_stack(
     if simulation_truth is None:
         intensity_volume_2 = None
     else:
-        assert binning_is_equal(
+        assert binning.is_equal(
             simulation_truth['binning'],
             reconstruction['binning'])
-        intensity_volume_2 = reconstructed_volume_intensity_as_cube(
-            simulation_truth['true_volume_intensity'],
-            r['binning'])
+        intensity_volume_2 = binning.volume_intensity_as_cube(
+            volume_intensity=simulation_truth['true_volume_intensity'],
+            binning=r['binning'],
+        )
 
     slices.save_slice_stack(
-        intensity_volume=reconstructed_volume_intensity_as_cube(
-            r['reconstructed_volume_intensity'],
-            r['binning']),
+        intensity_volume=binning.volume_intensity_as_cube(
+            volume_intensity=r['reconstructed_volume_intensity'],
+            binning=r['binning'],
+        ),
         event_info_repr=event_info_repr,
         xy_extent=[
             r['binning']['sen_x_bin_edges'].min(),

@@ -6,7 +6,6 @@ from skimage.measure import LineModelND, ransac
 from .. import system_matrix
 
 from ... import classify
-from ... import image
 from ... import trigger
 from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
@@ -19,8 +18,6 @@ def init(
     binning,
     sparse_system_matrix,
 ):
-    image_rays = image.ImageRays(light_field_geometry)
-
     intensities = np.zeros(light_field_geometry.number_lixel)
     for lixel_id in photon_lixel_ids:
         intensities[lixel_id] += 1
@@ -34,8 +31,6 @@ def init(
     r = {}
     r['binning'] = binning
     r['point_spread_function'] = psf
-    r['image_ray_supports'] = image_rays.support
-    r['image_ray_directions'] = image_rays.direction
     r['image_ray_intensities'] = intensities
     r['photon_lixel_ids'] = photon_lixel_ids
 
@@ -65,17 +60,6 @@ def init(
     r['voxel_cross_psf'] = voxel_cross_psf
     r['image_ray_cross_psf'] = image_ray_cross_psf
     return r
-
-
-def reconstructed_volume_intensity_as_cube(
-    reconstructed_volume_intensity,
-    binning
-):
-    return reconstructed_volume_intensity.reshape((
-            binning['number_sen_x_bins'],
-            binning['number_sen_y_bins'],
-            binning['number_sen_z_bins']),
-        order='C')
 
 
 def iterate(reconstruction):

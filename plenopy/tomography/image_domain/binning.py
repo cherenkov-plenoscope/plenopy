@@ -116,3 +116,11 @@ def linspace_edges_centers(start, stop, num):
     bin_radius = 0.5*width/num
     bin_centers = bin_edges[: -1] + bin_radius
     return bin_edges, bin_centers, width, bin_radius
+
+
+def volume_intensity_as_cube(volume_intensity, binning):
+    return volume_intensity.reshape((
+            binning['number_sen_x_bins'],
+            binning['number_sen_y_bins'],
+            binning['number_sen_z_bins']),
+        order='C')
