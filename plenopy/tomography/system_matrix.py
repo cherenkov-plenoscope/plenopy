@@ -221,13 +221,14 @@ def write(sparse_system_matrix, path):
         with open(os.path.join(path, key + "." + key_dtype_str), "wb") as f:
             f.write(ssm[key].tobytes())
     with open(os.path.join(path, "number.json"), "wb") as f:
-        f.write(json.dumps(
-            {
-                "number_lixel": ssm["number_lixel"],
-                "number_voxel": ssm["number_voxel"],
-            }
+        f.write(
+            json.dumps(
+                {
+                    "number_lixel": ssm["number_lixel"],
+                    "number_voxel": ssm["number_voxel"],
+                }
+            )
         )
-    )
 
 
 def read(path):

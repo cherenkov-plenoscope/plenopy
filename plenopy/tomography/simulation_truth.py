@@ -6,7 +6,7 @@ def histogram_photon_bunches(
     binning,
     limited_aperture_radius=None,
     limited_fov_radius=None,
-    observation_level=5e3
+    observation_level=5e3,
 ):
     """
     parameter
@@ -31,14 +31,11 @@ def histogram_photon_bunches(
     )
 
     hist = np.histogramdd(
-        ep['emission_positions'][ep['valid_acceptence']],
-        bins=(
-            binning.xy_bin_edges,
-            binning.xy_bin_edges,
-            binning.z_bin_edges
-        ),
+        ep["emission_positions"][ep["valid_acceptence"]],
+        bins=(binning.xy_bin_edges, binning.xy_bin_edges, binning.z_bin_edges),
         weights=photon_bunches.probability_to_reach_observation_level[
-            ep['valid_acceptence']]
+            ep["valid_acceptence"]
+        ],
     )
 
     return hist[0]
@@ -63,23 +60,31 @@ def emission_positions_of_photon_bunches(
     emission_positions      An array of emission-positions for each photon-
                             bunch in the cartesian frame of the plenoscope.
     """
-    supports = np.array([
-        photon_bunches.x,
-        photon_bunches.y,
-        observation_level*np.ones(photon_bunches.x.shape[0])]).T
+    supports = np.array(
+        [
+            photon_bunches.x,
+            photon_bunches.y,
+            observation_level * np.ones(photon_bunches.x.shape[0]),
+        ]
+    ).T
 
-    directions = np.array([
-        photon_bunches.cx,
-        photon_bunches.cy,
-        np.sqrt(1.0 - photon_bunches.cx**2 - photon_bunches.cy**2)]).T
+    directions = np.array(
+        [
+            photon_bunches.cx,
+            photon_bunches.cy,
+            np.sqrt(1.0 - photon_bunches.cx ** 2 - photon_bunches.cy ** 2),
+        ]
+    ).T
 
-    a = (photon_bunches.emission_height - supports[:, 2])/directions[:, 2]
+    a = (photon_bunches.emission_height - supports[:, 2]) / directions[:, 2]
 
-    emission_positions = np.array([
-            supports[:, 0] - a*directions[:, 0],
-            supports[:, 1] - a*directions[:, 1],
-            photon_bunches.emission_height
-        ]).T
+    emission_positions = np.array(
+        [
+            supports[:, 0] - a * directions[:, 0],
+            supports[:, 1] - a * directions[:, 1],
+            photon_bunches.emission_height,
+        ]
+    ).T
 
     # transform to plenoscope-frame
     emission_positions[:, 2] = emission_positions[:, 2] - observation_level
@@ -88,16 +93,16 @@ def emission_positions_of_photon_bunches(
     valid_fov = np.ones(supports.shape[0], dtype=np.bool)
 
     if limited_aperture_radius is not None:
-        R_aperture = np.sqrt(supports[:, 0]**2 + supports[:, 1]**2)
+        R_aperture = np.sqrt(supports[:, 0] ** 2 + supports[:, 1] ** 2)
         valid_aperture = R_aperture <= limited_aperture_radius
 
     if limited_fov_radius is not None:
-        R_fov = np.sqrt(directions[:, 0]**2 + directions[:, 1]**2)
+        R_fov = np.sqrt(directions[:, 0] ** 2 + directions[:, 1] ** 2)
         valid_fov = R_fov <= limited_fov_radius
 
-    valid_acceptence = valid_aperture*valid_fov
+    valid_acceptence = valid_aperture * valid_fov
 
     return {
-        'emission_positions': emission_positions,
-        'valid_acceptence': valid_acceptence
+        "emission_positions": emission_positions,
+        "valid_acceptence": valid_acceptence,
     }

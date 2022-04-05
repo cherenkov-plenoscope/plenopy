@@ -25,7 +25,7 @@ class Rays(object):
         """
         number_lixel = x.shape[0]
         self.support = np.array([x, y, np.zeros(number_lixel)]).T
-        dir_z = np.sqrt(1.0 - cx**2.0 - cy**2.0)
+        dir_z = np.sqrt(1.0 - cx ** 2.0 - cy ** 2.0)
         # (cos_x, cos_y, sqrt(1 - cos_x^2 - cos_y^2))^T
         self.direction = np.array([cx, cy, dir_z]).T
 
@@ -35,7 +35,8 @@ class Rays(object):
             x=light_field_geometry.x_mean,
             y=light_field_geometry.y_mean,
             cx=light_field_geometry.cx_mean,
-            cy=light_field_geometry.cy_mean)
+            cy=light_field_geometry.cy_mean,
+        )
 
     def xy_intersections_in_object_distance(self, object_distance):
         """
@@ -60,8 +61,10 @@ class Rays(object):
         """
         object_distance = np.atleast_3d(object_distance)
         scale_factors = object_distance / self.direction[:, 2]
-        pos3D = self.support[:, None, :] - (
-            scale_factors * self.direction.T[:, None, :]).T
+        pos3D = (
+            self.support[:, None, :]
+            - (scale_factors * self.direction.T[:, None, :]).T
+        )
         if object_distance.shape[1] == 1:
             return pos3D[:, 0, 0:2]
         else:
@@ -69,7 +72,7 @@ class Rays(object):
 
     def __repr__(self):
         out = self.__class__.__name__
-        out += '('
-        out += str(self.support.shape[0]) + ' lixels'
-        out += ')'
+        out += "("
+        out += str(self.support.shape[0]) + " lixels"
+        out += ")"
         return out
