@@ -2,66 +2,12 @@ import numpy as np
 import ray_voxel_overlap
 import json
 import os
-from skimage.measure import LineModelND, ransac
 from .. import system_matrix
-
-from ... import classify
-from ... import image
-from ... import trigger
-from ..simulation_truth import emission_positions_of_photon_bunches
-from ...plot import slices
+from ... import plot
 from . import binning
 from . import reconstruction
+from . import simulation_truth
 from ... import thin_lens
-
-
-
-def init_simulation_truth_from_event(
-    event,
-    binning
-):
-    r = {}
-    r['binning'] = binning
-
-    s2i = event.light_field_geometry.sensor_plane2imaging_system
-    crh = event.simulation_truth.event.corsika_run_header
-    aspb = event.simulation_truth.air_shower_photon_bunches
-
-    ep = emission_positions_of_photon_bunches(
-        aspb,
-        limited_aperture_radius=s2i.
-        expected_imaging_system_max_aperture_radius,
-        limited_fov_radius=0.5*s2i.max_FoV_diameter,
-        observation_level=crh.observation_level(),)
-
-    r['emission_positions'] = ep['emission_positions'][ep['valid_acceptence']]
-
-    true_emission_positions_image_domain = thin_lens.xyz2cxcyb(
-        r['emission_positions'][:, 0],
-        r['emission_positions'][:, 1],
-        r['emission_positions'][:, 2],
-        binning['focal_length']).T
-    tepid = true_emission_positions_image_domain
-
-    # directions to positions on image screen
-    tepid[:, 0] = -binning['focal_length']*np.tan(tepid[:, 0])
-    tepid[:, 1] = -binning['focal_length']*np.tan(tepid[:, 1])
-
-    r['emission_positions_image_domain'] = tepid
-
-    hist = np.histogramdd(
-        r['emission_positions_image_domain'],
-        bins=(
-            binning['sen_x_bin_edges'],
-            binning['sen_y_bin_edges'],
-            binning['sen_z_bin_edges']
-        ),
-        weights=aspb.probability_to_reach_observation_level[
-            ep['valid_acceptence']]
-    )
-
-    r['true_volume_intensity'] = hist[0].flatten()
-    return r
 
 
 def save_imgae_slice_stack(
@@ -85,7 +31,7 @@ def save_imgae_slice_stack(
             binning=r['binning'],
         )
 
-    slices.save_slice_stack(
+    plot.slices.save_slice_stack(
         intensity_volume=binning.volume_intensity_as_cube(
             volume_intensity=r['reconstructed_volume_intensity'],
             binning=r['binning'],
@@ -145,51 +91,6 @@ def xyzi_2_xyz(
             xyz.append(np.array([p[0], p[1], p[2]]))
     xyz = np.array(xyz)
     return xyz
-
-
-def fit_trajectory_to_point_cloud(
-    xyz,
-    residual_threshold=50
-):
-    model_robust, inliers = ransac(
-        xyz,
-        LineModelND,
-        min_samples=200,
-        residual_threshold=residual_threshold,
-        max_trials=50)
-
-    if model_robust.params[1][2] < 0:
-        direction = model_robust.params[1]
-    else:
-        direction = -model_robust.params[1]
-
-    support = np.zeros(3)
-    ri = model_robust.params[0][2]/direction[2]
-    support[0] = model_robust.params[0][0] - ri*direction[0]
-    support[1] = model_robust.params[0][1] - ri*direction[1]
-    return support, direction
-
-
-def init_reconstruction_from_event(event, trigger_geometry, binning):
-
-    trigger_responses = pl.trigger.io.read_trigger_response_from_path(
-        path=os.path.join(event._path, 'refocus_sum_trigger.json')
-    )
-    roi =pl.trigger.region_of_interest.from_trigger_response(
-        trigger_response=trigger_responses,
-        trigger_geometry=trigger_geometry,
-        time_slice_duration=event.raw_sensor_response.time_slice_duration,
-    )
-    (
-        air_shower_photon_ids, lixel_ids_of_photons
-    ) = classify.classify_air_shower_photons_from_trigger_response(
-        event, trigger_region_of_interest=roi)
-
-    return init_reconstruction(
-        event=event,
-        binning=binning,
-        air_shower_photon_ids=air_shower_photon_ids,
-        lixel_ids_of_photons=lixel_ids_of_photons)
 
 
 def overlap_2_xyzI(overlap, x_bin_edges, y_bin_edges, z_bin_edges):
