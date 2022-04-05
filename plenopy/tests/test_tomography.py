@@ -51,7 +51,7 @@ def test_image_domain():
         photons=photons, roi=roi
     )
 
-    binning = pl.tomography.image_domain.init_binning_for_depth_of_field(
+    binning = pl.tomography.image_domain.binning.init(
         focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length
     )
 

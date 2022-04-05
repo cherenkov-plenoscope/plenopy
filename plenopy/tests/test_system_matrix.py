@@ -34,7 +34,7 @@ def test_run_job():
     focal_length = light_field_geometry.expected_focal_length_of_imaging_system
     fov_radius = np.deg2rad(2.5)
 
-    binning = pl.tomography.image_domain.init_binning_for_depth_of_field(
+    binning = pl.tomography.image_domain.binning.init(
         focal_length=focal_length,
         cx_min=-fov_radius,
         cx_max=fov_radius,
