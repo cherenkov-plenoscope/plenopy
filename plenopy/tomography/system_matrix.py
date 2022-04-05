@@ -70,14 +70,21 @@ def make_jobs(
     return jobs
 
 
-def __run_job(job):
+def run_job(job):
+    """
+    Computes and returns the result of a single job for the
+    estimate of a system-matrix in tomography.
+
+    job : dict
+        The confi. for the computation of a part of the system-matrix.
+    """
     prng = np.random.Generator(np.random.MT19937(seed=job["random_seed"]))
 
     results = []
     num_lixel = job["cx_mean"].shape[0]
     for lix in range(num_lixel):
         (image_ray_supports,
-            image_ray_directions) = __make_image_ray_bundle(
+            image_ray_directions) = _make_image_ray_bundle(
             prng=prng,
             cx_mean=job["cx_mean"][lix],
             cx_std=job["cx_std"][lix],
@@ -108,7 +115,7 @@ def __run_job(job):
     return results
 
 
-def __make_image_ray_bundle(
+def _make_image_ray_bundle(
     prng,
     cx_mean,
     cx_std,
@@ -121,6 +128,10 @@ def __make_image_ray_bundle(
     focal_length,
     num_samples,
 ):
+    """
+    Returns the supports and directions of multiple rays which all approximate
+    the geometry of a beam observed by a single photo-sensor.
+    """
     cx = prng.normal(loc=cx_mean, scale=cx_std, size=num_samples)
     cy = prng.normal(loc=cy_mean, scale=cy_std, size=num_samples)
     x = prng.normal(loc=x_mean, scale=x_std/2, size=num_samples)
@@ -141,13 +152,20 @@ def __make_image_ray_bundle(
     return image_ray_supports, image_ray_directions
 
 
-__KEY_DTYPE = {
+SYSTEM_MATRIX_DTYPE = {
     "lixel_voxel_overlaps": "float32",
     "lixel_indicies": "uint32",
     "voxel_indicies": "uint32"}
 
 
-def __reduce_results(results):
+def reduce_results(results):
+    """
+    Returns a dict representing the sparse system-mstrix to be used in
+    tomography.
+
+    results : list of results.
+        Each result in the list is a result of a 'job'.
+    """
     lixel_voxel_overlaps = array.array('f')
     voxel_indicies = array.array('L')
     lixel_indicies = array.array('L')
@@ -172,20 +190,22 @@ def __reduce_results(results):
     return sys_mat
 
 
-def write_sparse(sparse_system_matrix, path):
+def write(sparse_system_matrix, path):
     os.makedirs(path)
-    for key in __KEY_DTYPE:
-        with open(os.path.join(path, key + "." + __KEY_DTYPE[key]), "wb") as f:
+    for key in SYSTEM_MATRIX_DTYPE:
+        key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
+        with open(os.path.join(path, key + "." + key_dtype_str), "wb") as f:
             f.write(sparse_system_matrix[key].tobytes())
 
 
-def read_sparse(path):
+def read(path):
     sparse_sys_mat = {}
-    for key in __KEY_DTYPE:
-        with open(os.path.join(path, key + "." + __KEY_DTYPE[key]), "rb") as f:
+    for key in SYSTEM_MATRIX_DTYPE:
+        key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
+        with open(os.path.join(path, key + "." + key_dtype_str), "rb") as f:
             sparse_sys_mat[key] = np.frombuffer(
                 f.read(),
-                dtype=np.dtype(__KEY_DTYPE[key]))
+                dtype=np.dtype(SYSTEM_MATRIX_DTYPE[key]))
     return sparse_sys_mat
 
 

@@ -72,10 +72,10 @@ def test_image_domain():
     )
     ssm_results = []
     for job in ssm_jobs:
-        result = pl.tomography.system_matrix.__run_job(job)
+        result = pl.tomography.system_matrix.run_job(job)
         ssm_results.append(result)
 
-    sparse_system_matrix = pl.tomography.system_matrix.__reduce_results(
+    sparse_system_matrix = pl.tomography.system_matrix.reduce_results(
         results=ssm_results
     )
 

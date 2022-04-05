@@ -53,7 +53,7 @@ def test_run_job():
         num_samples_per_lixel=3,
         random_seed=0)
 
-    result = pl.tomography.system_matrix.__run_job(jobs[0])
+    result = pl.tomography.system_matrix.run_job(jobs[0])
     assert len(result) == NUM_LIXELS_IN_JOB
 
     expected_sen_z_range = binning["sen_z_max"] - binning["sen_z_min"]
@@ -67,10 +67,10 @@ def test_run_job():
     # In production, this for-loop can be processed in parallel
     results = []
     for job in jobs:
-        result = pl.tomography.system_matrix.__run_job(job)
+        result = pl.tomography.system_matrix.run_job(job)
         results.append(result)
 
-    sparse_sys_mat = pl.tomography.system_matrix.__reduce_results(
+    sparse_sys_mat = pl.tomography.system_matrix.reduce_results(
         results=results)
 
     mat = pl.tomography.system_matrix.__make_matrix(
@@ -83,8 +83,8 @@ def test_run_job():
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy") as tmp:
         path = os.path.join(tmp, "sysmat")
-        pl.tomography.system_matrix.write_sparse(sparse_sys_mat, path)
-        sparse_sys_mat_back = pl.tomography.system_matrix.read_sparse(path)
+        pl.tomography.system_matrix.write(sparse_sys_mat, path)
+        sparse_sys_mat_back = pl.tomography.system_matrix.read(path)
 
     for key in sparse_sys_mat:
         assert key in sparse_sys_mat_back
