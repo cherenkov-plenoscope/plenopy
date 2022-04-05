@@ -84,7 +84,7 @@ def test_image_domain():
         number_volume_cells=binning["number_bins"],
     )
 
-    rec = pl.tomography.image_domain.init_reconstruction(
+    rec = pl.tomography.image_domain.reconstruction.init(
         light_field_geometry=event.light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         binning=binning,
@@ -92,7 +92,7 @@ def test_image_domain():
     )
 
     for i in range(10):
-        rec = pl.tomography.image_domain.one_more_iteration(rec)
+        rec = pl.tomography.image_domain.reconstruction.iterate(rec)
 
     vol = rec["reconstructed_volume_intensity"]
     assert (vol < 0.0).sum() == 0
