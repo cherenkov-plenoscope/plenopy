@@ -79,10 +79,10 @@ def test_image_domain():
         results=ssm_results
     )
 
-    mat = pl.tomography.system_matrix.__make_matrix(
+    mat = pl.tomography.system_matrix.to_numpy_csr_matrix(
         sparse_system_matrix=sparse_system_matrix,
-        light_field_geometry=run.light_field_geometry,
-        binning=binning
+        number_beams=run.light_field_geometry.number_lixel,
+        number_volume_cells=binning["number_bins"],
     )
 
     rec = pl.tomography.image_domain.init_reconstruction(

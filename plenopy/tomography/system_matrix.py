@@ -209,7 +209,20 @@ def read(path):
     return sparse_sys_mat
 
 
-def __make_matrix(sparse_system_matrix, light_field_geometry, binning):
+def to_numpy_csr_matrix(sparse_system_matrix, number_beams, number_volume_cells):
+    """
+    Returns a numpy CSR-matrix for efficient application of the system-matrix
+    in iterative tomography.
+
+    sparse_system_matrix : dict
+        Represents the system-matrix with explicit arrays of indices for
+        beams and volume-cells in a dict.
+    number_beams : int
+        The total number of beams observed by photo-sensors.
+    number_volume_cells : int
+        The total number of all volume-cells in the 3D volume infront of
+        the instrument's aperture.
+    """
     sm = sparse_system_matrix
     s = scipy.sparse.coo_matrix(
         (
@@ -219,7 +232,7 @@ def __make_matrix(sparse_system_matrix, light_field_geometry, binning):
                 sm["lixel_indicies"]
             )
         ),
-        shape=(binning["number_bins"], light_field_geometry.number_lixel),
+        shape=(number_volume_cells, number_beams),
         dtype=np.float32)
 
     return s.tocsr()

@@ -73,10 +73,10 @@ def test_run_job():
     sparse_sys_mat = pl.tomography.system_matrix.reduce_results(
         results=results)
 
-    mat = pl.tomography.system_matrix.__make_matrix(
+    mat = pl.tomography.system_matrix.to_numpy_csr_matrix(
         sparse_system_matrix=sparse_sys_mat,
-        light_field_geometry=light_field_geometry,
-        binning=binning)
+        number_beams=light_field_geometry.number_lixel,
+        number_volume_cells=binning["number_bins"])
 
     assert mat.shape[0] == binning["number_bins"]
     assert mat.shape[1] == light_field_geometry.number_lixel

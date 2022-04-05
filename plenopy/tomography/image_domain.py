@@ -152,10 +152,11 @@ def init_reconstruction(
     for lixel_id in photon_lixel_ids:
         intensities[lixel_id] += 1
 
-    psf = system_matrix.__make_matrix(
+    psf = system_matrix.to_numpy_csr_matrix(
         sparse_system_matrix=sparse_system_matrix,
-        light_field_geometry=light_field_geometry,
-        binning=binning)
+        number_beams=light_field_geometry.number_lixel,
+        number_volume_cells=binning["number_bins"],
+    )
 
     r = {}
     r['binning'] = binning
