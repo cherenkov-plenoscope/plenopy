@@ -1,4 +1,4 @@
 from .Rays import Rays
-from . import simulation_truth
-from . import image_domain
-from . import system_matrix
+from . import Simulation_Truth
+from . import Image_Domain
+from . import System_Matrix

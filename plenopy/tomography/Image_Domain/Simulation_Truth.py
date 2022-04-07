@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .. import simulation_truth
+from .. import Simulation_Truth
 from ... import thin_lens
 
 
@@ -11,7 +11,7 @@ def init(event, binning):
     crh = event.simulation_truth.event.corsika_run_header
     aspb = event.simulation_truth.air_shower_photon_bunches
 
-    ep = simulation_truth.emission_positions_of_photon_bunches(
+    ep = Simulation_Truth.emission_positions_of_photon_bunches(
         aspb,
         limited_aperture_radius=s2i.expected_imaging_system_max_aperture_radius,
         limited_fov_radius=0.5 * s2i.max_FoV_diameter,

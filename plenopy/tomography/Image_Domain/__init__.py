@@ -2,7 +2,7 @@ import numpy as np
 import ray_voxel_overlap
 import json
 import os
-from .. import system_matrix
+from .. import System_Matrix
 from ... import plot
 from ... import thin_lens
 from . import Binning

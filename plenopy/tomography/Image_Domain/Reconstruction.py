@@ -3,11 +3,11 @@ import ray_voxel_overlap
 import json
 import os
 from skimage.measure import LineModelND, ransac
-from .. import system_matrix
+from .. import System_Matrix
 
 from ... import classify
 from ... import trigger
-from ..simulation_truth import emission_positions_of_photon_bunches
+from .. Simulation_Truth import emission_positions_of_photon_bunches
 from ...plot import slices
 
 

@@ -1,9 +1,9 @@
 import numpy as np
-from .. import system_matrix
+from .. import System_Matrix
 
 
 def init(sparse_system_matrix):
-    sysmatcsr = system_matrix.to_numpy_csr_matrix(sparse_system_matrix)
+    sysmatcsr = System_Matrix.to_numpy_csr_matrix(sparse_system_matrix)
     psf = {}
     psf["csr"] = sysmatcsr
     # Total length of ray
