@@ -51,7 +51,7 @@ def test_image_domain():
         photons=photons, roi=roi
     )
 
-    binning = pl.tomography.image_domain.binning.init(
+    binning = pl.tomography.image_domain.Binning.init(
         focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length
     )
 
@@ -78,18 +78,18 @@ def test_image_domain():
         results=ssm_results
     )
 
-    psf = pl.tomography.image_domain.point_spread_function.init(
+    psf = pl.tomography.image_domain.Point_Spread_Function.init(
         sparse_system_matrix=sparse_system_matrix,
     )
 
-    rec = pl.tomography.image_domain.reconstruction.init(
+    rec = pl.tomography.image_domain.Reconstruction.init(
         light_field_geometry=event.light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         binning=binning,
     )
 
     for i in range(10):
-        rec = pl.tomography.image_domain.reconstruction.iterate(
+        rec = pl.tomography.image_domain.Reconstruction.iterate(
             reconstruction=rec,
             point_spread_function=psf,
         )

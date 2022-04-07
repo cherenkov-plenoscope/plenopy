@@ -220,7 +220,7 @@ def write(sparse_system_matrix, path):
         key_dtype_str = SYSTEM_MATRIX_DTYPE[key]
         with open(os.path.join(path, key + "." + key_dtype_str), "wb") as f:
             f.write(ssm[key].tobytes())
-    with open(os.path.join(path, "number.json"), "wb") as f:
+    with open(os.path.join(path, "number.json"), "wt") as f:
         f.write(
             json.dumps(
                 {
@@ -233,7 +233,7 @@ def write(sparse_system_matrix, path):
 
 def read(path):
     ssm = {}
-    with open(os.path.join(path, "number.json"), "rb") as f:
+    with open(os.path.join(path, "number.json"), "rt") as f:
         ssm = json.loads(f.read())
     for key in SYSTEM_MATRIX_DTYPE:
         key_dtype_str = SYSTEM_MATRIX_DTYPE[key]

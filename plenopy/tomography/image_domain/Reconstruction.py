@@ -9,7 +9,6 @@ from ... import classify
 from ... import trigger
 from ..simulation_truth import emission_positions_of_photon_bunches
 from ...plot import slices
-from . import binning
 
 
 def init(

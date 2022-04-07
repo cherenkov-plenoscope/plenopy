@@ -14,9 +14,9 @@ light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 def test_num_lixel_jobs():
     jobs = pl.tomography.system_matrix.make_jobs(
         light_field_geometry=light_field_geometry,
-        sen_x_bin_edges=None,
-        sen_y_bin_edges=None,
-        sen_z_bin_edges=None,
+        sen_x_bin_edges=[-1, 0, 1],
+        sen_y_bin_edges=[-1, 0, 1],
+        sen_z_bin_edges=[-1, 0, 1],
         num_lixels_in_job=100,
         random_seed=0,
     )
@@ -34,7 +34,7 @@ def test_run_job():
     focal_length = light_field_geometry.expected_focal_length_of_imaging_system
     fov_radius = np.deg2rad(2.5)
 
-    binning = pl.tomography.image_domain.binning.init(
+    binning = pl.tomography.image_domain.Binning.init(
         focal_length=focal_length,
         cx_min=-fov_radius,
         cx_max=fov_radius,
@@ -81,8 +81,6 @@ def test_run_job():
 
     mat = pl.tomography.system_matrix.to_numpy_csr_matrix(
         sparse_system_matrix=sparse_sys_mat,
-        number_beams=light_field_geometry.number_lixel,
-        number_volume_cells=binning["number_bins"],
     )
 
     assert mat.shape[0] == binning["number_bins"]

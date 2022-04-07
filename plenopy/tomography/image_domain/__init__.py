@@ -5,10 +5,10 @@ import os
 from .. import system_matrix
 from ... import plot
 from ... import thin_lens
-from . import binning
-from . import point_spread_function
-from . import reconstruction
-from . import simulation_truth
+from . import Binning
+from . import Point_Spread_Function
+from . import Reconstruction
+from . import Simulation_Truth
 
 
 def save_imgae_slice_stack(
@@ -25,13 +25,13 @@ def save_imgae_slice_stack(
     if simulation_truth is None:
         intensity_volume_2 = None
     else:
-        intensity_volume_2 = binning.volume_intensity_as_cube(
+        intensity_volume_2 = Binning.volume_intensity_as_cube(
             volume_intensity=simulation_truth["true_volume_intensity"],
             binning=binning,
         )
 
     plot.slices.save_slice_stack(
-        intensity_volume=binning.volume_intensity_as_cube(
+        intensity_volume=Binning.volume_intensity_as_cube(
             volume_intensity=r["reconstructed_volume_intensity"],
             binning=binning,
         ),
@@ -42,7 +42,7 @@ def save_imgae_slice_stack(
             binning["sen_y_bin_edges"].min(),
             binning["sen_y_bin_edges"].max(),
         ],
-        z_bin_centers=r["binning"]["sen_z_bin_centers"],
+        z_bin_centers=binning["sen_z_bin_centers"],
         output_path=out_dir,
         image_prefix="slice_",
         intensity_volume_2=intensity_volume_2,
