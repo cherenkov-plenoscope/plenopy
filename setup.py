@@ -34,7 +34,7 @@ setuptools.setup(
         'plenopy.event',
         'plenopy.image',
         'plenopy.light_field_geometry',
-        'plenopy.tomography',
+        'plenopy.Tomography',
         'plenopy.photon_stream',
         'plenopy.plot',
         'plenopy.simulation_truth',
