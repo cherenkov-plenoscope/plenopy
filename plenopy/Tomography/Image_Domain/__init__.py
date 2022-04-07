@@ -4,7 +4,7 @@ import json
 import os
 from .. import System_Matrix
 from ... import plot
-from ... import thin_lens
+from ... import Thin_Lens
 from . import Binning
 from . import Point_Spread_Function
 from . import Reconstruction

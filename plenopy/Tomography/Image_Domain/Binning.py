@@ -1,7 +1,7 @@
 import numpy as np
 import json
-from ...thin_lens import object_distance_2_image_distance as g2b
-from ...thin_lens import image_distance_2_object_distance as b2g
+from ...Thin_Lens import object_distance_2_image_distance as g2b
+from ...Thin_Lens import image_distance_2_object_distance as b2g
 
 
 def init(
