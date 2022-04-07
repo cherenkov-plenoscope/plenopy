@@ -12,7 +12,7 @@ light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
 
 def test_num_lixel_jobs():
-    jobs = pl.tomography.System_Matrix.make_jobs(
+    jobs = pl.Tomography.System_Matrix.make_jobs(
         light_field_geometry=light_field_geometry,
         sen_x_bin_edges=[-1, 0, 1],
         sen_y_bin_edges=[-1, 0, 1],
@@ -34,7 +34,7 @@ def test_run_job():
     focal_length = light_field_geometry.expected_focal_length_of_imaging_system
     fov_radius = np.deg2rad(2.5)
 
-    binning = pl.tomography.Image_Domain.Binning.init(
+    binning = pl.Tomography.Image_Domain.Binning.init(
         focal_length=focal_length,
         cx_min=-fov_radius,
         cx_max=fov_radius,
@@ -47,7 +47,7 @@ def test_run_job():
         number_obj_bins=16,
     )
 
-    jobs = pl.tomography.System_Matrix.make_jobs(
+    jobs = pl.Tomography.System_Matrix.make_jobs(
         light_field_geometry=light_field_geometry,
         sen_x_bin_edges=binning["sen_x_bin_edges"],
         sen_y_bin_edges=binning["sen_y_bin_edges"],
@@ -57,7 +57,7 @@ def test_run_job():
         random_seed=0,
     )
 
-    result = pl.tomography.System_Matrix.run_job(jobs[0])
+    result = pl.Tomography.System_Matrix.run_job(jobs[0])
     assert len(result) == NUM_LIXELS_IN_JOB
 
     expected_sen_z_range = binning["sen_z_max"] - binning["sen_z_min"]
@@ -72,14 +72,14 @@ def test_run_job():
     # In production, this for-loop can be processed in parallel
     results = []
     for job in jobs:
-        result = pl.tomography.System_Matrix.run_job(job)
+        result = pl.Tomography.System_Matrix.run_job(job)
         results.append(result)
 
-    sparse_sys_mat = pl.tomography.System_Matrix.reduce_results(
+    sparse_sys_mat = pl.Tomography.System_Matrix.reduce_results(
         results=results
     )
 
-    mat = pl.tomography.System_Matrix.to_numpy_csr_matrix(
+    mat = pl.Tomography.System_Matrix.to_numpy_csr_matrix(
         sparse_system_matrix=sparse_sys_mat,
     )
 
@@ -88,8 +88,8 @@ def test_run_job():
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy") as tmp:
         path = os.path.join(tmp, "sysmat")
-        pl.tomography.System_Matrix.write(sparse_sys_mat, path)
-        sparse_sys_mat_back = pl.tomography.System_Matrix.read(path)
+        pl.Tomography.System_Matrix.write(sparse_sys_mat, path)
+        sparse_sys_mat_back = pl.Tomography.System_Matrix.read(path)
 
     for key in sparse_sys_mat:
         assert key in sparse_sys_mat_back

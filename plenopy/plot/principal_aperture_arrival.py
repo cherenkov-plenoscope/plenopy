@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.art3d as art3d
 import os
 import tempfile
-from ..tomography import Rays
+from .. Tomography import Rays
 
 SPEED_OF_LIGHT = 299792458
 

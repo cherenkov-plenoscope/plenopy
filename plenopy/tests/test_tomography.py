@@ -51,7 +51,7 @@ def test_image_domain():
         photons=photons, roi=roi
     )
 
-    binning = pl.tomography.Image_Domain.Binning.init(
+    binning = pl.Tomography.Image_Domain.Binning.init(
         focal_length=run.light_field_geometry.sensor_plane2imaging_system.expected_imaging_system_focal_length
     )
 
@@ -60,7 +60,7 @@ def test_image_domain():
         photon_lixel_ids,
     ) = event.photon_arrival_times_and_lixel_ids()
 
-    ssm_jobs = pl.tomography.System_Matrix.make_jobs(
+    ssm_jobs = pl.Tomography.System_Matrix.make_jobs(
         light_field_geometry=run.light_field_geometry,
         sen_x_bin_edges=binning["sen_x_bin_edges"],
         sen_y_bin_edges=binning["sen_y_bin_edges"],
@@ -71,25 +71,25 @@ def test_image_domain():
     )
     ssm_results = []
     for job in ssm_jobs:
-        result = pl.tomography.System_Matrix.run_job(job)
+        result = pl.Tomography.System_Matrix.run_job(job)
         ssm_results.append(result)
 
-    sparse_system_matrix = pl.tomography.System_Matrix.reduce_results(
+    sparse_system_matrix = pl.Tomography.System_Matrix.reduce_results(
         results=ssm_results
     )
 
-    psf = pl.tomography.Image_Domain.Point_Spread_Function.init(
+    psf = pl.Tomography.Image_Domain.Point_Spread_Function.init(
         sparse_system_matrix=sparse_system_matrix,
     )
 
-    rec = pl.tomography.Image_Domain.Reconstruction.init(
+    rec = pl.Tomography.Image_Domain.Reconstruction.init(
         light_field_geometry=event.light_field_geometry,
         photon_lixel_ids=photon_lixel_ids,
         binning=binning,
     )
 
     for i in range(10):
-        rec = pl.tomography.Image_Domain.Reconstruction.iterate(
+        rec = pl.Tomography.Image_Domain.Reconstruction.iterate(
             reconstruction=rec,
             point_spread_function=psf,
         )

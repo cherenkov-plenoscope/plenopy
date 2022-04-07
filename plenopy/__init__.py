@@ -7,7 +7,7 @@ from . import split_light_field
 from . import plot
 from . import corsika
 from . import simulation_truth
-from . import tomography
+from . import Tomography
 from . import tools
 from . import photon_stream
 from . import trigger
