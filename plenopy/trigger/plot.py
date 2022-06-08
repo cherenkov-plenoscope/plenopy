@@ -54,7 +54,7 @@ def write_figures_to_directory(
                 "focus_{:06d}_lixel_in_pixel_overview.jpg".format(focus),
             )
         )
-        splt.close_figure(fig)
+        splt.close(fig)
 
         fig = splt.figure(style=figure_style)
         ax = splt.add_axes(fig=fig, span=[0.1, 0.1, 0.8, 0.8])
@@ -77,7 +77,7 @@ def write_figures_to_directory(
                 "focus_{:06d}_lixel_in_pixel_histogram.jpg".format(focus),
             )
         )
-        splt.close_figure(fig)
+        splt.close(fig)
 
         fig = splt.figure(style=figure_style)
         ax = splt.add_axes(fig=fig, span=[0.1, 0.1, 0.8, 0.8])
@@ -100,4 +100,4 @@ def write_figures_to_directory(
                 "focus_{:06d}_pixel_in_lixel_histogram.jpg".format(focus),
             )
         )
-        splt.close_figure(fig)
+        splt.close(fig)
