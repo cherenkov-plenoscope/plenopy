@@ -20,7 +20,8 @@ def add2ax(
     hexrotation=30,
     vmin=None,
     vmax=None,
-    colorbar=True
+    colorbar=True,
+    norm=None,
 ):
 
     if vmin is None:
@@ -49,7 +50,7 @@ def add2ax(
             )
         )
 
-    p = PatchCollection(patches, cmap=colormap, alpha=1, edgecolor='none')
+    p = PatchCollection(patches, cmap=colormap, alpha=1, edgecolor='none', norm=norm)
     p.set_array(I)
     p.set_clim([vmin, vmax])
 
