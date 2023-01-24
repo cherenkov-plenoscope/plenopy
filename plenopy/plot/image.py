@@ -33,9 +33,6 @@ def add2ax(
     bin_radius = 1.15 * np.sqrt((Area / I.shape[0]))
 
     nfov = fov + bin_radius
-    ax.set_xlim([-nfov, nfov])
-    ax.set_ylim([-nfov, nfov])
-    ax.set_aspect("equal")
 
     orientation = np.deg2rad(hexrotation)
 
@@ -60,7 +57,6 @@ def add2ax(
         plt.colorbar(p, cax=cax)
 
     ax.add_collection(p)
-    ax.set_aspect('equal')
     return p
 
 
