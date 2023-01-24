@@ -16,13 +16,13 @@ class Event(object):
         self.corsika_run_header = runh
 
     def __repr__(self):
-        out = ''
+        out = ""
         out += corsika.run_header_repr(self.corsika_run_header.raw)
-        out += '\n'
+        out += "\n"
         out += corsika.event_header_repr(self.corsika_event_header.raw)
         return out
 
     def short_event_info(self):
         return corsika.short_event_info(
-            self.corsika_run_header.raw,
-            self.corsika_event_header.raw)
+            self.corsika_run_header.raw, self.corsika_event_header.raw
+        )

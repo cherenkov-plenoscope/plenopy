@@ -7,7 +7,7 @@ import os
 
 
 def test_default_image_domain_binning():
-    b = pl.tomography.image_domain.init_binning_for_depth_of_field(
+    b = pl.Tomography.Image_Domain.Binning.init(
         focal_length=1.0,
         cx_min=np.deg2rad(-3.5),
         cx_max=np.deg2rad(+3.5),
@@ -48,7 +48,7 @@ def test_default_image_domain_binning():
 
 
 def test_write_read_binning():
-    b_1 = pl.tomography.image_domain.init_binning_for_depth_of_field(
+    b_1 = pl.Tomography.Image_Domain.Binning.init(
         focal_length=1.0,
         cx_min=np.deg2rad(-3.5),
         cx_max=np.deg2rad(+3.5),
@@ -62,8 +62,8 @@ def test_write_read_binning():
 
     with tempfile.TemporaryDirectory() as tmp:
         path = os.path.join(tmp, "my_binning.json")
-        pl.tomography.image_domain.write_binning(b_1, path)
-        b_2 = pl.tomography.image_domain.read_binning(path)
+        pl.Tomography.Image_Domain.Binning.write(b_1, path)
+        b_2 = pl.Tomography.Image_Domain.Binning.read(path)
 
-    for key in pl.tomography.image_domain.__KEY_CTOR_BINNING:
+    for key in pl.Tomography.Image_Domain.Binning.BINNING_CONSTRUCTORS:
         assert b_1[key] == b_2[key]

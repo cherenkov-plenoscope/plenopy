@@ -20,7 +20,7 @@ def test_init():
     direction[:, 1] = cy
     direction[:, 2] = np.sqrt(1.0 - cx**2 - cy**2)
 
-    rays = pl.tomography.Rays(
+    rays = pl.Tomography.Rays(
         x=support[:, 0],
         y=support[:, 1],
         cx=cx,
@@ -36,7 +36,7 @@ def test_ray_xy_intersection():
     direction = np.array([1.0, 2.0, 100.0])
     direction /= np.linalg.norm(direction)
 
-    rays = pl.tomography.Rays(
+    rays = pl.Tomography.Rays(
         x=np.array([support[0]]),
         y=np.array([support[1]]),
         cx=np.array([direction[0]]),
@@ -52,7 +52,7 @@ def test_init_from_light_fielg_geometry():
         'plenopy',
         'tests/resources/run.acp/input/plenoscope')
     lfg = pl.LightFieldGeometry(path)
-    rays = pl.tomography.Rays.from_light_field_geometry(lfg)
+    rays = pl.Tomography.Rays.from_light_field_geometry(lfg)
 
     assert rays.support.shape[0] == 19741
     assert rays.support.shape[1] == 3

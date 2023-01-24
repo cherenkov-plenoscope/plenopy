@@ -68,20 +68,35 @@ class Event(object):
                     op.join(truth_path, 'corsika_event_header.bin')),
                 runh=corsika.RunHeader(
                     op.join(truth_path, 'corsika_run_header.bin')))
+
             try:
                 air_shower_photon_bunches = corsika.PhotonBunches(
                     op.join(truth_path, 'air_shower_photon_bunches.bin'))
             except(FileNotFoundError):
                 air_shower_photon_bunches = None
+
             try:
                 simulation_truth_detector = simulation_truth.Detector(
                     op.join(truth_path, 'detector_pulse_origins.bin'))
             except(FileNotFoundError):
                 simulation_truth_detector = None
+
+            try:
+                _raw_header = hr.read_float32_header(
+                    op.join(truth_path, 'mctracer_event_header.bin')
+                )
+                photon_propagator = simulation_truth.PhotonPropagator(
+                    raw_header=_raw_header
+                )
+            except(FileNotFoundError):
+                photon_propagator = None
+
             self.simulation_truth = simulation_truth.SimulationTruth(
                 event=simulation_truth_event,
                 air_shower_photon_bunches=air_shower_photon_bunches,
-                detector=simulation_truth_detector)
+                detector=simulation_truth_detector,
+                photon_propagator=photon_propagator,
+            )
 
     def _read_dense_photons(self):
         path = op.join(self._path, 'dense_photon_ids.uint32.gz')
