@@ -159,7 +159,7 @@ class LightFieldGeometry(object):
         self.time_delay_wrt_principal_aperture_plane_mean = ls[:, 10].copy()
         self.time_delay_mean = (
             self.time_delay_wrt_principal_aperture_plane_mean -
-            np.min(self.time_delay_wrt_principal_aperture_plane_mean)
+            np.nanmin(self.time_delay_wrt_principal_aperture_plane_mean)
         )
         self.time_delay_std = ls[:, 11].copy()
         self.time_delay_wrt_principal_aperture_plane_std = self.time_delay_std
