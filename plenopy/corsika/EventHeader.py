@@ -40,6 +40,18 @@ class EventHeader(object):
     def core_position_y_meter(self):
         return self.raw[118 - 1 + 1]/1e2
 
+    def starting_height_of_simulation_at_thick0(self):
+        """
+        Height/m where CORSIKA starts to propagate the primary particle.
+        At THICK0 = 0 g cm^{-2} this corresponds to approx. '112.8km' according
+        to a comment in CORSIKA's sources or the value to be returned by
+        this call.
+
+        In: corsika756000Linux_QGSII_urqmd_compilefile.f, lines 4065-4075
+        """
+        cm2m = 1e-2
+        return self.raw[158 - 1] * cm2m
+
     def __repr__(self):
         out = self.__class__.__name__
         out += '('
