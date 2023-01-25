@@ -18,6 +18,11 @@ def assert_marker_of_header_is(h, expected_marker_string):
     assert h[0] == str2float(expected_marker_string)
 
 
+def interpret_bytes_from_float32_as_int32(float32):
+    ff = np.float32(float32)
+    return struct.unpack("i", struct.pack("f", ff))
+
+
 def read_float32_header(path):
     raw = np.fromfile(path, dtype=np.float32)
     return raw

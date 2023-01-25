@@ -10,7 +10,7 @@ class PhotonPropagator:
 
     def __init__(self, raw_header):
         self.raw = raw_header
-        if hr.str2int32("MERL") != self.raw[0]:
+        if hr.str2float("MERL") != self.raw[0]:
             print("Warning, expected 'MERL' marker.")
 
     def __repr__(self):
@@ -21,8 +21,7 @@ class PhotonPropagator:
         """
         The seed used in the merlict-simulation of this event.
         """
-        b = np.array(self.raw[1 - 1], dtype="float32").tobytes()
-        return hr.str2int32(b)
+        return hr.interpret_bytes_from_float32_as_int32(self.raw[2 - 1])
 
     def nsb_exposure_start_time(self):
         """
