@@ -156,8 +156,13 @@ class LightFieldGeometry(object):
         self.y_mean = ls[:, 8].copy()
         self.y_std = ls[:, 9].copy()
 
-        self.time_delay_mean = ls[:, 10].copy()
+        self.time_delay_wrt_principal_aperture_plane_mean = ls[:, 10].copy()
+        self.time_delay_mean = (
+            self.time_delay_wrt_principal_aperture_plane_mean -
+            np.min(self.time_delay_wrt_principal_aperture_plane_mean)
+        )
         self.time_delay_std = ls[:, 11].copy()
+        self.time_delay_wrt_principal_aperture_plane_std = self.time_delay_std
 
     def _read_light_field_sensor_geometry_header(self, path):
         gh = read_float32_header(path)
