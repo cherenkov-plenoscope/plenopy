@@ -10,8 +10,8 @@ class PhotonPropagator:
 
     def __init__(self, raw_header):
         self.raw = raw_header
-        if hr.str2float("MERL") != self.raw[0]:
-            print("Warning, expected 'MERL' marker.")
+        hr.assert_shape_is_valid(self.raw)
+        hr.assert_marker_of_header_is(self.raw, 'MERL')
 
     def __repr__(self):
         out = "PhotonPropagator(MERL)"
