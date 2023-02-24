@@ -71,27 +71,10 @@ def relative_path_length_for_isochor_image(
     y_std
 ):
     """
-    # It turns out that the relative-path-lengths can be computed like this:
-    # Making plane models [cx, cy, cz, d]
-    # normal-vector: [cx, cy, cz]
-    # distance of plane to origin: d
-    cz = np.sqrt(1.0 - cx**2 - cy**2)
-    plane_models = np.c_[cx, cy, cz, np.zeros(number_lixels)]
-
-    # Support-positions of the rays of the light-field (lixels) on the
-    # principal-aperture-palne (pap).
-    lixel_supports_on_pap = np.c_[
-        x,
-        y,
-        np.zeros(number_lixels),
-        np.ones(number_lixels)]
-
-    # The relative distances between the support-positions of the lixels and
-    # the plane of isochorusly incoming photons.
-    relative_path_lengths = np.zeros(number_lixels)
-    for lixel in range(number_lixels):
-        relative_distances[lixel] = (
-            plane_models[lixel].dot(lixel_supports_on_pap[lixel]))
+    The ray r(d) = (x,y,0)^T + d*(cx,cy,cz)^T has a point closest to the
+    aperture's principal plane's origin (0,0,0)^T.
+    The 'd' to reach this point on the ray r(d) is the path-length we are
+    looking for.
     """
     d_mean = cx_mean*x_mean + cy_mean*y_mean
 
