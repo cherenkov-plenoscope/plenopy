@@ -30,3 +30,20 @@ def xyz2cxcyb(x, y, z, focal_length):
     cx = np.arctan(x / object_distance)
     cy = np.arctan(y / object_distance)
     return np.array([cx, cy, image_distance])
+
+
+def resolution_of_depth(
+    object_distance_m,
+    focal_length_m,
+    mirror_diameter_m,
+    diameter_of_pixel_projected_on_sensor_plane_m,
+):
+    f = focal_length_m
+    D = mirror_diameter_m
+    p = diameter_of_pixel_projected_on_sensor_plane_m
+    g = object_distance_m
+
+    g_p = g * (1 + p * g / (2 * f * D))
+    g_m = g * (1 - p * g / (2 * f * D))
+
+    return g_p, g_m
