@@ -38,6 +38,29 @@ def resolution_of_depth(
     mirror_diameter_m,
     diameter_of_pixel_projected_on_sensor_plane_m,
 ):
+    """
+    Estimate and return the upper (g_p) and lower (g_m) object-distance which
+    mark the range in object-distance where a telescope sees a sharp picture of
+    when its focus is set to object_distance_m.
+
+    reference
+    ---------
+    @article{bernlohr2013monte,
+        author = {
+            Bernlohr, K and Barnacka, A and Becherini, Yvonne and Bigas, O
+            Blanch and Carmona, E and Colin, P and Decerprit, G and Di Pierro, F
+            and Dubois, F and Farnier, Christian and others
+        },
+        journal = {Astroparticle Physics},
+        pages = {171--188},
+        publisher = {Elsevier},
+        title = {
+            {Monte} {Carlo} design studies for the {Cherenkov Telescope Array}
+        },
+        volume = {43},
+        year = {2013},
+    }
+    """
     f = focal_length_m
     D = mirror_diameter_m
     p = diameter_of_pixel_projected_on_sensor_plane_m
