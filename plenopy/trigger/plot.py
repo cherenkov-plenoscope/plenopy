@@ -4,23 +4,6 @@ import os
 from .. import plot
 
 
-def _make_fig_ax(figsize):
-    fig = plt.figure(figsize=(figsize.width, figsize.hight), dpi=figsize.dpi)
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8])
-    ax.spines["right"].set_visible(False)
-    ax.spines["top"].set_visible(False)
-    return fig, ax
-
-
-def add2ax_histogram(ax, counts, bin_edges, style="k-"):
-    number_bins = len(counts)
-    assert len(bin_edges) == number_bins + 1
-    for i in range(number_bins):
-        x_start = bin_edges[i]
-        x_end = bin_edges[i + 1]
-        ax.plot([x_start, x_end], [counts[i], counts[i]], style)
-
-
 def write_figures_to_directory(
     trigger_geometry,
     trigger_summation_statistics,
