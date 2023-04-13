@@ -29,7 +29,7 @@ setuptools.setup(
     author_email='sebastian-achim.mueller@mpi-hd.mpg.de',
     license='GPL v3',
     packages=['plenopy'],
-    package_data={'plenopy': extra_files},
+    package_data={'plenopy': extra_files + [os.path.join("trigger", "scripts", "*")]},
     install_requires=[
         'setuptools>=18.0',
         'cython',
