@@ -2,7 +2,6 @@ import numpy as np
 from os import path as op
 from . import utils
 from .. import raw_light_field_sensor_response
-from ..photon_stream import cython_reader as phs
 from .. import corsika
 from .. import simulation_truth
 from .. import classify
@@ -113,16 +112,6 @@ class Event(object):
         else:
             self.dense_photon_ids = None
             self.cherenkov_photons = None
-
-    def photon_arrival_times_and_lixel_ids(self):
-        """
-        Returns (arrival_slices, lixel_ids) of all recorded photons.
-        """
-        (arrival_slices, lixel_ids) = phs.arrival_slices_and_lixel_ids(
-            self.raw_sensor_response)
-        return (
-            arrival_slices*self.raw_sensor_response["time_slice_duration"],
-            lixel_ids)
 
     def __repr__(self):
         out = self.__class__.__name__

@@ -38,3 +38,16 @@ def make_raw(raw_sensor_response):
         raw_sensor_response=raw_sensor_response,
         time_delays_to_be_subtracted=zeros,
     )
+
+
+def photon_arrival_times_and_lixel_ids(raw_sensor_response):
+    """
+    Returns (arrival_slices, lixel_ids) of photons.
+    """
+    (arrival_time_slices, lixel_ids) = photon_stream.cython_reader.arrival_slices_and_lixel_ids(
+        raw_sensor_response
+    )
+    return (
+        arrival_time_slices * raw_sensor_response["time_slice_duration"],
+        lixel_ids
+    )

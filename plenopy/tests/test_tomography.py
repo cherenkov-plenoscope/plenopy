@@ -58,7 +58,9 @@ def test_image_domain():
     (
         photon_arrival_times,
         photon_lixel_ids,
-    ) = event.photon_arrival_times_and_lixel_ids()
+    ) = pl.light_field_sequence.photon_arrival_times_and_lixel_ids(
+        event.raw_sensor_response
+    )
 
     ssm_jobs = pl.Tomography.System_Matrix.make_jobs(
         light_field_geometry=run.light_field_geometry,

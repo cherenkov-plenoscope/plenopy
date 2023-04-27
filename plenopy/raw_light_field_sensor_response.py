@@ -44,7 +44,8 @@ def read(f):
     return out
 
 
-def write(f, raw):
+def write(f, raw_sensor_response):
+    raw = raw_sensor_response
     assert isinstance(raw["time_slice_duration"], np.float32)
     f.write(raw["time_slice_duration"].tobytes())
 
