@@ -1,7 +1,6 @@
 import numpy as np
 import json
-from ...Thin_Lens import object_distance_2_image_distance as g2b
-from ...Thin_Lens import image_distance_2_object_distance as b2g
+from ... import thin_lens
 
 
 def init(
@@ -55,8 +54,8 @@ def init(
 
     b["number_bins"] = number_cx_bins * number_cy_bins * number_obj_bins
 
-    b["sen_z_min"] = g2b(obj_max, focal_length)
-    b["sen_z_max"] = g2b(obj_min, focal_length)
+    b["sen_z_min"] = thin_lens.object_distance_2_image_distance(obj_max, focal_length)
+    b["sen_z_max"] = thin_lens.object_distance_2_image_distance(obj_min, focal_length)
     b["number_sen_z_bins"] = number_obj_bins
     (
         b["sen_z_bin_edges"],
@@ -70,8 +69,8 @@ def init(
     b["obj_min"] = obj_min
     b["obj_max"] = obj_max
     b["number_obj_bins"] = number_obj_bins
-    b["obj_bin_edges"] = b2g(b["sen_z_bin_edges"], focal_length)
-    b["obj_bin_centers"] = b2g(b["sen_z_bin_centers"], focal_length)
+    b["obj_bin_edges"] = thin_lens.image_distance_2_object_distance(b["sen_z_bin_edges"], focal_length)
+    b["obj_bin_centers"] = thin_lens.image_distance_2_object_distance(b["sen_z_bin_centers"], focal_length)
 
     return b
 

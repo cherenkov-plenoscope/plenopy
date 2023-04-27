@@ -15,4 +15,4 @@ from . import trigger
 from . import classify
 from . import sequence
 from . import features
-from . import Thin_Lens
+from . import thin_lens

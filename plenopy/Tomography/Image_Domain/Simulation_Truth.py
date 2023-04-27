@@ -1,7 +1,7 @@
 import numpy as np
 import os
 from .. import Simulation_Truth
-from ... import Thin_Lens
+from ... import thin_lens
 
 
 def init(event, binning):
@@ -20,7 +20,7 @@ def init(event, binning):
 
     r["emission_positions"] = ep["emission_positions"][ep["valid_acceptence"]]
 
-    true_emission_positions_image_domain = Thin_Lens.xyz2cxcyb(
+    true_emission_positions_image_domain = thin_lens.xyz2cxcyb(
         r["emission_positions"][:, 0],
         r["emission_positions"][:, 1],
         r["emission_positions"][:, 2],
