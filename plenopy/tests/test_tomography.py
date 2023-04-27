@@ -42,7 +42,7 @@ def test_image_domain():
     roi = pl.trigger.region_of_interest.from_trigger_response(
         trigger_response=trigger_response,
         trigger_geometry=trigger_geometry,
-        time_slice_duration=event.raw_sensor_response.time_slice_duration,
+        time_slice_duration=event.raw_sensor_response["time_slice_duration"],
     )
 
     photons = pl.classify.RawPhotons.from_event(event)

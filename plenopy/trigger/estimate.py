@@ -1,7 +1,7 @@
 import numpy as np
 from ..photon_stream.cython_reader import photon_stream_to_image_sequence
 import scipy.ndimage
-
+from .. import raw_light_field_sensor_response
 
 def first_stage(
     raw_sensor_response,
@@ -38,25 +38,25 @@ def estimate_trigger_image_sequences(
     foci_trigger_image_sequences = np.zeros(
         shape=(
             tg["number_foci"],
-            raw_sensor_response.number_time_slices,
+            raw_sensor_response["number_time_slices"],
             tg["image"]["number_pixel"],
         ),
         dtype=np.uint32,
     )
     for focus in range(tg["number_foci"]):
         trigger_image_sequence = photon_stream_to_image_sequence(
-            photon_stream=raw_sensor_response.photon_stream,
+            photon_stream=raw_sensor_response["photon_stream"],
             photon_stream_next_channel_marker=(
-                raw_sensor_response.NEXT_READOUT_CHANNEL_MARKER
+                raw_light_field_sensor_response.NEXT_READOUT_CHANNEL_MARKER
             ),
-            time_slice_duration=raw_sensor_response.time_slice_duration,
+            time_slice_duration=raw_sensor_response["time_slice_duration"],
             time_delay_image_mean=lfg.time_delay_image_mean,
             projection_links=tg["foci"][focus]["links"],
             projection_starts=tg["foci"][focus]["starts"],
             projection_lengths=tg["foci"][focus]["lengths"],
             number_lixel=lfg.number_lixel,
             number_pixel=tg["image"]["number_pixel"],
-            number_time_slices=raw_sensor_response.number_time_slices,
+            number_time_slices=raw_sensor_response["number_time_slices"],
         )
         trigger_image_sequence_integrated = integrate_in_sliding_window(
             sequnce=trigger_image_sequence,

@@ -2,6 +2,7 @@ from . import sequence as seq_plt
 from .. import sequence as sequence
 from .. event.utils import short_info
 from .. import image
+from .. import light_field_sequence
 from . import image as img_plt
 import matplotlib.pyplot as plt
 
@@ -20,7 +21,9 @@ def show(event):
     4)  The photo equivalent distribution accross all lixels
     """
     raw = event.raw_sensor_response
-    lixel_sequence = event.light_field_sequence_raw()
+    lixel_sequence = light_field_sequence.make_raw(
+        raw_sensor_response=event.raw_sensor_response
+    )
 
     pix_img_seq = sequence.pixel_sequence(
         lixel_sequence=lixel_sequence,

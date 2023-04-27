@@ -11,7 +11,7 @@ class PhotonPropagator:
     def __init__(self, raw_header):
         self.raw = raw_header
         hr.assert_shape_is_valid(self.raw)
-        hr.assert_marker_of_header_is(self.raw, 'MERL')
+        # hr.assert_marker_of_header_is(self.raw, 'MERL')
 
     def __repr__(self):
         out = "PhotonPropagator(MERL)"

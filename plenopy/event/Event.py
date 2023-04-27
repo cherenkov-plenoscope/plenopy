@@ -3,10 +3,10 @@ from os import path as op
 from . import utils
 from .. import raw_light_field_sensor_response
 from ..photon_stream import cython_reader as phs
-from ..tools import header273float32 as hr
 from .. import corsika
 from .. import simulation_truth
 from .. import classify
+from .. import tools
 
 
 class Event(object):
@@ -46,7 +46,8 @@ class Event(object):
         self._read_event_header()
 
         _raw_path = op.join(self._path, 'raw_light_field_sensor_response.phs')
-        with open(_raw_path, "rb") as f:
+
+        with tools.acp_format.gz_transparent_open(_raw_path, "rb") as f:
             self.raw_sensor_response = raw_light_field_sensor_response.read(f)
 
         if self.type == 'SIMULATION':
@@ -56,7 +57,7 @@ class Event(object):
 
     def _read_event_header(self):
         header_path = op.join(self._path, 'event_header.bin')
-        header = hr.read_float32_header(header_path)
+        header = tools.header273float32.read_float32_header(header_path)
         self.type = utils.event_type_from_header(header)
         self.trigger_type = utils.trigger_type_from_header(header)
 
@@ -85,7 +86,7 @@ class Event(object):
                 simulation_truth_detector = None
 
             try:
-                _raw_header = hr.read_float32_header(
+                _raw_header = tools.header273float32.read_float32_header(
                     op.join(truth_path, 'mctracer_event_header.bin')
                 )
                 photon_propagator = simulation_truth.PhotonPropagator(
@@ -113,19 +114,6 @@ class Event(object):
             self.dense_photon_ids = None
             self.cherenkov_photons = None
 
-    def _light_field_sequence(self, time_delays_to_be_subtracted):
-        raw = self.raw_sensor_response
-        lixel_sequence = np.zeros(
-            shape=(raw["number_time_slices"], raw["number_lixel"]),
-            dtype=np.uint16)
-        phs.stream2sequence(
-            photon_stream=raw["photon_stream"],
-            time_slice_duration=raw["time_slice_duration"],
-            NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
-            sequence=lixel_sequence,
-            time_delay_mean=time_delays_to_be_subtracted)
-        return lixel_sequence
-
     def photon_arrival_times_and_lixel_ids(self):
         """
         Returns (arrival_slices, lixel_ids) of all recorded photons.
@@ -133,23 +121,8 @@ class Event(object):
         (arrival_slices, lixel_ids) = phs.arrival_slices_and_lixel_ids(
             self.raw_sensor_response)
         return (
-            arrival_slices*self.raw_sensor_response.time_slice_duration,
+            arrival_slices*self.raw_sensor_response["time_slice_duration"],
             lixel_ids)
-
-    def light_field_sequence_for_isochor_image(self):
-        return self._light_field_sequence(
-            time_delays_to_be_subtracted=
-                -self.light_field_geometry.time_delay_image_mean)
-
-    def light_field_sequence_for_isochor_aperture(self):
-        return self._light_field_sequence(
-            time_delays_to_be_subtracted=
-                +self.light_field_geometry.time_delay_mean)
-
-    def light_field_sequence_raw(self):
-        return self._light_field_sequence(
-            time_delays_to_be_subtracted=np.zeros(
-                self.light_field_geometry.number_lixel, dtype=np.float32))
 
     def __repr__(self):
         out = self.__class__.__name__

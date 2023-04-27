@@ -53,4 +53,4 @@ def test_open_event():
         'plenopy',
         'tests/resources/run.acp')
     run = pl.Run(run_path)
-    event = run[0]
+

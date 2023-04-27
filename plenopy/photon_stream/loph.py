@@ -177,7 +177,7 @@ def raw_sensor_response_to_photon_stream_in_loph_repr(
     """
     if cherenkov_photon_ids is None:
         cherenkov_photon_ids = np.ones(
-            raw_sensor_response.number_photons, dtype=np.bool
+            raw_sensor_response["number_photons"], dtype=np.bool
         )
 
     raw = raw_sensor_response

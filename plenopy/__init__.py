@@ -1,4 +1,5 @@
 from . import raw_light_field_sensor_response
+from . import light_field_sequence
 from .light_field_geometry.LightFieldGeometry import LightFieldGeometry
 from .event.Event import Event
 from .Run import Run

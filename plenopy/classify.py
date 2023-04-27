@@ -57,11 +57,11 @@ class RawPhotons():
             light_field_geometry=event.light_field_geometry,
             t_pap= (
                 arrival_slices.astype(np.float)*
-                event.raw_sensor_response.time_slice_duration +
+                event.raw_sensor_response["time_slice_duration"] +
                 event.light_field_geometry.time_delay_mean[lixel_ids]),
             t_img= (
                 arrival_slices.astype(np.float)*
-                event.raw_sensor_response.time_slice_duration +
+                event.raw_sensor_response["time_slice_duration"] +
                 event.light_field_geometry.time_delay_image_mean[lixel_ids])
             )
 

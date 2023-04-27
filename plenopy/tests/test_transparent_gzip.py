@@ -50,6 +50,6 @@ def test_transparent_gzip():
             event.simulation_truth.detector.pulse_origins)
 
         np.testing.assert_array_equal(
-            event_gz.raw_sensor_response.photon_stream,
-            event.raw_sensor_response.photon_stream)
+            event_gz.raw_sensor_response["photon_stream"],
+            event.raw_sensor_response["photon_stream"])
 
