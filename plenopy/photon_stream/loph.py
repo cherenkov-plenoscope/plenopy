@@ -164,8 +164,22 @@ def is_equal(phs_a, phs_b):
 
 
 def raw_sensor_response_to_photon_stream_in_loph_repr(
-    raw_sensor_response, cherenkov_photon_ids
+    raw_sensor_response, cherenkov_photon_ids=None
 ):
+    """
+    Parameter
+    ---------
+    raw_sensor_response : class
+
+    cherenkov_photon_ids : mask, 1d array
+        Either mask, or ids of photons.
+        If None, all raw photons go to the loph.
+    """
+    if cherenkov_photon_ids is None:
+        cherenkov_photon_ids = np.ones(
+            raw_sensor_response.number_photons, dtype=np.bool
+        )
+
     raw = raw_sensor_response
     cer_ids = cherenkov_photon_ids
     (arrival_slices, lixel_ids,) = cython_reader.arrival_slices_and_lixel_ids(
