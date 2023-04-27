@@ -56,7 +56,7 @@ def show(event):
     img_plt.add_paxel_image_to_ax(paxel_image, axs[0][1])
     seq_plt.add2ax_hist_arrival_time(
         sequence=lixel_sequence,
-        time_slice_duration=raw.time_slice_duration,
+        time_slice_duration=raw["time_slice_duration"],
         ax=axs[1][0])
     seq_plt.add2ax_hist_intensity(lixel_sequence, axs[1][1])
     plt.show()

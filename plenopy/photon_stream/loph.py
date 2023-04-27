@@ -187,9 +187,9 @@ def raw_sensor_response_to_photon_stream_in_loph_repr(
     )
     phs = {}
     phs["sensor"] = {}
-    phs["sensor"]["number_channels"] = raw.number_lixel
-    phs["sensor"]["number_time_slices"] = raw.number_time_slices
-    phs["sensor"]["time_slice_duration"] = raw.time_slice_duration
+    phs["sensor"]["number_channels"] = raw["number_lixel"]
+    phs["sensor"]["number_time_slices"] = raw["number_time_slices"]
+    phs["sensor"]["time_slice_duration"] = raw["time_slice_duration"]
 
     phs["photons"] = {}
     phs["photons"]["channels"] = lixel_ids[cer_ids]

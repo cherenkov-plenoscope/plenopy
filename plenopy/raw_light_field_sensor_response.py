@@ -64,8 +64,31 @@ class RawLightFieldSensorResponse(object):
         out += str(np.round(self.time_slice_duration * 1e12)) + "ps)"
         return out
 
+"""
+The raw sensor-response of the Atmospheric-Cherenkov-Plenoscope.
+
+photon_stream           A stream of arrival-time-slices of photons
+                        separated by a delimiter symbol to indicate the
+                        next read-out-channel (lixel).
+
+time_slice_duration     The duration of one time-slice in the
+                        photon-stream.
+
+number_photons          The number of photons in the stream.
+
+number_lixel            The number of read-out-channels (lixels).
+
+number_time_slices      The number of time-slices of the photon-stream.
+
+number_symbols          The number of pulses plus the number of lixels.
+                        This is the size of the photon-stream in bytes.
+"""
+
+NEXT_READOUT_CHANNEL_MARKER = 255
+
 
 def read(f):
+
     out = {}
     out["time_slice_duration"] = np.frombuffer(
         f.read(4), dtype=np.float32, count=1
@@ -81,6 +104,10 @@ def read(f):
         f.read(out["number_symbols"]), dtype=np.uint8
     )
     return out
+
+
+def number_photons(raw):
+    return raw["photon_stream"].shape[0] - raw["number_lixel"] - 1
 
 
 def write(f, raw):

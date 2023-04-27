@@ -1,7 +1,7 @@
 import numpy as np
 from os import path as op
 from . import utils
-from ..RawLightFieldSensorResponse import RawLightFieldSensorResponse
+from .. import raw_light_field_sensor_response
 from ..photon_stream import cython_reader as phs
 from ..tools import header273float32 as hr
 from .. import corsika
@@ -44,8 +44,11 @@ class Event(object):
         self.light_field_geometry = light_field_geometry
         self._path = op.abspath(path)
         self._read_event_header()
-        self.raw_sensor_response = RawLightFieldSensorResponse(
-            op.join(self._path, 'raw_light_field_sensor_response.phs'))
+
+        _raw_path = op.join(self._path, 'raw_light_field_sensor_response.phs')
+        with open(_raw_path, "rb") as f:
+            self.raw_sensor_response = raw_light_field_sensor_response.read(f)
+
         if self.type == 'SIMULATION':
             self._read_simulation_truth()
         self.number = int(op.basename(self._path))
@@ -113,11 +116,11 @@ class Event(object):
     def _light_field_sequence(self, time_delays_to_be_subtracted):
         raw = self.raw_sensor_response
         lixel_sequence = np.zeros(
-            shape=(raw.number_time_slices, raw.number_lixel),
+            shape=(raw["number_time_slices"], raw["number_lixel"]),
             dtype=np.uint16)
         phs.stream2sequence(
-            photon_stream=raw.photon_stream,
-            time_slice_duration=raw.time_slice_duration,
+            photon_stream=raw["photon_stream"],
+            time_slice_duration=raw["time_slice_duration"],
             NEXT_READOUT_CHANNEL_MARKER=raw.NEXT_READOUT_CHANNEL_MARKER,
             sequence=lixel_sequence,
             time_delay_mean=time_delays_to_be_subtracted)
