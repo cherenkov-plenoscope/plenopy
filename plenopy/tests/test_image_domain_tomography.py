@@ -17,34 +17,34 @@ def test_default_image_domain_binning():
         number_cy_bins=96,
         obj_min=5e3,
         obj_max=25e3,
-        number_obj_bins=32
+        number_obj_bins=32,
     )
-    assert b['number_cx_bins'] == 96
-    assert b['number_cy_bins'] == 96
-    assert len(b['cx_bin_centers']) == 96
-    assert len(b['cy_bin_centers']) == 96
+    assert b["number_cx_bins"] == 96
+    assert b["number_cy_bins"] == 96
+    assert len(b["cx_bin_centers"]) == 96
+    assert len(b["cy_bin_centers"]) == 96
 
-    assert b['number_sen_x_bins'] == 96
-    assert b['number_sen_y_bins'] == 96
-    assert len(b['sen_x_bin_centers']) == 96
-    assert len(b['sen_y_bin_centers']) == 96
+    assert b["number_sen_x_bins"] == 96
+    assert b["number_sen_y_bins"] == 96
+    assert len(b["sen_x_bin_centers"]) == 96
+    assert len(b["sen_y_bin_centers"]) == 96
 
-    assert len(b['cx_bin_edges']) == 96 + 1
-    assert len(b['cy_bin_edges']) == 96 + 1
+    assert len(b["cx_bin_edges"]) == 96 + 1
+    assert len(b["cy_bin_edges"]) == 96 + 1
 
-    assert len(b['sen_x_bin_edges']) == 96 + 1
-    assert len(b['sen_y_bin_edges']) == 96 + 1
+    assert len(b["sen_x_bin_edges"]) == 96 + 1
+    assert len(b["sen_y_bin_edges"]) == 96 + 1
 
-    assert b['number_sen_z_bins'] == 32
-    assert b['number_obj_bins'] == 32
+    assert b["number_sen_z_bins"] == 32
+    assert b["number_obj_bins"] == 32
 
-    assert len(b['sen_z_bin_centers']) == 32
-    assert len(b['obj_bin_centers']) == 32
+    assert len(b["sen_z_bin_centers"]) == 32
+    assert len(b["obj_bin_centers"]) == 32
 
-    assert len(b['sen_z_bin_edges']) == 32 + 1
-    assert len(b['obj_bin_edges']) == 32 + 1
+    assert len(b["sen_z_bin_edges"]) == 32 + 1
+    assert len(b["obj_bin_edges"]) == 32 + 1
 
-    assert b['number_bins'] == 96 * 96 * 32
+    assert b["number_bins"] == 96 * 96 * 32
 
 
 def test_write_read_binning():
@@ -58,7 +58,8 @@ def test_write_read_binning():
         number_cy_bins=96,
         obj_min=5e3,
         obj_max=25e3,
-        number_obj_bins=32)
+        number_obj_bins=32,
+    )
 
     with tempfile.TemporaryDirectory() as tmp:
         path = os.path.join(tmp, "my_binning.json")

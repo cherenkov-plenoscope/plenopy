@@ -61,14 +61,7 @@ import numpy as np
 
 
 def relative_path_length_for_isochor_image(
-    cx_mean,
-    cx_std,
-    cy_mean,
-    cy_std,
-    x_mean,
-    x_std,
-    y_mean,
-    y_std
+    cx_mean, cx_std, cy_mean, cy_std, x_mean, x_std, y_mean, y_std
 ):
     """
     The ray r(d) = (x,y,0)^T + d*(cx,cy,cz)^T has a point closest to the
@@ -76,7 +69,7 @@ def relative_path_length_for_isochor_image(
     The 'd' to reach this point on the ray r(d) is the path-length we are
     looking for.
     """
-    d_mean = cx_mean*x_mean + cy_mean*y_mean
+    d_mean = cx_mean * x_mean + cy_mean * y_mean
 
     # del d_mean / del cx = x
     # del d_mean / del cy = y
@@ -84,10 +77,11 @@ def relative_path_length_for_isochor_image(
     # del d_mean / del y = cy
 
     d_std = np.sqrt(
-        (x_mean**2)*(cx_std**2) +
-        (y_mean**2)*(cy_std**2) +
-        (cx_mean**2)*(x_std**2) +
-        (cy_mean**2)*(y_std**2))
+        (x_mean ** 2) * (cx_std ** 2)
+        + (y_mean ** 2) * (cy_std ** 2)
+        + (cx_mean ** 2) * (x_std ** 2)
+        + (cy_mean ** 2) * (y_std ** 2)
+    )
     return d_mean, d_std
 
 
@@ -113,8 +107,11 @@ def time_delay_from_sensors_to_image(
         y_mean=y_mean,
         y_std=y_std,
     )
-    time_delay_principal_aperture_plane_2_image = rel_dists_mean/speed_of_light
+    time_delay_principal_aperture_plane_2_image = (
+        rel_dists_mean / speed_of_light
+    )
     time_delay_sesnsor_2_image = (
-        time_delay_from_sensors_to_principal_aperture_plane -
-        time_delay_principal_aperture_plane_2_image)
+        time_delay_from_sensors_to_principal_aperture_plane
+        - time_delay_principal_aperture_plane_2_image
+    )
     return time_delay_sesnsor_2_image

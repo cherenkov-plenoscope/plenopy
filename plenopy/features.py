@@ -48,37 +48,42 @@ def estimate_light_front_surface_normal(
     zs,
     max_number_itarations=100,
     min_number_points_for_plane_fit=10,
-    max_orthogonal_distance_of_inlier=0.025):
+    max_orthogonal_distance_of_inlier=0.025,
+):
     B, inlier = tools.ransac_3d_plane.fit(
         prng=prng,
         xyz_point_cloud=np.c_[xs, ys, zs],
         max_number_itarations=max_number_itarations,
         min_number_points_for_plane_fit=min_number_points_for_plane_fit,
-        max_orthogonal_distance_of_inlier=max_orthogonal_distance_of_inlier,)
+        max_orthogonal_distance_of_inlier=max_orthogonal_distance_of_inlier,
+    )
     c_pap_time = np.array([B[0], B[1], B[2]])
     if c_pap_time[2] > 0:
         c_pap_time *= -1
-    c_pap_time = c_pap_time/np.linalg.norm(c_pap_time)
+    c_pap_time = c_pap_time / np.linalg.norm(c_pap_time)
     return c_pap_time
 
 
 HillasEllipse = namedtuple(
-    'HillasEllipse', [
-    'cx_mean',
-    'cy_mean',
-    'cx_major',
-    'cy_major',
-    'cx_minor',
-    'cy_minor',
-    'std_major',
-    'std_minor'])
+    "HillasEllipse",
+    [
+        "cx_mean",
+        "cy_mean",
+        "cx_major",
+        "cy_major",
+        "cx_minor",
+        "cy_minor",
+        "std_major",
+        "std_minor",
+    ],
+)
 
 
 def estimate_hillas_ellipse(cxs, cys):
     cx_mean = np.mean(cxs)
     cy_mean = np.mean(cys)
     cov_matrix = np.cov(np.c_[cxs, cys].T)
-    eigen_vals, eigen_vecs= np.linalg.eig(cov_matrix)
+    eigen_vals, eigen_vecs = np.linalg.eig(cov_matrix)
     major_idx = np.argmax(eigen_vals)
     if major_idx == 0:
         minor_idx = 1
@@ -96,17 +101,18 @@ def estimate_hillas_ellipse(cxs, cys):
         cx_minor=minor_axis[0],
         cy_minor=minor_axis[1],
         std_major=major_std,
-        std_minor=minor_std)
+        std_minor=minor_std,
+    )
 
 
 def interpolate_x(x0, x1, y0, y1, yarg):
     # f(x) = m*x + b
     # m = (y1 - y0)/(x1 - x0)
     # y1 = m*x1 + b
-    m = (y1 - y0)/(x1 - x0)
-    b = -m*x1 + y1
+    m = (y1 - y0) / (x1 - x0)
+    b = -m * x1 + y1
     # (y - b)/m = x
-    x = (yarg - b)/m
+    x = (yarg - b) / m
     return x
 
 
@@ -140,130 +146,136 @@ def extract_features(
     light_field_geometry,
     light_field_geometry_addon,
     prng,
-    debug=False):
+    debug=False,
+):
     cp = cherenkov_photons
     lfg = light_field_geometry
     lfg_addon = light_field_geometry_addon
 
     f = {}
-    f['num_photons'] = int(cp.number)
-    if f['num_photons'] < 35:
+    f["num_photons"] = int(cp.number)
+    if f["num_photons"] < 35:
         msg = "Expected at least {:d} photons, got {:d}.".format(
-                35,
-                f['num_photons'])
+            35, f["num_photons"]
+        )
         raise RuntimeError(msg)
-    #=======================
+    # =======================
     # aperture
-    #=======================
-    if debug: print("aperture")
+    # =======================
+    if debug:
+        print("aperture")
     paxelidx_bin_edges = np.arange(lfg.number_paxel + 1)
     paxel_intensity = np.histogram(
-        lfg.paxel_pos_tree.query(
-        np.c_[cp.x, cp.y])[1],
-        bins=paxelidx_bin_edges)[0]
+        lfg.paxel_pos_tree.query(np.c_[cp.x, cp.y])[1], bins=paxelidx_bin_edges
+    )[0]
 
-    f['paxel_intensity_peakness_std_over_mean'] = \
-        float(np.std(paxel_intensity)/np.mean(paxel_intensity))
+    f["paxel_intensity_peakness_std_over_mean"] = float(
+        np.std(paxel_intensity) / np.mean(paxel_intensity)
+    )
 
-    f['paxel_intensity_peakness_max_over_mean'] = \
-        float(np.max(paxel_intensity)/np.mean(paxel_intensity))
+    f["paxel_intensity_peakness_max_over_mean"] = float(
+        np.max(paxel_intensity) / np.mean(paxel_intensity)
+    )
 
     # position
     # ----------
-    f['paxel_intensity_median_x'] = float(np.median(cp.x))
-    f['paxel_intensity_median_y'] = float(np.median(cp.y))
+    f["paxel_intensity_median_x"] = float(np.median(cp.x))
+    f["paxel_intensity_median_y"] = float(np.median(cp.y))
 
-    if debug: print("aperture, num islands")
+    if debug:
+        print("aperture, num islands")
     # num islands on aperture
-    #------------------------
-    expected_paxel_intensity = np.sum(paxel_intensity)/lfg.number_paxel
+    # ------------------------
+    expected_paxel_intensity = np.sum(paxel_intensity) / lfg.number_paxel
     for thr in [2, 4, 8]:
-        key = 'aperture_num_islands_watershed_rel_thr_{:d}'.format(thr)
+        key = "aperture_num_islands_watershed_rel_thr_{:d}".format(thr)
         islands = islands_greater_equal_threshold(
             intensities=paxel_intensity,
             neighborhood=lfg_addon["paxel_neighborhood"],
-            threshold=thr*expected_paxel_intensity)
+            threshold=thr * expected_paxel_intensity,
+        )
         f[key] = len(islands)
 
-    #=======================
+    # =======================
     # light-front
-    #=======================
-    if debug: print("light-front")
+    # =======================
+    if debug:
+        print("light-front")
     light_front_normal = estimate_light_front_surface_normal(
-        prng=prng,
-        xs=cp.x,
-        ys=cp.y,
-        zs=cp.t_pap*3e8)
-    f['light_front_cx'] = light_front_normal[0]
-    f['light_front_cy'] = light_front_normal[1]
+        prng=prng, xs=cp.x, ys=cp.y, zs=cp.t_pap * 3e8
+    )
+    f["light_front_cx"] = light_front_normal[0]
+    f["light_front_cy"] = light_front_normal[1]
 
-    #=======================
+    # =======================
     # image
-    #=======================
-    if debug: print("image, focus infinity")
-    f['image_infinity_cx_mean'] = float(np.mean(cp.cx))
-    f['image_infinity_cy_mean'] = float(np.mean(cp.cy))
-    f['image_infinity_cx_std'] = float(np.std(cp.cx))
-    f['image_infinity_cy_std'] = float(np.std(cp.cy))
+    # =======================
+    if debug:
+        print("image, focus infinity")
+    f["image_infinity_cx_mean"] = float(np.mean(cp.cx))
+    f["image_infinity_cy_mean"] = float(np.mean(cp.cy))
+    f["image_infinity_cx_std"] = float(np.std(cp.cx))
+    f["image_infinity_cy_std"] = float(np.std(cp.cy))
     leakage_mask = np.hypot(cp.cx, cp.cy) >= lfg_addon["fov_radius_leakage"]
-    f['image_infinity_num_photons_on_edge_field_of_view'] = int(
-        np.sum(leakage_mask))
-
+    f["image_infinity_num_photons_on_edge_field_of_view"] = int(
+        np.sum(leakage_mask)
+    )
 
     # quick refocus scan
-    #-------------------
-    if debug: print("refocus-stack")
+    # -------------------
+    if debug:
+        print("refocus-stack")
+
     def ellipse_solid_angle(object_distance, cherenkov_photons):
         obj = object_distance
         cp = cherenkov_photons
         cxs, cys = cp.cx_cy_in_object_distance(obj)
         ellipse = estimate_hillas_ellipse(cxs=cxs, cys=cys)
-        return np.pi*ellipse.std_major*ellipse.std_minor
+        return np.pi * ellipse.std_major * ellipse.std_minor
 
     def ellipse_solid_angle_slope(
-        object_distance,
-        cherenkov_photons,
-        relative_delta=0.05):
-        obj_upper = object_distance *(1 + relative_delta)
-        obj_lower = object_distance *(1 - relative_delta)
+        object_distance, cherenkov_photons, relative_delta=0.05
+    ):
+        obj_upper = object_distance * (1 + relative_delta)
+        obj_lower = object_distance * (1 - relative_delta)
         obj_delta = obj_upper - obj_lower
         esa_upper = ellipse_solid_angle(obj_upper, cherenkov_photons)
         esa_lower = ellipse_solid_angle(obj_lower, cherenkov_photons)
         esa_delta = esa_upper - esa_lower
-        return esa_delta/obj_delta
+        return esa_delta / obj_delta
 
-    if debug: print("refocus-stack, sharpest obj-dist")
+    if debug:
+        print("refocus-stack, sharpest obj-dist")
     NUM_REFOCUS_SLICES = 24
     OBJECT_DISTANCE_MIN = 2.5e3
     OBJECT_DISTANCE_MAX = 250e3
     OBJECT_DISTANCES = np.geomspace(
-        OBJECT_DISTANCE_MIN,
-        OBJECT_DISTANCE_MAX,
-        NUM_REFOCUS_SLICES)
+        OBJECT_DISTANCE_MIN, OBJECT_DISTANCE_MAX, NUM_REFOCUS_SLICES
+    )
     ellipse_solid_angles = np.zeros(NUM_REFOCUS_SLICES)
     for i, obj in enumerate(OBJECT_DISTANCES):
         ellipse_solid_angles[i] = ellipse_solid_angle(
-            object_distance=obj,
-            cherenkov_photons=cp)
+            object_distance=obj, cherenkov_photons=cp
+        )
     obj = OBJECT_DISTANCES[np.argmin(ellipse_solid_angles)]
     obj_delta = 1e3
     for i in range(10):
         sa_plus = ellipse_solid_angle(
-            object_distance=obj + obj_delta,
-            cherenkov_photons=cp)
+            object_distance=obj + obj_delta, cherenkov_photons=cp
+        )
         sa_minus = ellipse_solid_angle(
-            object_distance=obj - obj_delta,
-            cherenkov_photons=cp)
+            object_distance=obj - obj_delta, cherenkov_photons=cp
+        )
         if sa_plus < sa_minus:
             obj += obj_delta
         else:
             obj -= obj_delta
         obj_delta /= 2
-    f['image_smallest_ellipse_object_distance'] = float(obj)
-    f['image_smallest_ellipse_solid_angle'] = float(sa_plus)
+    f["image_smallest_ellipse_object_distance"] = float(obj)
+    f["image_smallest_ellipse_solid_angle"] = float(sa_plus)
 
     # half-depth min
-    sa_twice = 2.*f['image_smallest_ellipse_solid_angle']
+    sa_twice = 2.0 * f["image_smallest_ellipse_solid_angle"]
     for i in range(NUM_REFOCUS_SLICES):
         if ellipse_solid_angles[i] <= sa_twice:
             if i == 0:
@@ -274,7 +286,8 @@ def extract_features(
                     x1=OBJECT_DISTANCES[i],
                     y0=ellipse_solid_angles[i - 1],
                     y1=ellipse_solid_angles[i],
-                    yarg=sa_twice)
+                    yarg=sa_twice,
+                )
             break
     for i in range(NUM_REFOCUS_SLICES):
         idx = NUM_REFOCUS_SLICES - i - 1
@@ -287,7 +300,8 @@ def extract_features(
                     x1=OBJECT_DISTANCES[idx + 1],
                     y0=ellipse_solid_angles[idx],
                     y1=ellipse_solid_angles[idx + 1],
-                    yarg=sa_twice)
+                    yarg=sa_twice,
+                )
             break
 
     if obj_lower == OBJECT_DISTANCE_MIN:
@@ -304,15 +318,19 @@ def extract_features(
         raise RuntimeError("Upper focus out of range.")
     """
 
-    f['image_smallest_ellipse_half_depth'] = float(obj_upper - obj_lower)
+    f["image_smallest_ellipse_half_depth"] = float(obj_upper - obj_lower)
 
     # shift of mean in image while refocusing
     cxs_u, cys_u = cp.cx_cy_in_object_distance(obj_upper)
     cxs_l, cys_l = cp.cx_cy_in_object_distance(obj_lower)
-    f['image_half_depth_shift_cx'] = float(np.median(cxs_u) - np.median(cxs_l))
-    f['image_half_depth_shift_cy'] = float(np.median(cys_u) - np.median(cys_l))
+    f["image_half_depth_shift_cx"] = float(np.median(cxs_u) - np.median(cxs_l))
+    f["image_half_depth_shift_cy"] = float(np.median(cys_u) - np.median(cys_l))
 
-    if debug: print('image_smallest_ellipse_half_depth', f['image_smallest_ellipse_half_depth'])
+    if debug:
+        print(
+            "image_smallest_ellipse_half_depth",
+            f["image_smallest_ellipse_half_depth"],
+        )
 
     """
     plt.figure()
@@ -325,10 +343,12 @@ def extract_features(
     """
 
     cx, cy = cp.cx_cy_in_object_distance(
-        f['image_smallest_ellipse_object_distance'])
+        f["image_smallest_ellipse_object_distance"]
+    )
     leakage_mask = np.hypot(cx, cy) >= lfg_addon["fov_radius_leakage"]
-    f['image_smallest_ellipse_num_photons_on_edge_field_of_view'] = int(
-        np.sum(leakage_mask))
+    f["image_smallest_ellipse_num_photons_on_edge_field_of_view"] = int(
+        np.sum(leakage_mask)
+    )
 
     """
     plt.plot(cx, cy, 'x')
@@ -336,17 +356,18 @@ def extract_features(
     plt.show()
     """
 
-    if debug: print("image_smallest_ellipse, num islands")
+    if debug:
+        print("image_smallest_ellipse, num islands")
     epsilon_cx_cy_radius = np.deg2rad(0.05)
     min_number_photons = 17
     dbscan = DBSCAN(
-        eps=epsilon_cx_cy_radius,
-        min_samples=min_number_photons
+        eps=epsilon_cx_cy_radius, min_samples=min_number_photons
     ).fit(np.c_[cx, cy])
 
-    if debug: print("image_smallest_ellipse, num islands 2")
+    if debug:
+        print("image_smallest_ellipse, num islands 2")
     label_ids = np.array(list(set(dbscan.labels_)))
-    f['image_num_islands'] = int(np.sum(label_ids >= 0))
+    f["image_num_islands"] = int(np.sum(label_ids >= 0))
     cluster_masks = []
     cluster_sizes = []
     cluster_ids = label_ids[label_ids >= 0]

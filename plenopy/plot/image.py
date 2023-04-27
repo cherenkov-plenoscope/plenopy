@@ -16,7 +16,7 @@ def add2ax(
     I,
     px,
     py,
-    colormap='viridis',
+    colormap="viridis",
     hexrotation=30,
     vmin=None,
     vmax=None,
@@ -43,11 +43,13 @@ def add2ax(
                 (px[d], py[d]),
                 numVertices=6,
                 radius=bin_radius,
-                orientation=orientation
+                orientation=orientation,
             )
         )
 
-    p = PatchCollection(patches, cmap=colormap, alpha=1, edgecolor='none', norm=norm)
+    p = PatchCollection(
+        patches, cmap=colormap, alpha=1, edgecolor="none", norm=norm
+    )
     p.set_array(I)
     p.set_clim([vmin, vmax])
 
@@ -61,17 +63,12 @@ def add2ax(
 
 
 def add_pixel_image_to_ax(
-    img,
-    ax,
-    colormap="viridis",
-    vmin=None,
-    vmax=None,
-    colorbar=True
+    img, ax, colormap="viridis", vmin=None, vmax=None, colorbar=True
 ):
-    ax.set_xlabel('cx/deg')
-    ax.set_ylabel('cy/deg')
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
+    ax.set_xlabel("cx/deg")
+    ax.set_ylabel("cy/deg")
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
 
     return add2ax(
         ax=ax,
@@ -82,22 +79,17 @@ def add_pixel_image_to_ax(
         hexrotation=30,
         vmin=vmin,
         vmax=vmax,
-        colorbar=colorbar
+        colorbar=colorbar,
     )
 
 
 def add_paxel_image_to_ax(
-    img,
-    ax,
-    colormap="viridis",
-    vmin=None,
-    vmax=None,
-    colorbar=True
+    img, ax, colormap="viridis", vmin=None, vmax=None, colorbar=True
 ):
-    ax.set_xlabel('x/m')
-    ax.set_ylabel('y/m')
-    ax.spines['right'].set_visible(False)
-    ax.spines['top'].set_visible(False)
+    ax.set_xlabel("x/m")
+    ax.set_ylabel("y/m")
+    ax.spines["right"].set_visible(False)
+    ax.spines["top"].set_visible(False)
 
     return add2ax(
         ax=ax,
@@ -108,5 +100,5 @@ def add_paxel_image_to_ax(
         hexrotation=0,
         vmin=vmin,
         vmax=vmax,
-        colorbar=colorbar
+        colorbar=colorbar,
     )

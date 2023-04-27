@@ -40,6 +40,7 @@ class PlenoscopeGeometry(object):
     housing_overhead                            Overhead of the light field
                                                 sensor housing.
     """
+
     def __init__(self, raw):
         """
         Parameters
@@ -49,26 +50,29 @@ class PlenoscopeGeometry(object):
         header273float32.assert_shape_is_valid(raw)
         self.sensor_plane2imaging_system = self._read(raw)
         self.sensor_plane_distance = self.sensor_plane2imaging_system[2, 3]
-        self.expected_imaging_system_focal_length = raw[23-1]
-        self.expected_imaging_system_max_aperture_radius = raw[24-1]
-        self.max_FoV_diameter = raw[25-1]
-        self.pixel_FoV_hex_flat2flat = raw[26-1]
-        self.number_of_paxel_on_pixel_diagonal = raw[27-1]
-        self.housing_overhead = raw[28-1]
+        self.expected_imaging_system_focal_length = raw[23 - 1]
+        self.expected_imaging_system_max_aperture_radius = raw[24 - 1]
+        self.max_FoV_diameter = raw[25 - 1]
+        self.pixel_FoV_hex_flat2flat = raw[26 - 1]
+        self.number_of_paxel_on_pixel_diagonal = raw[27 - 1]
+        self.housing_overhead = raw[28 - 1]
 
     def _read(self, raw):
-        return np.array([
-            [raw[11 - 1], raw[14 - 1], raw[17 - 1], raw[20 - 1]],
-            [raw[12 - 1], raw[15 - 1], raw[18 - 1], raw[21 - 1]],
-            [raw[13 - 1], raw[16 - 1], raw[19 - 1], raw[22 - 1]],
-            [0.0,         0.0,         0.0,         1.0]])
+        return np.array(
+            [
+                [raw[11 - 1], raw[14 - 1], raw[17 - 1], raw[20 - 1]],
+                [raw[12 - 1], raw[15 - 1], raw[18 - 1], raw[21 - 1]],
+                [raw[13 - 1], raw[16 - 1], raw[19 - 1], raw[22 - 1]],
+                [0.0, 0.0, 0.0, 1.0],
+            ]
+        )
 
     def __repr__(self):
         out = self.__class__.__name__
-        out += '('
+        out += "("
         out += str(self.expected_imaging_system_focal_length)
-        out += 'm focal length, '
-        out += str(self.expected_imaging_system_max_aperture_radius*2)
-        out += 'm mirror diameter'
-        out += ')'
+        out += "m focal length, "
+        out += str(self.expected_imaging_system_max_aperture_radius * 2)
+        out += "m mirror diameter"
+        out += ")"
         return out

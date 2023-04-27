@@ -26,8 +26,8 @@ def test_matrix_2_image_color_channel():
     for color_channel in range(3):
         matrix2d = np.eye(3)
         image_bgr = pl.plot.slices.matrix_2_rgb_image(
-            matrix=matrix2d,
-            color_channel=color_channel)
+            matrix=matrix2d, color_channel=color_channel
+        )
 
         # again test shape
         assert matrix2d.shape[0] == image_bgr.shape[0]
@@ -53,8 +53,8 @@ def test_matrix_2_image_min_max():
     color_channel = 1
     matrix2d = np.diag([0, 0, 0.365, 1.0])
     image_bgr = pl.plot.slices.matrix_2_rgb_image(
-        matrix=matrix2d,
-        color_channel=color_channel)
+        matrix=matrix2d, color_channel=color_channel
+    )
 
     assert matrix2d[0, 0] == image_bgr[0, 0, color_channel]
     assert matrix2d[1, 1] == image_bgr[1, 1, color_channel]

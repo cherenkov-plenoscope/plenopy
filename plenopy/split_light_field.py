@@ -35,7 +35,9 @@ def make_split_light_field(loph_record, light_field_geometry):
     """
 
     out = {}
-    out["number_photons"] = loph_record["photons"]["arrival_time_slices"].shape[0]
+    out["number_photons"] = loph_record["photons"][
+        "arrival_time_slices"
+    ].shape[0]
     out["number_paxel"] = light_field_geometry.number_paxel
     out["paxel_pos_x"] = light_field_geometry.paxel_pos_x
     out["paxel_pos_y"] = light_field_geometry.paxel_pos_y
@@ -60,8 +62,7 @@ def make_split_light_field(loph_record, light_field_geometry):
             out["image_sequences"][pax] = np.array(out["image_sequences"][pax])
         else:
             out["image_sequences"][pax] = np.zeros(
-                shape=(0, 3),
-                dtype=np.float32
+                shape=(0, 3), dtype=np.float32
             )
     return out
 

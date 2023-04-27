@@ -40,7 +40,9 @@ def read(f):
         f.read(out["number_symbols"]), dtype=np.uint8
     )
 
-    out["number_photons"] = out["photon_stream"].shape[0] - out["number_lixel"] - 1
+    out["number_photons"] = (
+        out["photon_stream"].shape[0] - out["number_lixel"] - 1
+    )
     return out
 
 

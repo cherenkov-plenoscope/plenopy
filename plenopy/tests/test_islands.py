@@ -4,10 +4,9 @@ import plenopy as pl
 
 def test_islands():
     idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-    intensities = [
-           0, 0, 0, 0, 3, 0 ,0 ,0 ,0 ,3  ,3  ,3  ,0  ,0  ,0]
+    intensities = [0, 0, 0, 0, 3, 0, 0, 0, 0, 3, 3, 3, 0, 0, 0]
     neighborhood = [
-        [   1],
+        [1],
         [0, 2],
         [1, 3],
         [2, 4],
@@ -25,9 +24,8 @@ def test_islands():
     ]
 
     islands = pl.features.islands_greater_equal_threshold(
-        intensities=intensities,
-        neighborhood=neighborhood,
-        threshold=2)
+        intensities=intensities, neighborhood=neighborhood, threshold=2
+    )
 
     assert len(islands) == 2
     assert len(islands[0]) == 3
@@ -37,23 +35,18 @@ def test_islands():
     assert len(islands[1]) == 1
     assert 4 in islands[1]
 
-    intensities = [
-           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1]
+    intensities = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     islands = pl.features.islands_greater_equal_threshold(
-        intensities=intensities,
-        neighborhood=neighborhood,
-        threshold=1)
+        intensities=intensities, neighborhood=neighborhood, threshold=1
+    )
 
     assert len(islands) == 1
     for i in idx:
         assert i in islands[0]
 
-
-    intensities = [
-           1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1]
+    intensities = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     islands = pl.features.islands_greater_equal_threshold(
-        intensities=intensities,
-        neighborhood=neighborhood,
-        threshold=2)
+        intensities=intensities, neighborhood=neighborhood, threshold=2
+    )
 
     assert len(islands) == 0

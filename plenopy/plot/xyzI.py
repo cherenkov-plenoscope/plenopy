@@ -16,32 +16,30 @@ def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
                     intensities to be plotted in red color.
     """
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection="3d")
 
     add2ax_xyzI(
         ax,
         xyzIs,
-        color='b',
+        color="b",
         steps=steps,
         alpha_max=alpha_max,
-        ball_size=ball_size)
+        ball_size=ball_size,
+    )
 
     if xyzIs2 is not None:
         add2ax_xyzI(
             ax,
             xyzIs2,
-            color='r',
+            color="r",
             steps=steps,
             alpha_max=alpha_max,
-            ball_size=ball_size)
+            ball_size=ball_size,
+        )
 
 
 def hist3D_to_xyzI(
-    xyz_hist,
-    x_bin_centers,
-    y_bin_centers,
-    z_bin_centers,
-    threshold=0,
+    xyz_hist, x_bin_centers, y_bin_centers, z_bin_centers, threshold=0,
 ):
     """
     Returns a flat array of x,y,z positions and intensities for each voxel in
@@ -69,22 +67,22 @@ def hist3D_to_xyzI(
         for y in range(xyz_hist.shape[1]):
             for z in range(xyz_hist.shape[2]):
                 if xyz_hist[x, y, z] > threshold:
-                    xyzi.append(np.array([
-                        x_bin_centers[x],
-                        y_bin_centers[y],
-                        z_bin_centers[z],
-                        xyz_hist[x, y, z]]))
+                    xyzi.append(
+                        np.array(
+                            [
+                                x_bin_centers[x],
+                                y_bin_centers[y],
+                                z_bin_centers[z],
+                                xyz_hist[x, y, z],
+                            ]
+                        )
+                    )
     xyzi = np.array(xyzi)
     return xyzi
 
 
 def add2ax_xyzI(
-    ax,
-    xyzIs,
-    color='b',
-    alpha_max=0.2,
-    steps=32,
-    ball_size=100.0
+    ax, xyzIs, color="b", alpha_max=0.2, steps=32, ball_size=100.0
 ):
     if xyzIs.shape[0] == 0:
         return
@@ -97,8 +95,8 @@ def add2ax_xyzI(
         steps = length
 
     (starts, ends) = _start_and_end_slices_for_1D_array_chunking(
-        number_of_chunks=steps,
-        array_length=length)
+        number_of_chunks=steps, array_length=length
+    )
 
     mean_chunk_intensities = []
     for i in range(steps):
@@ -114,7 +112,7 @@ def add2ax_xyzI(
         end = ends[i]
         mean_I = mean_chunk_intensities[i]
         max_I = max_chunk_intensities
-        relative_I = mean_I/max_I
+        relative_I = mean_I / max_I
 
         ax.scatter(
             xyzIs_sorted[start:end, 0],
@@ -122,22 +120,22 @@ def add2ax_xyzI(
             xyzIs_sorted[start:end, 2],
             s=ball_size,
             depthshade=False,
-            alpha=relative_I*alpha_max,
+            alpha=relative_I * alpha_max,
             c=color,
-            lw=0)
+            lw=0,
+        )
 
 
 def _start_and_end_slices_for_1D_array_chunking(
-    number_of_chunks,
-    array_length
+    number_of_chunks, array_length
 ):
     assert array_length >= number_of_chunks
     assert array_length > 0
     assert number_of_chunks >= 1
 
     chunk_edges = np.array(
-        np.floor(
-            np.linspace(0.0, array_length-1, number_of_chunks+1)),
-        dtype=np.int64)
+        np.floor(np.linspace(0.0, array_length - 1, number_of_chunks + 1)),
+        dtype=np.int64,
+    )
 
     return (chunk_edges[0:-1], chunk_edges[1:])

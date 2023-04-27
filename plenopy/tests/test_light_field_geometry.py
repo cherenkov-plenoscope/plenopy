@@ -8,8 +8,8 @@ import os
 
 def test_is_own_data():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy',
-        'tests/resources/run.acp/input/plenoscope')
+        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    )
     lfg = pl.LightFieldGeometry(light_field_geometry_path)
 
     assert lfg.cx_mean.flags.owndata
@@ -33,14 +33,14 @@ def test_is_own_data():
 
 def test_init():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy',
-        'tests/resources/run.acp/input/plenoscope')
+        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    )
     ls = pl.LightFieldGeometry(light_field_geometry_path)
 
     # A 'small' MAGIC 17m class ACP
     number_pixel = 1039
     number_paxel = 19
-    number_lixel = number_pixel*number_paxel
+    number_lixel = number_pixel * number_paxel
 
     assert ls.number_lixel == number_lixel
     assert ls.number_pixel == number_pixel
@@ -70,30 +70,31 @@ def test_init():
 
 def test_plot():
     light_field_geometry_path = pkg_resources.resource_filename(
-        'plenopy',
-        'tests/resources/run.acp/input/plenoscope')
+        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    )
     light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 
     figure_style = {"rows": 360, "cols": 640, "fontsize": 1}
 
-    with tempfile.TemporaryDirectory(prefix='plenopy') as tmp:
+    with tempfile.TemporaryDirectory(prefix="plenopy") as tmp:
         ls_plot = pl.plot.light_field_geometry.save_all(
             light_field_geometry=light_field_geometry,
             out_dir=tmp,
-            figure_style=figure_style)
+            figure_style=figure_style,
+        )
 
-        assert os.path.exists(os.path.join(tmp, 'cx_mean.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'cy_mean.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'cy_std.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'cy_std.jpg'))
+        assert os.path.exists(os.path.join(tmp, "cx_mean.jpg"))
+        assert os.path.exists(os.path.join(tmp, "cy_mean.jpg"))
+        assert os.path.exists(os.path.join(tmp, "cy_std.jpg"))
+        assert os.path.exists(os.path.join(tmp, "cy_std.jpg"))
 
-        assert os.path.exists(os.path.join(tmp, 'x_mean.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'y_mean.jpg'))
+        assert os.path.exists(os.path.join(tmp, "x_mean.jpg"))
+        assert os.path.exists(os.path.join(tmp, "y_mean.jpg"))
 
-        assert os.path.exists(os.path.join(tmp, 't_mean.jpg'))
-        assert os.path.exists(os.path.join(tmp, 't_std.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'eta_mean.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'eta_std.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'c_mean_vs_c_std.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'x_y_mean_hist2d.jpg'))
-        assert os.path.exists(os.path.join(tmp, 'cx_cy_mean_hist2d.jpg'))
+        assert os.path.exists(os.path.join(tmp, "t_mean.jpg"))
+        assert os.path.exists(os.path.join(tmp, "t_std.jpg"))
+        assert os.path.exists(os.path.join(tmp, "eta_mean.jpg"))
+        assert os.path.exists(os.path.join(tmp, "eta_std.jpg"))
+        assert os.path.exists(os.path.join(tmp, "c_mean_vs_c_std.jpg"))
+        assert os.path.exists(os.path.join(tmp, "x_y_mean_hist2d.jpg"))
+        assert os.path.exists(os.path.join(tmp, "cx_cy_mean_hist2d.jpg"))

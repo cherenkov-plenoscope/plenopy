@@ -15,10 +15,10 @@ def save_slice_stack(
     xy_extent,
     z_bin_centers,
     output_path,
-    image_prefix='slice_',
+    image_prefix="slice_",
     intensity_volume_2=None,
-    xlabel='x/m',
-    ylabel='y/m',
+    xlabel="x/m",
+    ylabel="y/m",
     sqrt_intensity=False,
     figure_style=splt.FIGURE_16_9,
 ):
@@ -76,8 +76,7 @@ def save_slice_stack(
 
         plt.savefig(
             os.path.join(
-                output_path,
-                image_prefix+str(z_slice).zfill(6)+".jpg"
+                output_path, image_prefix + str(z_slice).zfill(6) + ".jpg"
             ),
         )
 
@@ -95,14 +94,11 @@ def add2ax_image(
     I_vol_min2=None,
     I_vol_max2=None,
     xy_extent=[-500, 500, -500, 500],
-    cmap='viridis'
+    cmap="viridis",
 ):
     if image_2 is None:
         img = ax.imshow(
-            image,
-            cmap=cmap,
-            extent=xy_extent,
-            interpolation='None'
+            image, cmap=cmap, extent=xy_extent, interpolation="None"
         )
         img.set_clim(I_vol_min1, I_vol_max1)
         divider = make_axes_locatable(ax)
@@ -113,34 +109,27 @@ def add2ax_image(
             image,
             color_channel=1,
             I_vol_min1=I_vol_min1,
-            I_vol_max1=I_vol_max1
+            I_vol_max1=I_vol_max1,
         )
         rgb_img2 = matrix_2_rgb_image(
             image_2,
             color_channel=0,
             I_vol_min1=I_vol_min2,
-            I_vol_max1=I_vol_max2
+            I_vol_max1=I_vol_max2,
         )
         rgb_image = rgb_img1 + rgb_img2
-        img = ax.imshow(
-            rgb_image,
-            extent=xy_extent,
-            interpolation='None'
-        )
+        img = ax.imshow(rgb_image, extent=xy_extent, interpolation="None")
 
 
 def matrix_2_rgb_image(
-    matrix,
-    color_channel=0,
-    I_vol_min1=None,
-    I_vol_max1=None
+    matrix, color_channel=0, I_vol_min1=None, I_vol_max1=None
 ):
     if I_vol_min1 is None:
         I_vol_min1 = matrix.min()
     if I_vol_max1 is None:
         I_vol_max1 = matrix.max()
     image = np.zeros(shape=(matrix.shape[0], matrix.shape[1], 3))
-    inensity = (matrix - I_vol_min1)/(I_vol_max1 - I_vol_min1)
+    inensity = (matrix - I_vol_min1) / (I_vol_max1 - I_vol_min1)
     image[:, :, color_channel] = inensity
     return image
 
@@ -154,8 +143,8 @@ def save_slice_video(
     output_path,
     fps=25,
     intensity_volume_2=None,
-    xlabel='x/m',
-    ylabel='y/m',
+    xlabel="x/m",
+    ylabel="y/m",
 ):
     with tempfile.TemporaryDirectory() as work_dir:
         save_slice_stack(
@@ -174,34 +163,44 @@ def save_slice_video(
         i = 0
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(0).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+                os.path.join(
+                    work_dir, image_prefix + str(0).zfill(6) + ".jpg"
+                ),
+                os.path.join(work_dir, "video_" + str(i).zfill(6) + ".jpg"),
             )
             i += 1
 
         for o in range(steps):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+                os.path.join(
+                    work_dir, image_prefix + str(o).zfill(6) + ".jpg"
+                ),
+                os.path.join(work_dir, "video_" + str(i).zfill(6) + ".jpg"),
             )
             i += 1
 
         for o in range(5):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(steps-1).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+                os.path.join(
+                    work_dir, image_prefix + str(steps - 1).zfill(6) + ".jpg"
+                ),
+                os.path.join(work_dir, "video_" + str(i).zfill(6) + ".jpg"),
             )
             i += 1
 
         for o in range(steps - 1, -1, -1):
             shutil.copy(
-                os.path.join(work_dir, image_prefix+str(o).zfill(6)+'.jpg'),
-                os.path.join(work_dir, 'video_'+str(i).zfill(6)+'.jpg')
+                os.path.join(
+                    work_dir, image_prefix + str(o).zfill(6) + ".jpg"
+                ),
+                os.path.join(work_dir, "video_" + str(i).zfill(6) + ".jpg"),
             )
             i += 1
 
         splt.write_video_from_image_slices(
-            image_sequence_wildcard_path=os.path.join(work_dir, 'video_%06d.jpg'),
+            image_sequence_wildcard_path=os.path.join(
+                work_dir, "video_%06d.jpg"
+            ),
             output_path=output_path,
-            frames_per_second=fps
+            frames_per_second=fps,
         )

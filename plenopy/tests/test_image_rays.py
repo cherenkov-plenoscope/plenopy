@@ -4,11 +4,11 @@ import pkg_resources
 import pytest
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def light_field_geometry():
     path = pkg_resources.resource_filename(
-        'plenopy',
-        'tests/resources/run.acp/input/plenoscope')
+        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    )
     lfg = pl.LightFieldGeometry(path)
     assert lfg.number_lixel == 19741
     assert lfg.number_pixel == 1039
@@ -34,7 +34,7 @@ def test_image_rays_inside_fov(light_field_geometry):
     image_rays = pl.image.ImageRays(light_field_geometry)
 
     objs_mins_maxs = [
-        [25.e3, 0.98, 1.00],
+        [25.0e3, 0.98, 1.00],
         [5.0e3, 0.97, 0.98],
         [2.5e3, 0.96, 0.97],
         [1.2e3, 0.91, 0.93],
@@ -47,7 +47,9 @@ def test_image_rays_inside_fov(light_field_geometry):
         min_fraction = obj_min_max[1]
         max_fraction = obj_min_max[2]
         pixel_ids, in_fov = image_rays.pixel_ids_of_lixels_in_object_distance(
-            object_distance)
+            object_distance
+        )
         assert (
-            in_fov.sum() >= min_fraction*num_lix and
-            in_fov.sum() < max_fraction*num_lix)
+            in_fov.sum() >= min_fraction * num_lix
+            and in_fov.sum() < max_fraction * num_lix
+        )

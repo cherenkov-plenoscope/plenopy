@@ -29,6 +29,7 @@ class PhotonBunches(object):
                                                     this photon to reach the
                                                     observation level [1]
     """
+
     def __init__(self, path):
         """
         Parameters
@@ -37,21 +38,25 @@ class PhotonBunches(object):
         """
         floats_per_photon = 8
         raw = np.fromfile(path, dtype=np.float32)
-        raw = raw.reshape([raw.shape[0]//floats_per_photon, floats_per_photon])
-        self.x = raw[:, 0]/100  # in meters
-        self.y = raw[:, 1]/100  # in meters
+        raw = raw.reshape(
+            [raw.shape[0] // floats_per_photon, floats_per_photon]
+        )
+        self.x = raw[:, 0] / 100  # in meters
+        self.y = raw[:, 1] / 100  # in meters
         self.cx = raw[:, 2]  # in rad
         self.cy = raw[:, 3]  # in rad
-        self.arrival_time_since_first_interaction = raw[:, 4]/1e9  # in seconds
-        self.emission_height = raw[:, 5]/100  # in meters
+        self.arrival_time_since_first_interaction = (
+            raw[:, 4] / 1e9
+        )  # in seconds
+        self.emission_height = raw[:, 5] / 100  # in meters
         self.probability_to_reach_observation_level = raw[:, 6]  # in [1]
-        self.wavelength = raw[:, 7]/1e9  # in meters
+        self.wavelength = raw[:, 7] / 1e9  # in meters
 
     def __repr__(self):
         out = self.__class__.__name__
-        out += '('
-        out += str(self.x.shape[0])+' bunches, '
+        out += "("
+        out += str(self.x.shape[0]) + " bunches, "
         out += str(self.probability_to_reach_observation_level.sum())
-        out += ' photons'
-        out += ')'
+        out += " photons"
+        out += ")"
         return out

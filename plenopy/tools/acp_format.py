@@ -14,7 +14,7 @@ def all_folders_with_digit_names_in_path(path):
     ----------
     path       path of a run directory
     """
-    files_in_run_folder = glob.glob(os.path.join(path, '*'))
+    files_in_run_folder = glob.glob(os.path.join(path, "*"))
     events = []
     for fi in files_in_run_folder:
         if os.path.isdir(fi) and os.path.basename(fi).isdigit():
@@ -31,7 +31,7 @@ def is_gzipped(path):
     Reads in the first two bytes of a file and compares with the gzip magic
     numbers.
     """
-    with open(path, 'rb') as fin:
+    with open(path, "rb") as fin:
         marker = fin.read(2)
         if len(marker) < 2:
             return False
@@ -39,17 +39,14 @@ def is_gzipped(path):
 
 
 def compress_event_in_place(event_path):
-    phs_path = os.path.join(
-        event_path,
-        'raw_light_field_sensor_response.phs')
+    phs_path = os.path.join(event_path, "raw_light_field_sensor_response.phs")
     if os.path.isfile(phs_path):
-        subprocess.check_call(['gzip', phs_path])
+        subprocess.check_call(["gzip", phs_path])
     pulse_origins_path = os.path.join(
-        event_path,
-        'simulation_truth',
-        'detector_pulse_origins.bin')
+        event_path, "simulation_truth", "detector_pulse_origins.bin"
+    )
     if os.path.isfile(pulse_origins_path):
-        subprocess.check_call(['gzip', pulse_origins_path])
+        subprocess.check_call(["gzip", pulse_origins_path])
 
 
 class gz_transparent_open:
@@ -57,8 +54,8 @@ class gz_transparent_open:
         self.file_options = file_options
         if os.path.isfile(path):
             self.path = path
-        elif os.path.isfile(path+'.gz'):
-            self.path = path+'.gz'
+        elif os.path.isfile(path + ".gz"):
+            self.path = path + ".gz"
 
     def __enter__(self):
         if is_gzipped(self.path):

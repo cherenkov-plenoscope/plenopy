@@ -50,22 +50,26 @@ class ImageRays(object):
         #  Positive cx incoming-directions are reflected onto negative x
         #  positions on the sensor-plane and vice-versa.
 
-        sensor_plane_intersections = np.array([
-            -self._f*np.tan(cx),
-            -self._f*np.tan(cy),
-            self._f*np.ones(lfg.number_lixel)]).T
-        self.support = np.array([
-            x,
-            y,
-            np.zeros(lfg.number_lixel)]).T
+        sensor_plane_intersections = np.array(
+            [
+                -self._f * np.tan(cx),
+                -self._f * np.tan(cy),
+                self._f * np.ones(lfg.number_lixel),
+            ]
+        ).T
+        self.support = np.array([x, y, np.zeros(lfg.number_lixel)]).T
         self.direction = sensor_plane_intersections - self.support
         no = np.linalg.norm(self.direction, axis=1)
         self.direction[:, 0] /= no
         self.direction[:, 1] /= no
         self.direction[:, 2] /= no
         self.pixel_pos_tree = lfg.pixel_pos_tree
-        self.pixel_outer_radius = 2/np.sqrt(3) * 0.5*(
-            lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
+        self.pixel_outer_radius = (
+            2
+            / np.sqrt(3)
+            * 0.5
+            * (lfg.sensor_plane2imaging_system.pixel_FoV_hex_flat2flat)
+        )
 
     def cx_cy_in_object_distance(self, object_distance):
         """
@@ -76,13 +80,13 @@ class ImageRays(object):
         ----------
         object_distance     The distance from the aperture to focus on.
         """
-        image_distance = 1/(1/self._f - 1/object_distance)
-        scale_factors = image_distance/self.direction[:, 2]
+        image_distance = 1 / (1 / self._f - 1 / object_distance)
+        scale_factors = image_distance / self.direction[:, 2]
         pos = self.support + (scale_factors * self.direction.T).T
         ix = pos[:, 0]
         iy = pos[:, 1]
-        cx = -np.arctan(ix/image_distance)
-        cy = -np.arctan(iy/image_distance)
+        cx = -np.arctan(ix / image_distance)
+        cy = -np.arctan(iy / image_distance)
         return cx, cy
 
     def pixel_ids_of_lixels_in_object_distance(self, object_distance):
@@ -90,14 +94,14 @@ class ImageRays(object):
         cxy = np.vstack((cx, cy)).T
         number_nearest_neighbors = 1
         distances, pixel_indicies = self.pixel_pos_tree.query(
-            x=cxy,
-            k=number_nearest_neighbors)
-        inside_fov = distances <= 1.1*self.pixel_outer_radius
+            x=cxy, k=number_nearest_neighbors
+        )
+        inside_fov = distances <= 1.1 * self.pixel_outer_radius
         return pixel_indicies, inside_fov
 
     def __repr__(self):
         out = self.__class__.__name__
-        out += '('
-        out += str(self.support.shape[0]) + ' image rays'
-        out += ')'
+        out += "("
+        out += str(self.support.shape[0]) + " image rays"
+        out += ")"
         return out

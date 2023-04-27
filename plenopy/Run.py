@@ -33,8 +33,8 @@ class Run(object):
 
         if light_field_geometry is None:
             self.light_field_geometry = LightFieldGeometry(
-                os.path.join(
-                    self.path, 'input', 'plenoscope'))
+                os.path.join(self.path, "input", "plenoscope")
+            )
         else:
             self.light_field_geometry = light_field_geometry
         self.event_numbers = self._event_numbers_in_run()
@@ -53,7 +53,7 @@ class Run(object):
         """
         try:
             event_number = self.event_numbers[index]
-        except(IndexError):
+        except (IndexError):
             raise StopIteration
         event_path = os.path.join(self.path, str(event_number))
         return Event(event_path, self.light_field_geometry)
@@ -62,7 +62,7 @@ class Run(object):
         return self.number_events
 
     def __repr__(self):
-        out = 'Run('
+        out = "Run("
         out += "'" + self.path + "', "
-        out += str(self.number_events) + ' events)'
+        out += str(self.number_events) + " events)"
         return out

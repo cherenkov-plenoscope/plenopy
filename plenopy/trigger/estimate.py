@@ -3,6 +3,7 @@ from ..photon_stream.cython_reader import photon_stream_to_image_sequence
 import scipy.ndimage
 from .. import raw_light_field_sensor_response
 
+
 def first_stage(
     raw_sensor_response,
     light_field_geometry,

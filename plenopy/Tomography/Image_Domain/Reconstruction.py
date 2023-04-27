@@ -7,7 +7,7 @@ from .. import System_Matrix
 
 from ... import classify
 from ... import trigger
-from .. Simulation_Truth import emission_positions_of_photon_bunches
+from ..Simulation_Truth import emission_positions_of_photon_bunches
 from ...plot import slices
 
 

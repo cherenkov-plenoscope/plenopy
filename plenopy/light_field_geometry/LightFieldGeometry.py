@@ -104,11 +104,10 @@ class LightFieldGeometry(object):
     def __init__(self, path):
         path = os.path.abspath(path)
         self._read_light_field_sensor_geometry_header(
-            os.path.join(path, 'light_field_sensor_geometry.header.bin'))
-        self._read_lixel_positions(
-            os.path.join(path, 'lixel_positions.bin'))
-        self._read_lixel_statistics(
-            os.path.join(path, 'lixel_statistics.bin'))
+            os.path.join(path, "light_field_sensor_geometry.header.bin")
+        )
+        self._read_lixel_positions(os.path.join(path, "lixel_positions.bin"))
+        self._read_lixel_statistics(os.path.join(path, "lixel_statistics.bin"))
         self._calc_pixel_and_paxel_average_positions()
         self._init_lixel_polygons()
         self.valid_efficiency = self.most_efficient_lixels(0.95)
@@ -117,28 +116,26 @@ class LightFieldGeometry(object):
     def _calc_pixel_and_paxel_average_positions(self):
         npix = self.number_pixel
         npax = self.number_paxel
-        self.paxel_pos_x = np.nanmean(
-            self.x_mean.reshape(npix, npax),
-            axis=0)
-        self.paxel_pos_y = np.nanmean(
-            self.y_mean.reshape(npix, npax),
-            axis=0)
+        self.paxel_pos_x = np.nanmean(self.x_mean.reshape(npix, npax), axis=0)
+        self.paxel_pos_y = np.nanmean(self.y_mean.reshape(npix, npax), axis=0)
         self.pixel_pos_cx = np.nanmean(
-            self.cx_mean.reshape(npix, npax),
-            axis=1)
+            self.cx_mean.reshape(npix, npax), axis=1
+        )
         self.pixel_pos_cy = np.nanmean(
-            self.cy_mean.reshape(npix, npax),
-            axis=1)
+            self.cy_mean.reshape(npix, npax), axis=1
+        )
         self.pixel_pos_tree = scipy.spatial.cKDTree(
-            np.array([self.pixel_pos_cx, self.pixel_pos_cy]).T)
+            np.array([self.pixel_pos_cx, self.pixel_pos_cy]).T
+        )
         self.paxel_pos_tree = scipy.spatial.cKDTree(
-            np.array([self.paxel_pos_x, self.paxel_pos_y]).T)
+            np.array([self.paxel_pos_x, self.paxel_pos_y]).T
+        )
         self.paxel_efficiency_along_pixel = np.nanmean(
-            self.efficiency.reshape(npix, npax),
-            axis=0)
+            self.efficiency.reshape(npix, npax), axis=0
+        )
         self.pixel_efficiency_along_paxel = np.nanmean(
-            self.efficiency.reshape(npix, npax),
-            axis=1)
+            self.efficiency.reshape(npix, npax), axis=1
+        )
 
     def _read_lixel_statistics(self, path):
         ls = np.fromfile(path, dtype=np.float32)
@@ -158,15 +155,15 @@ class LightFieldGeometry(object):
 
         self.time_delay_wrt_principal_aperture_plane_mean = ls[:, 10].copy()
         self.time_delay_mean = (
-            self.time_delay_wrt_principal_aperture_plane_mean -
-            np.nanmin(self.time_delay_wrt_principal_aperture_plane_mean)
+            self.time_delay_wrt_principal_aperture_plane_mean
+            - np.nanmin(self.time_delay_wrt_principal_aperture_plane_mean)
         )
         self.time_delay_std = ls[:, 11].copy()
         self.time_delay_wrt_principal_aperture_plane_std = self.time_delay_std
 
     def _read_light_field_sensor_geometry_header(self, path):
         gh = read_float32_header(path)
-        assert_marker_of_header_is(gh, 'PLGH')
+        assert_marker_of_header_is(gh, "PLGH")
         self.sensor_plane2imaging_system = PlenoscopeGeometry(gh)
 
         self.number_pixel = int(gh[101 - 1])
@@ -186,20 +183,23 @@ class LightFieldGeometry(object):
         self.lixel_positions_y = lp[:, 1]
 
     def _init_lixel_polygons(self):
-        s32 = np.sqrt(3)/2.
+        s32 = np.sqrt(3) / 2.0
 
-        poly_template = np.array([
-            [0, 1],
-            [-s32, 0.5],
-            [-s32, -0.5],
-            [0, -1],
-            [s32, -0.5],
-            [s32, 0.5]])
+        poly_template = np.array(
+            [
+                [0, 1],
+                [-s32, 0.5],
+                [-s32, -0.5],
+                [0, -1],
+                [s32, -0.5],
+                [s32, 0.5],
+            ]
+        )
         poly_template *= self.lixel_outer_radius
 
-        lixel_centers_xy = np.array([
-            self.lixel_positions_x,
-            self.lixel_positions_y])
+        lixel_centers_xy = np.array(
+            [self.lixel_positions_x, self.lixel_positions_y]
+        )
 
         self.lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
 
@@ -224,31 +224,37 @@ class LightFieldGeometry(object):
     def _init_time_delay_image(self):
         # distances d from pap to plane of isochor light-front
         d_mean, d_std = isochor_image.relative_path_length_for_isochor_image(
-            cx_mean=self.cx_mean, cx_std=self.cx_std,
-            cy_mean=self.cy_mean, cy_std=self.cy_std,
-            x_mean=self.x_mean, x_std=self.x_std,
-            y_mean=self.y_mean, y_std=self.y_std)
+            cx_mean=self.cx_mean,
+            cx_std=self.cx_std,
+            cy_mean=self.cy_mean,
+            cy_std=self.cy_std,
+            x_mean=self.x_mean,
+            x_std=self.x_std,
+            y_mean=self.y_mean,
+            y_std=self.y_std,
+        )
 
-        t_mean = d_mean/speed_of_light
-        t_std = d_std/speed_of_light
+        t_mean = d_mean / speed_of_light
+        t_std = d_std / speed_of_light
 
         valid = np.invert(np.isnan(t_mean))
 
         self.time_delay_image_mean = -self.time_delay_mean + t_mean
         self.time_delay_image_mean -= np.min(self.time_delay_image_mean[valid])
         self.time_delay_image_std = np.sqrt(
-            self.time_delay_std**2 + t_std**2)
+            self.time_delay_std ** 2 + t_std ** 2
+        )
 
     def pixel_and_paxel_of_lixel(self, lixel):
-        pix = lixel//self.number_paxel
-        pax = lixel - pix*self.number_paxel
+        pix = lixel // self.number_paxel
+        pax = lixel - pix * self.number_paxel
         return pix, pax
 
     def __repr__(self):
         out = self.__class__.__name__
-        out += '('
-        out += str(self.number_lixel) + ' lixel, '
-        out += str(self.number_pixel) + ' pixel, '
-        out += str(self.number_paxel) + ' paxel'
-        out += ')'
+        out += "("
+        out += str(self.number_lixel) + " lixel, "
+        out += str(self.number_pixel) + " pixel, "
+        out += str(self.number_paxel) + " paxel"
+        out += ")"
         return out

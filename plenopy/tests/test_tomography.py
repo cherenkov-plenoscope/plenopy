@@ -92,8 +92,7 @@ def test_image_domain():
 
     for i in range(10):
         rec = pl.Tomography.Image_Domain.Reconstruction.iterate(
-            reconstruction=rec,
-            point_spread_function=psf,
+            reconstruction=rec, point_spread_function=psf,
         )
 
     vol = rec["reconstructed_volume_intensity"]
