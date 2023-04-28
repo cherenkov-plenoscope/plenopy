@@ -4,6 +4,7 @@ from . import photon_stream
 
 
 def make(raw_sensor_response, time_delays_to_be_subtracted):
+    raw = raw_sensor_response
     lixel_sequence = np.zeros(
         shape=(raw["number_time_slices"], raw["number_lixel"]), dtype=np.uint16
     )
@@ -18,14 +19,14 @@ def make(raw_sensor_response, time_delays_to_be_subtracted):
 
 
 def make_isochor_image(raw_sensor_response, time_delay_image_mean):
-    return make_light_field_sequence(
+    return make(
         raw_sensor_response=raw_sensor_response,
         time_delays_to_be_subtracted=-1.0 * time_delay_image_mean,
     )
 
 
 def make_isochor_aperture(time_delay_mean):
-    return make_light_field_sequence(
+    return make(
         raw_sensor_response=raw_sensor_response,
         time_delays_to_be_subtracted=+1.0 * time_delay_mean,
     )
@@ -33,7 +34,7 @@ def make_isochor_aperture(time_delay_mean):
 
 def make_raw(raw_sensor_response):
     zeros = np.zeros(raw_sensor_response["number_lixel"], dtype=np.float32)
-    return make_light_field_sequence(
+    return make(
         raw_sensor_response=raw_sensor_response,
         time_delays_to_be_subtracted=zeros,
     )
