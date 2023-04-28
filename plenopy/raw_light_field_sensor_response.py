@@ -40,8 +40,8 @@ def read(f):
         f.read(out["number_symbols"]), dtype=np.uint8
     )
 
-    out["number_photons"] = (
-        out["photon_stream"].shape[0] - out["number_lixel"] - 1
+    out["number_photons"] = out["photon_stream"].shape[0] - (
+        out["number_lixel"] - 1
     )
     return out
 
@@ -63,3 +63,26 @@ def write(f, raw_sensor_response):
     assert isinstance(raw["photon_stream"], np.ndarray)
     assert raw["photon_stream"].dtype == np.uint8
     f.write(raw["photon_stream"].tobytes())
+
+
+def is_euqal(a, b):
+    if a["time_slice_duration"] != b["time_slice_duration"]:
+        return False
+
+    if a["number_lixel"] != b["number_lixel"]:
+        return False
+
+    if a["number_time_slices"] != b["number_time_slices"]:
+        return False
+
+    if a["number_symbols"] != b["number_symbols"]:
+        return False
+
+    if a["number_photons"] != b["number_photons"]:
+        return False
+
+    for s in range(a["number_symbols"]):
+        if a["photon_stream"][s] != b["photon_stream"][s]:
+            return False
+
+    return True
