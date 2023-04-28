@@ -138,11 +138,9 @@ def arrival_slices_and_lixel_ids(
     cdef unsigned int photon_stream_length = raw["number_symbols"]
     cdef unsigned char NEXT_MARKER = raw_light_field_sensor_response.NEXT_READOUT_CHANNEL_MARKER
     cdef np.ndarray[unsigned char, mode = "c"] arrival_slices = np.zeros(
-        raw["number_photons"], dtype=np.uint8,
-    )
+        raw["number_photons"], dtype=np.uint8)
     cdef np.ndarray[unsigned int, mode = "c"] lixel_ids = np.zeros(
-        raw["number_photons"], dtype=np.uint32,
-    )
+        raw["number_photons"], dtype=np.uint32)
 
     c_photon_stream_to_arrival_slices_and_lixel_ids(
         &photon_stream[0],
