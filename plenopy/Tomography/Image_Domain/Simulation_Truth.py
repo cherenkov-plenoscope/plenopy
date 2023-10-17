@@ -1,7 +1,8 @@
 import numpy as np
 import os
+import thin_lens
 from .. import Simulation_Truth
-from ... import thin_lens
+
 
 
 def init(event, binning):

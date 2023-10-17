@@ -1,5 +1,6 @@
 import numpy as np
 import plenopy as pl
+import thin_lens
 
 
 def test_depth_of_field_transformations():
@@ -7,9 +8,9 @@ def test_depth_of_field_transformations():
     for x in np.linspace(-1e3, 1e3, 13):
         for y in np.linspace(-1e3, 1e3, 13):
             for z in np.linspace(0.1e3, 10e3, 13):
-                cxcyb = pl.thin_lens.xyz2cxcyb(x, y, z, FOCAL_LENGTH)
+                cxcyb = thin_lens.xyz2cxcyb(x, y, z, FOCAL_LENGTH)
 
-                xyz = pl.thin_lens.cxcyb2xyz(
+                xyz = thin_lens.cxcyb2xyz(
                     cxcyb[0], cxcyb[1], cxcyb[2], FOCAL_LENGTH
                 )
 

@@ -20,7 +20,7 @@ extra_files = package_files(os.path.join(setup_py_dir, "plenopy", "tests"))
 
 setuptools.setup(
     name="plenopy",
-    version="0.2.3",
+    version="0.2.4",
     description="View and work on plenoscope events",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -36,6 +36,7 @@ setuptools.setup(
         "setuptools>=18.0",
         "cython",
         "joblib",
+        "thin_lens",
         "ray_voxel_overlap",
         "sebastians_matplotlib_addons",
     ],
