@@ -270,6 +270,35 @@ def read(path):
     return tg
 
 
+def plot(path):
+    """
+    Try to plot the geometry of the sum-trigger.
+
+    Parameters
+    ----------
+    path : str
+        Directory written by plenopy.trigger.geometry.write()
+    """
+    try:
+        import subprocess
+        import importlib
+        from importlib import resources
+
+        plenopy_trigger_script_plot_path = os.path.join(
+            str(importlib.resources.files("plenopy")),
+            "trigger", "scripts", "plot.py",
+        )
+        subprocess.call(
+            [
+                "python",
+                plenopy_trigger_script_plot_path,
+                path,
+            ]
+        )
+    except:
+        pass
+
+
 def _write(path, value, dtype):
     with open(path + "." + dtype, "wb") as f:
         f.write(np.float32(value).astype(dtype).tobytes())
