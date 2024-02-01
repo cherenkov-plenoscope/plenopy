@@ -1,7 +1,5 @@
-import pytest
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import tempfile
 import os
 

@@ -1,15 +1,12 @@
-import pytest
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import os
 
 
 def test_read_photon_stream():
-    run_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp"
-    )
-    run = pl.Run(run_path)
+    path = os.path.join(pl.testing.pkg_dir(), "tests", "resources", "run.acp")
+
+    run = pl.Run(path)
 
     raw_path = os.path.join(
         run.path, "1", "raw_light_field_sensor_response.phs"
@@ -50,7 +47,5 @@ def test_read_photon_stream():
 
 
 def test_open_event():
-    run_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp"
-    )
-    run = pl.Run(run_path)
+    path = os.path.join(pl.testing.pkg_dir(), "tests", "resources", "run.acp")
+    run = pl.Run(path)

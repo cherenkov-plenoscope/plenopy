@@ -1,15 +1,12 @@
 import pytest
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import tempfile
 import os
 import shutil
 import glob
 
-run_path = pkg_resources.resource_filename(
-    "plenopy", "tests/resources/run.acp"
-)
+run_path = os.path.join(pl.testing.pkg_dir(), "tests", "resources", "run.acp")
 
 
 def test_transparent_gzip():

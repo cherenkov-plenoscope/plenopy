@@ -1,13 +1,18 @@
 import numpy as np
 import plenopy as pl
-import pkg_resources
+import os
 import pytest
 
 
 @pytest.fixture(scope="session")
 def light_field_geometry():
-    path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    path = os.path.join(
+        pl.testing.pkg_dir(),
+        "tests",
+        "resources",
+        "run.acp",
+        "input",
+        "plenoscope",
     )
     lfg = pl.LightFieldGeometry(path)
     assert lfg.number_lixel == 19741

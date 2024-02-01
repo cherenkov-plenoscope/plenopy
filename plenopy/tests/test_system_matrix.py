@@ -1,12 +1,15 @@
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import tempfile
 import os
 
-light_field_geometry_path = pkg_resources.resource_filename(
-    "plenopy",
-    os.path.join("tests", "resources", "run.acp", "input", "plenoscope"),
+light_field_geometry_path = os.path.join(
+    pl.testing.pkg_dir(),
+    "tests",
+    "resources",
+    "run.acp",
+    "input",
+    "plenoscope",
 )
 light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
 

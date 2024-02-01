@@ -51,17 +51,17 @@ class RawPhotons:
             event.raw_sensor_response
         )
         return cls(
-            photon_ids=np.arange(arrival_slices.shape[0], dtype=np.int),
+            photon_ids=np.arange(arrival_slices.shape[0], dtype=np.int64),
             arrival_slices=arrival_slices,
             lixel_ids=lixel_ids,
             light_field_geometry=event.light_field_geometry,
             t_pap=(
-                arrival_slices.astype(np.float)
+                arrival_slices.astype(np.float64)
                 * event.raw_sensor_response["time_slice_duration"]
                 + event.light_field_geometry.time_delay_mean[lixel_ids]
             ),
             t_img=(
-                arrival_slices.astype(np.float)
+                arrival_slices.astype(np.float64)
                 * event.raw_sensor_response["time_slice_duration"]
                 + event.light_field_geometry.time_delay_image_mean[lixel_ids]
             ),

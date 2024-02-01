@@ -1,8 +1,7 @@
 import numpy as np
 import plenopy as pl
+import os
 import ray_voxel_overlap as rvo
-import pkg_resources
-
 
 """
 The events for testing are 'recorded' on a MAGIC 17m aperture diameter
@@ -10,9 +9,9 @@ Plenoscope. They are small in size and thus fine to test the interfaces of the
 reconstruction but they can not give physical results, 17m is just too small of
 a baseline.
 """
-run_path = pkg_resources.resource_filename(
-    "plenopy", "tests/resources/run.acp"
-)
+
+
+run_path = os.path.join(pl.testing.pkg_dir(), "tests", "resources", "run.acp")
 
 
 def test_image_domain():

@@ -1,7 +1,6 @@
-import pytest
 import numpy as np
 import plenopy as pl
-import pkg_resources
+import os
 
 
 def test_init():
@@ -44,9 +43,15 @@ def test_ray_xy_intersection():
 
 
 def test_init_from_light_fielg_geometry():
-    path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    path = os.path.join(
+        pl.testing.pkg_dir(),
+        "tests",
+        "resources",
+        "run.acp",
+        "input",
+        "plenoscope",
     )
+
     lfg = pl.LightFieldGeometry(path)
     rays = pl.Tomography.Rays.from_light_field_geometry(lfg)
 

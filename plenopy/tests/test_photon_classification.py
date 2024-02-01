@@ -5,7 +5,7 @@ import plenopy as pl
 def test_benchmark_of_perfect_detector():
     number_all_photons = 1000 * 1000
     number_cherenkov_photons = 100
-    pulse_origins = -100 * np.ones(number_all_photons, dtype=np.int)
+    pulse_origins = -100 * np.ones(number_all_photons, dtype=np.int64)
     pulse_origins[0:number_cherenkov_photons] = np.arange(
         number_cherenkov_photons
     )
@@ -35,7 +35,7 @@ def test_benchmark_of_perfect_detector():
 def test_benchmark_of_normal_detector():
     number_all_photons = 1000 * 1000
     number_cherenkov_photons = 100
-    pulse_origins = -100 * np.ones(number_all_photons, dtype=np.int)
+    pulse_origins = -100 * np.ones(number_all_photons, dtype=np.int64)
     pulse_origins[0:number_cherenkov_photons] = np.arange(
         number_cherenkov_photons
     )
@@ -43,7 +43,7 @@ def test_benchmark_of_normal_detector():
     photon_ids_cherenkov = np.arange(
         int(number_cherenkov_photons / 2),
         int(number_cherenkov_photons * 1.5),
-        dtype=np.int,
+        dtype=np.int64,
     )
 
     result = pl.classify.benchmark(

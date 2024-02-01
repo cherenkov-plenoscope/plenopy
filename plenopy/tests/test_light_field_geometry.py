@@ -1,16 +1,19 @@
-import pytest
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import tempfile
 import os
 
 
 def test_is_own_data():
-    light_field_geometry_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    path = os.path.join(
+        pl.testing.pkg_dir(),
+        "tests",
+        "resources",
+        "run.acp",
+        "input",
+        "plenoscope",
     )
-    lfg = pl.LightFieldGeometry(light_field_geometry_path)
+    lfg = pl.LightFieldGeometry(path)
 
     assert lfg.cx_mean.flags.owndata
     assert lfg.cx_std.flags.owndata
@@ -32,10 +35,15 @@ def test_is_own_data():
 
 
 def test_init():
-    light_field_geometry_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    path = os.path.join(
+        pl.testing.pkg_dir(),
+        "tests",
+        "resources",
+        "run.acp",
+        "input",
+        "plenoscope",
     )
-    ls = pl.LightFieldGeometry(light_field_geometry_path)
+    ls = pl.LightFieldGeometry(path)
 
     # A 'small' MAGIC 17m class ACP
     number_pixel = 1039
@@ -69,10 +77,15 @@ def test_init():
 
 
 def test_plot():
-    light_field_geometry_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp/input/plenoscope"
+    path = os.path.join(
+        pl.testing.pkg_dir(),
+        "tests",
+        "resources",
+        "run.acp",
+        "input",
+        "plenoscope",
     )
-    light_field_geometry = pl.LightFieldGeometry(light_field_geometry_path)
+    light_field_geometry = pl.LightFieldGeometry(path)
 
     figure_style = {"rows": 360, "cols": 640, "fontsize": 1}
 

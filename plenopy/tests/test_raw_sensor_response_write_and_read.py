@@ -1,16 +1,12 @@
-import pytest
 import os
 import numpy as np
 import plenopy as pl
-import pkg_resources
 import tempfile
 
 
 def test_open_event_in_run():
-    run_path = pkg_resources.resource_filename(
-        "plenopy", "tests/resources/run.acp"
-    )
-    run = pl.Run(run_path)
+    path = os.path.join(pl.testing.pkg_dir(), "tests", "resources", "run.acp")
+    run = pl.Run(path)
 
     with tempfile.TemporaryDirectory(prefix="plenopy_test_") as tmp_dir:
         for n, event in enumerate(run):
