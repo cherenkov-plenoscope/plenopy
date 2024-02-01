@@ -90,7 +90,6 @@ def save_principal_aperture_arrival_video(
     figure_style=splt.FIGURE_16_9,
 ):
     with tempfile.TemporaryDirectory(prefix="plenopy_video") as tmp:
-
         save_principal_aperture_arrival_stack(
             light_field_geometry=light_field_geometry,
             photon_lixel_ids=photon_lixel_ids,

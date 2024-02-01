@@ -2,7 +2,9 @@ import numpy as np
 
 
 def from_trigger_response(
-    trigger_response, trigger_geometry, time_slice_duration,
+    trigger_response,
+    trigger_geometry,
+    time_slice_duration,
 ):
     """
     Export the position of the largest trigger-response in absolute

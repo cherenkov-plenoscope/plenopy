@@ -23,7 +23,6 @@ def add2ax(
     colorbar=True,
     norm=None,
 ):
-
     if vmin is None:
         vmin = I.min()
     if vmax is None:

@@ -80,14 +80,14 @@ class Event(object):
                 air_shower_photon_bunches = corsika.PhotonBunches(
                     op.join(truth_path, "air_shower_photon_bunches.bin")
                 )
-            except (FileNotFoundError):
+            except FileNotFoundError:
                 air_shower_photon_bunches = None
 
             try:
                 simulation_truth_detector = simulation_truth.Detector(
                     op.join(truth_path, "detector_pulse_origins.bin")
                 )
-            except (FileNotFoundError):
+            except FileNotFoundError:
                 simulation_truth_detector = None
 
             try:
@@ -97,7 +97,7 @@ class Event(object):
                 photon_propagator = simulation_truth.PhotonPropagator(
                     raw_header=_raw_header
                 )
-            except (FileNotFoundError):
+            except FileNotFoundError:
                 photon_propagator = None
 
             self.simulation_truth = simulation_truth.SimulationTruth(

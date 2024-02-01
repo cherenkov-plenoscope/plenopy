@@ -77,10 +77,10 @@ def relative_path_length_for_isochor_image(
     # del d_mean / del y = cy
 
     d_std = np.sqrt(
-        (x_mean ** 2) * (cx_std ** 2)
-        + (y_mean ** 2) * (cy_std ** 2)
-        + (cx_mean ** 2) * (x_std ** 2)
-        + (cy_mean ** 2) * (y_std ** 2)
+        (x_mean**2) * (cx_std**2)
+        + (y_mean**2) * (cy_std**2)
+        + (cx_mean**2) * (x_std**2)
+        + (cy_mean**2) * (y_std**2)
     )
     return d_mean, d_std
 

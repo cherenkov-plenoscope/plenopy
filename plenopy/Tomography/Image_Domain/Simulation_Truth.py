@@ -4,7 +4,6 @@ import thin_lens
 from .. import Simulation_Truth
 
 
-
 def init(event, binning):
     r = {}
 

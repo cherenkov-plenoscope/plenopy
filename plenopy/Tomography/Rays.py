@@ -25,7 +25,7 @@ class Rays(object):
         """
         number_lixel = x.shape[0]
         self.support = np.array([x, y, np.zeros(number_lixel)]).T
-        dir_z = np.sqrt(1.0 - cx ** 2.0 - cy ** 2.0)
+        dir_z = np.sqrt(1.0 - cx**2.0 - cy**2.0)
         # (cos_x, cos_y, sqrt(1 - cos_x^2 - cos_y^2))^T
         self.direction = np.array([cx, cy, dir_z]).T
 

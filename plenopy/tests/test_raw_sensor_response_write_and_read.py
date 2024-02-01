@@ -13,9 +13,7 @@ def test_open_event_in_run():
     run = pl.Run(run_path)
 
     with tempfile.TemporaryDirectory(prefix="plenopy_test_") as tmp_dir:
-
         for n, event in enumerate(run):
-
             with open(
                 os.path.join(
                     event._path, "raw_light_field_sensor_response.phs"

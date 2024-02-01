@@ -24,7 +24,6 @@ NEXT_READOUT_CHANNEL_MARKER = 255
 
 
 def read(f):
-
     out = {}
     out["time_slice_duration"] = np.frombuffer(
         f.read(4), dtype=np.float32, count=1

@@ -84,7 +84,6 @@ def test_ransac_full():
         for ny in np.linspace(-1, 1, 4):
             for nz in np.linspace(-1, 1, 4):
                 for d in np.linspace(1, 2, 4):
-
                     n = np.array([nx, ny, nz])
                     n = n / np.linalg.norm(n)
 

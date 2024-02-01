@@ -4,7 +4,10 @@ from .narrow_angle.deconvolution import make_cached_tomographic_system_matrix
 
 
 def baselines_in_voxels(
-    light_field_geometry, x_bin_edges, y_bin_edges, z_bin_edges,
+    light_field_geometry,
+    x_bin_edges,
+    y_bin_edges,
+    z_bin_edges,
 ):
     """
     Estimate the 3D reconstruction power of the Plenoscope by counting the
@@ -56,9 +59,14 @@ def baselines_in_voxels(
         n_paxels_in_voxel += paxel_system_matrix_integral > 0
 
     number_baselines_in_voxel = (
-        n_paxels_in_voxel ** 2 - n_paxels_in_voxel
+        n_paxels_in_voxel**2 - n_paxels_in_voxel
     ) / 2.0
 
     return number_baselines_in_voxel.reshape(
-        (n_x_bins, n_y_bins, n_z_bins,), order="C"
+        (
+            n_x_bins,
+            n_y_bins,
+            n_z_bins,
+        ),
+        order="C",
     )

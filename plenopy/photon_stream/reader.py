@@ -66,7 +66,6 @@ def py_photon_stream_to_image_sequence(
             arrival_slice = int(np.round(arrival_time / time_slice_duration))
 
             if arrival_slice < number_time_slices and arrival_slice >= 0:
-
                 for p in range(projection_lengths[phs_lixel]):
                     pp = projection_starts[phs_lixel] + p
                     pixel = projection_links[pp]

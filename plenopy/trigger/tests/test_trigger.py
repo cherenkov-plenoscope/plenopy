@@ -79,7 +79,6 @@ def test_max_response_unique_maximum():
 
     for tt in range(number_time_slices):
         for pp in range(number_pixel):
-
             image_sequence = np.zeros(
                 shape=(number_time_slices, number_pixel), dtype=np.uint32
             )
@@ -155,10 +154,12 @@ def test_io():
         == tg_back["image"]["max_number_nearest_lixel_in_pixel"]
     )
     np.testing.assert_array_equal(
-        tg["image"]["pixel_cx_rad"], tg_back["image"]["pixel_cx_rad"],
+        tg["image"]["pixel_cx_rad"],
+        tg_back["image"]["pixel_cx_rad"],
     )
     np.testing.assert_array_equal(
-        tg["image"]["pixel_cy_rad"], tg_back["image"]["pixel_cy_rad"],
+        tg["image"]["pixel_cy_rad"],
+        tg_back["image"]["pixel_cy_rad"],
     )
 
     for focus in range(tg["number_foci"]):

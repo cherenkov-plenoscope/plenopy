@@ -46,7 +46,6 @@ def save_slice_stack(
         I_vol_min2 = None
 
     for z_slice in range(vol_I_1.shape[2]):
-
         fig.suptitle(event_info_repr)
 
         ax_histogram.set_xlabel(xlabel)

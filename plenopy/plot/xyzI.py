@@ -39,7 +39,11 @@ def plot_xyzI(xyzIs, xyzIs2=None, alpha_max=0.2, steps=32, ball_size=100.0):
 
 
 def hist3D_to_xyzI(
-    xyz_hist, x_bin_centers, y_bin_centers, z_bin_centers, threshold=0,
+    xyz_hist,
+    x_bin_centers,
+    y_bin_centers,
+    z_bin_centers,
+    threshold=0,
 ):
     """
     Returns a flat array of x,y,z positions and intensities for each voxel in

@@ -6,7 +6,6 @@ time_slice_duration = 0.5e-9
 
 
 def test_cx_cy_t_point_cloud():
-
     number_lixel = 10
     cx = np.arange(0, number_lixel)
     cy = np.arange(0, number_lixel)

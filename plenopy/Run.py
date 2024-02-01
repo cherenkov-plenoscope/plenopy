@@ -53,7 +53,7 @@ class Run(object):
         """
         try:
             event_number = self.event_numbers[index]
-        except (IndexError):
+        except IndexError:
             raise StopIteration
         event_path = os.path.join(self.path, str(event_number))
         return Event(event_path, self.light_field_geometry)

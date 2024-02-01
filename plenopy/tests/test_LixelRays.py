@@ -18,7 +18,7 @@ def test_init():
     cy = 0.1 * prng.uniform(size=N)
     direction[:, 0] = cx
     direction[:, 1] = cy
-    direction[:, 2] = np.sqrt(1.0 - cx ** 2 - cy ** 2)
+    direction[:, 2] = np.sqrt(1.0 - cx**2 - cy**2)
 
     rays = pl.Tomography.Rays(x=support[:, 0], y=support[:, 1], cx=cx, cy=cy)
 
@@ -27,7 +27,6 @@ def test_init():
 
 
 def test_ray_xy_intersection():
-
     support = np.array([0.0, 0.0, 0.0])
     direction = np.array([1.0, 2.0, 100.0])
     direction /= np.linalg.norm(direction)

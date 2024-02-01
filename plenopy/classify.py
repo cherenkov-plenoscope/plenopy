@@ -192,7 +192,7 @@ def cherenkov_photons_in_roi_in_image(
 
     cx_roi = roi["cx_center_roi"]
     cy_roi = roi["cy_center_roi"]
-    roi_cx_cy_radius_square = roi_cx_cy_radius ** 2
+    roi_cx_cy_radius_square = roi_cx_cy_radius**2
     cxs, cys = photons.cx_cy_in_object_distance(roi["object_distance"])
     cx_cy_square = (cx_roi - cxs) ** 2 + (cy_roi - cys) ** 2
     roi_mask_cx_cy = cx_cy_square <= roi_cx_cy_radius_square
@@ -248,7 +248,7 @@ def write_dense_photon_ids_to_event(event_path, photon_ids, settings):
     """
     assert os.path.exists(event_path)
     assert np.sum(photon_ids < 0) == 0
-    assert np.sum(photon_ids >= 2 ** 32) == 0
+    assert np.sum(photon_ids >= 2**32) == 0
     photon_ids_uint32 = photon_ids.astype(dtype=np.uint32)
 
     filename = "dense_photon_ids"

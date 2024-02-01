@@ -11,7 +11,9 @@ from .image import add_pixel_image_to_ax
 
 
 def refocus_images(
-    light_field_geometry, photon_lixel_ids, object_distances,
+    light_field_geometry,
+    photon_lixel_ids,
+    object_distances,
 ):
     image_rays = image.ImageRays(light_field_geometry)
     images = []
@@ -145,7 +147,9 @@ def save_side_by_side(
         )
     )
     plt.colorbar(
-        patch_collection, cax=colorbar_ax, orientation="horizontal",
+        patch_collection,
+        cax=colorbar_ax,
+        orientation="horizontal",
     )
 
     obj_dist_label_ax = fig.add_axes(
@@ -188,7 +192,9 @@ def save_refocus_stack(
     figure_style=splt.FIGURE_16_9,
 ):
     object_distances = np.logspace(
-        np.log10(obj_dist_min), np.log10(obj_dist_max), steps,
+        np.log10(obj_dist_min),
+        np.log10(obj_dist_max),
+        steps,
     )
 
     images = refocus_images(

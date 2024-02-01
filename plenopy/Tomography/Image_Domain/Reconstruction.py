@@ -12,7 +12,9 @@ from ...plot import slices
 
 
 def init(
-    light_field_geometry, photon_lixel_ids, binning,
+    light_field_geometry,
+    photon_lixel_ids,
+    binning,
 ):
     intensities = np.zeros(light_field_geometry.number_lixel)
     for lixel_id in photon_lixel_ids:

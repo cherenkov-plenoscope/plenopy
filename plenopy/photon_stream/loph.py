@@ -182,9 +182,10 @@ def raw_sensor_response_to_photon_stream_in_loph_repr(
 
     raw = raw_sensor_response
     cer_ids = cherenkov_photon_ids
-    (arrival_slices, lixel_ids,) = cython_reader.arrival_slices_and_lixel_ids(
-        raw
-    )
+    (
+        arrival_slices,
+        lixel_ids,
+    ) = cython_reader.arrival_slices_and_lixel_ids(raw)
     phs = {}
     phs["sensor"] = {}
     phs["sensor"]["number_channels"] = raw["number_lixel"]
@@ -289,7 +290,6 @@ def split_into_chunks(loph_path, out_dir, chunk_prefix, num_events_in_chunk):
         has_events_left = True
 
         while has_events_left:
-
             chunk_path = os.path.join(
                 out_dir, "{:s}{:09d}.tar".format(chunk_prefix, chunk_count)
             )

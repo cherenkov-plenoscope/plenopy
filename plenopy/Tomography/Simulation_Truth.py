@@ -72,7 +72,7 @@ def emission_positions_of_photon_bunches(
         [
             photon_bunches.cx,
             photon_bunches.cy,
-            np.sqrt(1.0 - photon_bunches.cx ** 2 - photon_bunches.cy ** 2),
+            np.sqrt(1.0 - photon_bunches.cx**2 - photon_bunches.cy**2),
         ]
     ).T
 

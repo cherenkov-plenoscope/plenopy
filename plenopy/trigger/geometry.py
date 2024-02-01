@@ -80,7 +80,6 @@ def init_trigger_geometry(
     tg["foci"] = []
 
     for object_distance in object_distances:
-
         lixel_to_pixel = estimate_projection_of_light_field_to_image(
             light_field_geometry=light_field_geometry,
             object_distance=object_distance,
@@ -286,7 +285,9 @@ def plot(path):
 
         plenopy_trigger_script_plot_path = os.path.join(
             str(importlib.resources.files("plenopy")),
-            "trigger", "scripts", "plot.py",
+            "trigger",
+            "scripts",
+            "plot.py",
         )
         subprocess.call(
             [

@@ -34,8 +34,10 @@ splt.matplotlib.rcParams.update(MATPLOTLIB_RCPARAMS)
 
 
 trigger_geometry = plenopy.trigger.geometry.read(trg_geom_dir)
-trigger_summation_statistics = plenopy.trigger.geometry.init_summation_statistics(
-    trigger_geometry=trigger_geometry
+trigger_summation_statistics = (
+    plenopy.trigger.geometry.init_summation_statistics(
+        trigger_geometry=trigger_geometry
+    )
 )
 
 stats = trigger_summation_statistics
@@ -43,7 +45,6 @@ stats = trigger_summation_statistics
 cxy_lim = [-3.5, 3.5]
 
 for focus in range(trigger_geometry["number_foci"]):
-
     fig = splt.figure(FIGURE_STYLE)
     ax = splt.add_axes(fig=fig, span=AX_SPAN)
     plenopy.plot.image.add2ax(
@@ -65,7 +66,8 @@ for focus in range(trigger_geometry["number_foci"]):
     ax.set_ylabel(r"$c_y\,/\,1^{\circ}$")
     fig.savefig(
         os.path.join(
-            plot_dir, "focus_{:06d}_lixel_in_pixel_overview.jpg".format(focus),
+            plot_dir,
+            "focus_{:06d}_lixel_in_pixel_overview.jpg".format(focus),
         )
     )
     splt.close(fig)
