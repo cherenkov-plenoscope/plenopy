@@ -1,6 +1,8 @@
 import setuptools
-import numpy
 import os
+import Cython
+from Cython import Build as _
+import numpy
 
 
 with open("README.rst", "r", encoding="utf-8") as f:
@@ -12,6 +14,19 @@ with open(os.path.join("plenopy", "version.py")) as f:
     last_line = txt.splitlines()[-1]
     version_string = last_line.split()[-1]
     version = version_string.strip("\"'")
+
+
+extensions = [
+    setuptools.Extension(
+        name="plenopy.photon_stream.cython_reader",
+        sources=[
+            os.path.join("plenopy", "photon_stream", "cython_reader.pyx"),
+            os.path.join("plenopy", "photon_stream", "reader.c"),
+        ],
+        language="c",
+        include_dirs=[numpy.get_include()],
+    )
+]
 
 
 def package_files(directory):
@@ -54,23 +69,12 @@ setuptools.setup(
         "plenopy": extra_files + [os.path.join("trigger", "scripts", "*")]
     },
     install_requires=[
-        "cython",
         "joblib",
         "thin_lens",
         "ray_voxel_overlap",
         "sebastians_matplotlib_addons",
     ],
-    ext_modules=[
-        setuptools.Extension(
-            "plenopy.photon_stream.cython_reader",
-            sources=[
-                os.path.join("plenopy", "photon_stream", "cython_reader.pyx"),
-                os.path.join("plenopy", "photon_stream", "reader.c"),
-            ],
-            include_dirs=[numpy.get_include(), "plenopy"],
-            language="c",
-        ),
-    ],
+    ext_modules=Cython.Build.cythonize(extensions, language_level=3),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
