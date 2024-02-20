@@ -112,7 +112,7 @@ class Event(object):
         if op.exists(path):
             self.dense_photon_ids = classify.read_dense_photon_ids(path)
             photons = classify.RawPhotons.from_event(self)
-            mask = np.zeros(photons.x.shape[0], dtype=np.bool)
+            mask = np.zeros(photons.x.shape[0], dtype=bool)
             mask[self.dense_photon_ids] = True
             self.cherenkov_photons = photons.cut(mask)
         else:

@@ -43,7 +43,7 @@ def baselines_in_voxels(
     n_paxels_in_voxel = np.zeros(n_x_bins * n_y_bins * n_z_bins)
     for paxel in range(light_field_geometry.number_paxel):
         rays_in_this_paxel = np.zeros(
-            light_field_geometry.number_paxel, dtype=np.bool
+            light_field_geometry.number_paxel, dtype=bool
         )
         rays_in_this_paxel[paxel] = True
         rays_in_this_paxel = np.tile(

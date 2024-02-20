@@ -89,8 +89,8 @@ def emission_positions_of_photon_bunches(
     # transform to plenoscope-frame
     emission_positions[:, 2] = emission_positions[:, 2] - observation_level
 
-    valid_aperture = np.ones(supports.shape[0], dtype=np.bool)
-    valid_fov = np.ones(supports.shape[0], dtype=np.bool)
+    valid_aperture = np.ones(supports.shape[0], dtype=bool)
+    valid_fov = np.ones(supports.shape[0], dtype=bool)
 
     if limited_aperture_radius is not None:
         R_aperture = np.sqrt(supports[:, 0] ** 2 + supports[:, 1] ** 2)
