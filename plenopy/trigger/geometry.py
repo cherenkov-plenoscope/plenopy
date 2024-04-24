@@ -1,6 +1,9 @@
 import os
 import numpy as np
 import scipy.spatial
+import zipfile
+import gzip
+import posixpath
 from . import utils
 from .. import tools
 from .. import image
@@ -199,74 +202,90 @@ def init_summation_statistics(trigger_geometry):
 
 def write(trigger_geometry, path):
     assert_trigger_geometry_consistent(trigger_geometry=trigger_geometry)
-    os.makedirs(path, exist_ok=True)
     tg = trigger_geometry
+    join = posixpath.join
 
-    join = os.path.join
-    _write(join(path, "number_lixel"), tg["number_lixel"], "u4")
+    with zipfile.ZipFile(file=path, mode="w") as zout:
+        _zwrite(zout, "number_lixel", tg["number_lixel"], "u4")
 
-    _write(join(path, "image.number_pixel"), tg["image"]["number_pixel"], "u4")
-    _write(
-        join(path, "image.max_number_nearest_lixel_in_pixel"),
-        tg["image"]["max_number_nearest_lixel_in_pixel"],
-        "u4",
-    )
-    _write(join(path, "image.pixel_cx_rad"), tg["image"]["pixel_cx_rad"], "f4")
-    _write(join(path, "image.pixel_cy_rad"), tg["image"]["pixel_cy_rad"], "f4")
-    _write(
-        join(path, "image.pixel_radius_rad"),
-        tg["image"]["pixel_radius_rad"],
-        "f4",
-    )
-
-    _write(join(path, "number_foci"), tg["number_foci"], "u4")
-    for focus in range(tg["number_foci"]):
-        name = "foci.{:06d}".format(focus)
-        _write(
-            join(path, name + ".object_distance_m"),
-            tg["foci"][focus]["object_distance_m"],
+        _zwrite(zout, "image.number_pixel", tg["image"]["number_pixel"], "u4")
+        _zwrite(
+            zout,
+            "image.max_number_nearest_lixel_in_pixel",
+            tg["image"]["max_number_nearest_lixel_in_pixel"],
+            "u4",
+        )
+        _zwrite(zout, "image.pixel_cx_rad", tg["image"]["pixel_cx_rad"], "f4")
+        _zwrite(zout, "image.pixel_cy_rad", tg["image"]["pixel_cy_rad"], "f4")
+        _zwrite(
+            zout,
+            "image.pixel_radius_rad",
+            tg["image"]["pixel_radius_rad"],
             "f4",
         )
-        _write(join(path, name + ".starts"), tg["foci"][focus]["starts"], "u4")
-        _write(
-            join(path, name + ".lengths"), tg["foci"][focus]["lengths"], "u4"
-        )
-        _write(join(path, name + ".links"), tg["foci"][focus]["links"], "u4")
+
+        _zwrite(zout, "number_foci", tg["number_foci"], "u4")
+        for focus in range(tg["number_foci"]):
+            name = "foci.{:06d}".format(focus)
+            _zwrite(
+                zout,
+                name + ".object_distance_m",
+                tg["foci"][focus]["object_distance_m"],
+                "f4",
+            )
+            _zwrite(zout, name + ".starts", tg["foci"][focus]["starts"], "u4")
+            _zwrite(
+                zout, name + ".lengths", tg["foci"][focus]["lengths"], "u4"
+            )
+            _zwrite(zout, name + ".links", tg["foci"][focus]["links"], "u4")
 
 
 def read(path):
-    join = os.path.join
+    join = posixpath.join
     tg = {}
-    tg["number_lixel"] = _read(join(path, "number_lixel"), "u4")[0]
+    with zipfile.ZipFile(file=path, mode="r") as zin:
+        tg["number_lixel"] = _zread(zin, "number_lixel", "u4")[0]
 
-    tg["image"] = {}
-    tg["image"]["number_pixel"] = _read(
-        join(path, "image.number_pixel"), "u4"
-    )[0]
-    tg["image"]["max_number_nearest_lixel_in_pixel"] = _read(
-        join(path, "image.max_number_nearest_lixel_in_pixel"), "u4"
-    )[0]
-    tg["image"]["pixel_cx_rad"] = _read(join(path, "image.pixel_cx_rad"), "f4")
-    tg["image"]["pixel_cy_rad"] = _read(join(path, "image.pixel_cy_rad"), "f4")
-    tg["image"]["pixel_radius_rad"] = _read(
-        join(path, "image.pixel_radius_rad"), "f4"
-    )[0]
-
-    tg["number_foci"] = _read(join(path, "number_foci"), "u4")[0]
-    tg["foci"] = [{} for i in range(tg["number_foci"])]
-    for focus in range(tg["number_foci"]):
-        name = "foci.{:06d}".format(focus)
-        tg["foci"][focus]["object_distance_m"] = _read(
-            join(path, name + ".object_distance_m"), "f4"
+        tg["image"] = {}
+        tg["image"]["number_pixel"] = _zread(zin, "image.number_pixel", "u4")[
+            0
+        ]
+        tg["image"]["max_number_nearest_lixel_in_pixel"] = _zread(
+            zin, "image.max_number_nearest_lixel_in_pixel", "u4"
         )[0]
-        tg["foci"][focus]["starts"] = _read(join(path, name + ".starts"), "u4")
-        tg["foci"][focus]["lengths"] = _read(
-            join(path, name + ".lengths"), "u4"
-        )
-        tg["foci"][focus]["links"] = _read(join(path, name + ".links"), "u4")
+        tg["image"]["pixel_cx_rad"] = _zread(zin, "image.pixel_cx_rad", "f4")
+        tg["image"]["pixel_cy_rad"] = _zread(zin, "image.pixel_cy_rad", "f4")
+        tg["image"]["pixel_radius_rad"] = _zread(
+            zin, "image.pixel_radius_rad", "f4"
+        )[0]
 
-    assert_trigger_geometry_consistent(trigger_geometry=tg)
-    return tg
+        tg["number_foci"] = _zread(zin, "number_foci", "u4")[0]
+        tg["foci"] = [{} for i in range(tg["number_foci"])]
+        for focus in range(tg["number_foci"]):
+            name = "foci.{:06d}".format(focus)
+            tg["foci"][focus]["object_distance_m"] = _zread(
+                zin, name + ".object_distance_m", "f4"
+            )[0]
+            tg["foci"][focus]["starts"] = _zread(zin, name + ".starts", "u4")
+            tg["foci"][focus]["lengths"] = _zread(zin, name + ".lengths", "u4")
+            tg["foci"][focus]["links"] = _zread(zin, name + ".links", "u4")
+
+        assert_trigger_geometry_consistent(trigger_geometry=tg)
+        return tg
+
+
+def _zwrite(zout, name_without_extension, value, dtype):
+    with zout.open(name_without_extension + "." + dtype + ".gz", "w") as f:
+        payload = np.float32(value).astype(dtype).tobytes()
+        payload_gz = gzip.compress(payload)
+        f.write(payload_gz)
+
+
+def _zread(zin, name_without_extension, dtype):
+    with zin.open(name_without_extension + "." + dtype + ".gz", "r") as f:
+        payload_gz = f.read()
+        payload = gzip.decompress(payload_gz)
+        return np.frombuffer(payload, dtype=dtype)
 
 
 def plot(path):
@@ -298,16 +317,6 @@ def plot(path):
         )
     except:
         pass
-
-
-def _write(path, value, dtype):
-    with open(path + "." + dtype, "wb") as f:
-        f.write(np.float32(value).astype(dtype).tobytes())
-
-
-def _read(path, dtype):
-    with open(path + "." + dtype, "rb") as f:
-        return np.frombuffer(f.read(), dtype=dtype)
 
 
 def assert_trigger_geometry_consistent(trigger_geometry):
