@@ -138,11 +138,18 @@ def test_io():
 
     with tempfile.TemporaryDirectory(prefix="test_plenopy_trigger") as tmp:
         pl.trigger.geometry.write(
-            trigger_geometry=tg, path=os.path.join(tmp, "trigger_geometry.zip")
+            trigger_geometry=tg,
+            path=os.path.join(
+                tmp,
+                "dummy" + pl.trigger.geometry.suggested_filename_extension(),
+            ),
         )
 
         tg_back = pl.trigger.geometry.read(
-            path=os.path.join(tmp, "trigger_geometry.zip")
+            path=os.path.join(
+                tmp,
+                "dummy" + pl.trigger.geometry.suggested_filename_extension(),
+            )
         )
 
     assert tg["image"]["number_pixel"] == tg_back["image"]["number_pixel"]

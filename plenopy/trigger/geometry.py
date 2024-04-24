@@ -200,6 +200,10 @@ def init_summation_statistics(trigger_geometry):
     return stats
 
 
+def suggested_filename_extension():
+    return ".trigger_geometry.zip"
+
+
 def write(trigger_geometry, path):
     assert_trigger_geometry_consistent(trigger_geometry=trigger_geometry)
     tg = trigger_geometry
@@ -288,14 +292,16 @@ def _zread(zin, name_without_extension, dtype):
         return np.frombuffer(payload, dtype=dtype)
 
 
-def plot(path):
+def plot(trigger_geometry_path, out_dir):
     """
     Try to plot the geometry of the sum-trigger.
 
     Parameters
     ----------
-    path : str
-        Directory written by plenopy.trigger.geometry.write()
+    trigger_geometry_path : str
+        Zipfile written by plenopy.trigger.geometry.write().
+    out_dir : str
+        Write figures to this directory.
     """
     try:
         import subprocess
@@ -312,7 +318,8 @@ def plot(path):
             [
                 "python",
                 plenopy_trigger_script_plot_path,
-                path,
+                trigger_geometry_path,
+                out_dir,
             ]
         )
     except:

@@ -9,20 +9,25 @@ parser = argparse.ArgumentParser(
     prog="plenopy/trigger/scripts/plot.py",
     description=("Plot the trigger's geometry of the plenoscope"),
 )
-
 parser.add_argument(
     "trigger_geometry_path",
     metavar="PATH",
     type=str,
-    help="directory containing the trigger's geometry.",
+    help="Zipfile containing the trigger's geometry.",
+)
+parser.add_argument(
+    "out_dir",
+    metavar="PATH",
+    type=str,
+    help="Directory to write figures to.",
 )
 
 args = parser.parse_args()
 
-trg_geom_dir = os.path.abspath(args.trigger_geometry_path)
-plot_dir = os.path.join(trg_geom_dir, "plot")
+trg_geom_path = os.path.abspath(args.trigger_geometry_path)
+out_dir = os.path.abspath(args.out_dir)
 
-os.makedirs(plot_dir, exist_ok=True)
+os.makedirs(out_dir, exist_ok=True)
 
 MATPLOTLIB_RCPARAMS = {
     "mathtext.fontset": "cm",
@@ -33,7 +38,7 @@ AX_SPAN = [0.2, 0.2, 0.75, 0.75]
 splt.matplotlib.rcParams.update(MATPLOTLIB_RCPARAMS)
 
 
-trigger_geometry = plenopy.trigger.geometry.read(trg_geom_dir)
+trigger_geometry = plenopy.trigger.geometry.read(trg_geom_path)
 trigger_summation_statistics = (
     plenopy.trigger.geometry.init_summation_statistics(
         trigger_geometry=trigger_geometry
@@ -66,7 +71,7 @@ for focus in range(trigger_geometry["number_foci"]):
     ax.set_ylabel(r"$c_y\,/\,1^{\circ}$")
     fig.savefig(
         os.path.join(
-            plot_dir,
+            out_dir,
             "focus_{:06d}_lixel_in_pixel_overview.jpg".format(focus),
         )
     )
@@ -89,7 +94,7 @@ for focus in range(trigger_geometry["number_foci"]):
     ax.grid(color="k", linestyle="-", linewidth=0.66, alpha=0.1)
     fig.savefig(
         os.path.join(
-            plot_dir,
+            out_dir,
             "focus_{:06d}_lixel_in_pixel_histogram.jpg".format(focus),
         )
     )
@@ -112,7 +117,7 @@ for focus in range(trigger_geometry["number_foci"]):
     ax.grid(color="k", linestyle="-", linewidth=0.66, alpha=0.1)
     fig.savefig(
         os.path.join(
-            plot_dir,
+            out_dir,
             "focus_{:06d}_pixel_in_lixel_histogram.jpg".format(focus),
         )
     )
