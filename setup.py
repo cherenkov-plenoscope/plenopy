@@ -69,6 +69,7 @@ setuptools.setup(
         "plenopy": extra_files + [os.path.join("trigger", "scripts", "*")]
     },
     install_requires=[
+        "scikit-learn",
         "joblib",
         "thin_lens",
         "ray_voxel_overlap",
