@@ -109,7 +109,6 @@ class LightFieldGeometry(object):
         self._read_lixel_positions(os.path.join(path, "lixel_positions.bin"))
         self._read_lixel_statistics(os.path.join(path, "lixel_statistics.bin"))
         self._calc_pixel_and_paxel_average_positions()
-        self._init_lixel_polygons()
         self.valid_efficiency = self.most_efficient_lixels(0.95)
         self._init_time_delay_image()
 
@@ -182,27 +181,6 @@ class LightFieldGeometry(object):
         self.lixel_positions_x = lp[:, 0]
         self.lixel_positions_y = lp[:, 1]
 
-    def _init_lixel_polygons(self):
-        s32 = np.sqrt(3) / 2.0
-
-        poly_template = np.array(
-            [
-                [0, 1],
-                [-s32, 0.5],
-                [-s32, -0.5],
-                [0, -1],
-                [s32, -0.5],
-                [s32, 0.5],
-            ]
-        )
-        poly_template *= self.lixel_outer_radius
-
-        lixel_centers_xy = np.array(
-            [self.lixel_positions_x, self.lixel_positions_y]
-        )
-
-        self.lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
-
     def most_efficient_lixels(self, fraction):
         """
         Returns a boolean mask (shape=[numnper_pixel, number_paxel]) of
@@ -258,3 +236,23 @@ class LightFieldGeometry(object):
         out += str(self.number_paxel) + " paxel"
         out += ")"
         return out
+
+
+def init_lixel_polygons(
+    lixel_positions_x, lixel_positions_y, lixel_outer_radius
+):
+    s32 = np.sqrt(3) / 2.0
+    poly_template = np.array(
+        [
+            [0, 1],
+            [-s32, 0.5],
+            [-s32, -0.5],
+            [0, -1],
+            [s32, -0.5],
+            [s32, 0.5],
+        ]
+    )
+    poly_template *= lixel_outer_radius
+    lixel_centers_xy = np.array([lixel_positions_x, lixel_positions_y])
+    lixel_polygons = [xy + poly_template for xy in lixel_centers_xy.T]
+    return lixel_polygons

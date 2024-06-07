@@ -5,6 +5,7 @@ import matplotlib.colors as colors
 from matplotlib.collections import PolyCollection
 import os
 import warnings
+from ..light_field_geometry.LightFieldGeometry import init_lixel_polygons
 
 
 def save_all(light_field_geometry, out_dir, figure_style=splt.FIGURE_16_9):
@@ -248,8 +249,15 @@ def colored_lixels(
     linewidths=None,
 ):
     warnings.warn(DeprecationWarning("Use ax_add_polygons_with_colormap()"))
+
+    lixel_polygons = init_lixel_polygons(
+        lixel_positions_x=lss.lixel_positions_x,
+        lixel_positions_y=lss.lixel_positions_y,
+        lixel_outer_radius=lss.lixel_outer_radius,
+    )
+
     return ax_add_polygons_with_colormap(
-        polygons=lss.lixel_polygons,
+        polygons=lixel_polygons,
         I=I,
         ax=ax,
         cmap=cmap,
