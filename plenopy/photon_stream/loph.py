@@ -212,9 +212,8 @@ def _workaround_tar_next(tar_object):
 
 
 class LopfTarReader:
-    def __init__(self, path, uid_num_digits=12):
-        self.path = path
-        self.tar = tarfile.open(name=path, mode="r")
+    def __init__(self, path=None, fileobj=None, uid_num_digits=12):
+        self.tar = tarfile.open(name=path, fileobj=fileobj, mode="r")
         self._uid_num_digits = uid_num_digits
         assert self._uid_num_digits > 0
 
@@ -238,14 +237,13 @@ class LopfTarReader:
         return self.tar.close()
 
     def __repr__(self):
-        out = "{:s}(path='{:s}')".format(self.__class__.__name__, self.path)
+        out = "{:s}()".format(self.__class__.__name__)
         return out
 
 
 class LopfTarWriter:
-    def __init__(self, path, uid_num_digits=12):
-        self.path = path
-        self.tar = tarfile.open(name=path, mode="w")
+    def __init__(self, path=None, fileobj=None, uid_num_digits=12):
+        self.tar = tarfile.open(name=path, fileobj=fileobj, mode="w")
         self._uid_num_digits = uid_num_digits
         assert self._uid_num_digits > 0
         self._uid_str = "{uid:0" + str(self._uid_num_digits) + "d}.phs.loph"
@@ -265,7 +263,7 @@ class LopfTarWriter:
         return True
 
     def __repr__(self):
-        out = "{:s}(path='{:s}')".format(self.__class__.__name__, self.path)
+        out = "{:s}()".format(self.__class__.__name__)
         return out
 
 
