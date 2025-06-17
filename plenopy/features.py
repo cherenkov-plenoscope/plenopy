@@ -233,17 +233,6 @@ def extract_features(
         ellipse = estimate_hillas_ellipse(cxs=cxs, cys=cys)
         return np.pi * ellipse.std_major * ellipse.std_minor
 
-    def ellipse_solid_angle_slope(
-        object_distance, cherenkov_photons, relative_delta=0.05
-    ):
-        obj_upper = object_distance * (1 + relative_delta)
-        obj_lower = object_distance * (1 - relative_delta)
-        obj_delta = obj_upper - obj_lower
-        esa_upper = ellipse_solid_angle(obj_upper, cherenkov_photons)
-        esa_lower = ellipse_solid_angle(obj_lower, cherenkov_photons)
-        esa_delta = esa_upper - esa_lower
-        return esa_delta / obj_delta
-
     if debug:
         print("refocus-stack, sharpest obj-dist")
     NUM_REFOCUS_SLICES = 24
