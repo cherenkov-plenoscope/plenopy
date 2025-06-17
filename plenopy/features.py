@@ -228,6 +228,10 @@ def extract_features(
     f["image_infinity_num_photons_on_edge_field_of_view"] = int(
         np.sum(leakage_mask)
     )
+    OBJECT_DISTANCE_MAX = 250e3
+    f["image_infinity_ellipse_solid_angle"] = ellipse_solid_angle(
+        object_distance=OBJECT_DISTANCE_MAX, cherenkov_photons=cp
+    )
 
     # quick refocus scan
     # -------------------
@@ -264,10 +268,13 @@ def extract_features(
     f["image_smallest_ellipse_object_distance"] = float(obj)
     f["image_smallest_ellipse_solid_angle"] = float(sa_plus)
 
-    # half-depth min
-    sa_twice = 2.0 * f["image_smallest_ellipse_solid_angle"]
+    # fraction-depth min
+    sa_pivot = (1 / 2) * (
+        f["image_infinity_ellipse_solid_angle"]
+        + f["image_smallest_ellipse_solid_angle"]
+    )
     for i in range(NUM_REFOCUS_SLICES):
-        if ellipse_solid_angles[i] <= sa_twice:
+        if ellipse_solid_angles[i] <= sa_pivot:
             if i == 0:
                 obj_lower = OBJECT_DISTANCE_MIN
             else:
@@ -276,12 +283,12 @@ def extract_features(
                     x1=OBJECT_DISTANCES[i],
                     y0=ellipse_solid_angles[i - 1],
                     y1=ellipse_solid_angles[i],
-                    yarg=sa_twice,
+                    yarg=sa_pivot,
                 )
             break
     for i in range(NUM_REFOCUS_SLICES):
         idx = NUM_REFOCUS_SLICES - i - 1
-        if ellipse_solid_angles[idx] <= sa_twice:
+        if ellipse_solid_angles[idx] <= sa_pivot:
             if idx == NUM_REFOCUS_SLICES - 1:
                 obj_upper = OBJECT_DISTANCE_MAX
             else:
@@ -290,23 +297,24 @@ def extract_features(
                     x1=OBJECT_DISTANCES[idx + 1],
                     y0=ellipse_solid_angles[idx],
                     y1=ellipse_solid_angles[idx + 1],
-                    yarg=sa_twice,
+                    yarg=sa_pivot,
                 )
             break
 
+    """
+    plt.figure()
+    plt.plot(OBJECT_DISTANCES, ellipse_solid_angles)
+    plt.plot(obj, sa_plus, "ro")
+    plt.plot([obj_lower, obj_upper], [sa_pivot, sa_pivot], "g")
+    plt.ylim([0, 1e-3])
+    plt.semilogx()
+    plt.savefig("ellipse_solid_angles.jpg")
+    plt.close("all")
+    input("ellipse_solid_angles.jpg")
+    """
+
     if obj_lower == OBJECT_DISTANCE_MIN:
         raise RuntimeError("Lower focus out of range.")
-    """
-    if obj_upper == OBJECT_DISTANCE_MAX:
-        plt.figure()
-        plt.plot(OBJECT_DISTANCES, ellipse_solid_angles)
-        plt.plot(obj, sa_plus, 'ro')
-        plt.plot([obj_lower, obj_upper], [sa_twice, sa_twice], 'g')
-        plt.ylim([0, 1e-3])
-        plt.show()
-        plt.close("all")
-        raise RuntimeError("Upper focus out of range.")
-    """
 
     f["image_smallest_ellipse_half_depth"] = float(obj_upper - obj_lower)
 
@@ -326,7 +334,7 @@ def extract_features(
     plt.figure()
     plt.plot(OBJECT_DISTANCES, ellipse_solid_angles)
     plt.plot(obj, sa_plus, 'ro')
-    plt.plot([obj_lower, obj_upper], [sa_twice, sa_twice], 'g')
+    plt.plot([obj_lower, obj_upper], [sa_pivot, sa_pivot], 'g')
     plt.ylim([0, 1e-3])
     plt.show()
     plt.close("all")
