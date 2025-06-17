@@ -46,6 +46,27 @@ class RawPhotons:
         self._image_rays = ImageRays(self._light_field_geometry)
 
     @classmethod
+    def from_lopf(cls, loph, light_field_geometry):
+        lixel_ids = loph["photons"]["channels"]
+        arrival_slices = loph["photons"]["arrival_time_slices"]
+        time_slice_duration = loph["sensor"]["time_slice_duration"]
+
+        return cls(
+            photon_ids=np.arange(arrival_slices.shape[0], dtype=np.int64),
+            arrival_slices=arrival_slices,
+            lixel_ids=lixel_ids,
+            light_field_geometry=light_field_geometry,
+            t_pap=(
+                arrival_slices.astype(np.float64) * time_slice_duration
+                + light_field_geometry.time_delay_mean[lixel_ids]
+            ),
+            t_img=(
+                arrival_slices.astype(np.float64) * time_slice_duration
+                + light_field_geometry.time_delay_image_mean[lixel_ids]
+            ),
+        )
+
+    @classmethod
     def from_event(cls, event):
         arrival_slices, lixel_ids = arrival_slices_and_lixel_ids(
             event.raw_sensor_response
