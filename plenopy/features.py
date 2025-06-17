@@ -141,6 +141,14 @@ def make_light_field_geometry_addon(light_field_geometry):
     return lfg_addon
 
 
+def ellipse_solid_angle(object_distance, cherenkov_photons):
+    obj = object_distance
+    cp = cherenkov_photons
+    cxs, cys = cp.cx_cy_in_object_distance(obj)
+    ellipse = estimate_hillas_ellipse(cxs=cxs, cys=cys)
+    return np.pi * ellipse.std_major * ellipse.std_minor
+
+
 def extract_features(
     cherenkov_photons,
     light_field_geometry,
@@ -225,13 +233,6 @@ def extract_features(
     # -------------------
     if debug:
         print("refocus-stack")
-
-    def ellipse_solid_angle(object_distance, cherenkov_photons):
-        obj = object_distance
-        cp = cherenkov_photons
-        cxs, cys = cp.cx_cy_in_object_distance(obj)
-        ellipse = estimate_hillas_ellipse(cxs=cxs, cys=cys)
-        return np.pi * ellipse.std_major * ellipse.std_minor
 
     if debug:
         print("refocus-stack, sharpest obj-dist")
