@@ -63,9 +63,9 @@ def estimate_trigger_image_sequences(
             sequnce=trigger_image_sequence,
             integration_time_slices=integration_time_slices,
         )
-        foci_trigger_image_sequences[
-            focus, :, :
-        ] = trigger_image_sequence_integrated
+        foci_trigger_image_sequences[focus, :, :] = (
+            trigger_image_sequence_integrated
+        )
     return foci_trigger_image_sequences
 
 

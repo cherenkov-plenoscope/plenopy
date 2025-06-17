@@ -45,9 +45,9 @@ def init_trigger_image_geometry(
     trg_img["pixel_cy_rad"] = grid_cx_cy[:, 1]
     trg_img["pixel_radius_rad"] = pixel_radius_rad
     trg_img["number_pixel"] = grid_cx_cy.shape[0]
-    trg_img[
-        "max_number_nearest_lixel_in_pixel"
-    ] = max_number_nearest_lixel_in_pixel
+    trg_img["max_number_nearest_lixel_in_pixel"] = (
+        max_number_nearest_lixel_in_pixel
+    )
     return trg_img
 
 

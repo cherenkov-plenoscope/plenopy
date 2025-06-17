@@ -219,9 +219,7 @@ class LightFieldGeometry(object):
 
         self.time_delay_image_mean = -self.time_delay_mean + t_mean
         self.time_delay_image_mean -= np.min(self.time_delay_image_mean[valid])
-        self.time_delay_image_std = np.sqrt(
-            self.time_delay_std**2 + t_std**2
-        )
+        self.time_delay_image_std = np.sqrt(self.time_delay_std**2 + t_std**2)
 
     def pixel_and_paxel_of_lixel(self, lixel):
         pix = lixel // self.number_paxel

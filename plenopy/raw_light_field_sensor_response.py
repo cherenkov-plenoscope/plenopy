@@ -17,6 +17,7 @@ number_time_slices      The number of time-slices of the photon-stream.
 number_symbols          The number of pulses plus the number of lixels.
                         This is the size of the photon-stream in bytes.
 """
+
 import numpy as np
 
 

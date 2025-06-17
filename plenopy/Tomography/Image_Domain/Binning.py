@@ -76,10 +76,10 @@ def init(
     b["obj_bin_edges"] = thin_lens.compute_object_distance_for_image_distance(
         image_distance=b["sen_z_bin_edges"], focal_length=focal_length
     )
-    b[
-        "obj_bin_centers"
-    ] = thin_lens.compute_object_distance_for_image_distance(
-        image_distance=b["sen_z_bin_centers"], focal_length=focal_length
+    b["obj_bin_centers"] = (
+        thin_lens.compute_object_distance_for_image_distance(
+            image_distance=b["sen_z_bin_centers"], focal_length=focal_length
+        )
     )
 
     return b

@@ -13,6 +13,7 @@ The total trigger-system can have multiple of these refocused images.
 The pattern of light-field-cells to be added up is stored in the
 trigger-geometry, which is estimated from the ligth-field-geometry.
 """
+
 from . import io
 from . import geometry
 from . import estimate
