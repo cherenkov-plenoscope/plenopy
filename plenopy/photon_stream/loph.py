@@ -234,8 +234,11 @@ class LopfTarReader:
     def __iter__(self):
         return self
 
+    def close(self):
+        self.tar.close()
+
     def __exit__(self, type, value, traceback):
-        return self.tar.close()
+        self.close()
 
     def __repr__(self):
         out = "{:s}()".format(self.__class__.__name__)
@@ -259,9 +262,11 @@ class LopfTarWriter:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
+    def close(self):
         self.tar.close()
-        return True
+
+    def __exit__(self, type, value, traceback):
+        self.close()
 
     def __repr__(self):
         out = "{:s}()".format(self.__class__.__name__)
