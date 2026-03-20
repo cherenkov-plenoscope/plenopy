@@ -138,12 +138,13 @@ def read_photon_stream_from_file(fileobj):
     # PHOTONS
     # =======
     num = _read(np.uint64, 1, f)[0]
+    print("num", num)
     phs["photons"]["channels"] = np.zeros(num, dtype=np.uint32)
     phs["photons"]["arrival_time_slices"] = np.zeros(num, dtype=np.uint8)
 
     for ph in range(num):
-        phs["photons"]["channels"][ph] = _read(np.uint32, 1, f)
-        phs["photons"]["arrival_time_slices"][ph] = _read(np.uint8, 1, f)
+        phs["photons"]["channels"][ph] = _read(np.uint32, 1, f)[0]
+        phs["photons"]["arrival_time_slices"][ph] = _read(np.uint8, 1, f)[0]
 
     assert_valid(phs)
     return phs
